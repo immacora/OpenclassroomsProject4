@@ -1,0 +1,22 @@
+[flake8]
+
+exclude=
+    .gitignore,
+    __pycache__,
+    data/,
+    docs/,
+    flake8_rapport/,
+    README.md,
+    requirements.txt,
+    venv/
+
+filename =
+    main.py,
+    swiss_chess_manager/
+
+format = pylint
+
+max-line-length = 119
+max-doc-length = 119
+
+max-complexity = 10
