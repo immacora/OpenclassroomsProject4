@@ -8,8 +8,6 @@ from views.menu_view import MenuView
 
 def main():
 
-    """I) ETAPE 1"""
-
     """1: Initialise les variables modèle (paramètre = constante MAIN_MENU), vue et controller."""
 
     menu = Menu(constants.MAIN_MENU)
