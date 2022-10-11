@@ -1,0 +1,1 @@
+"""swiss_chess_manager package."""
