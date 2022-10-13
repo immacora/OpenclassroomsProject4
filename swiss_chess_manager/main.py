@@ -14,9 +14,9 @@ def main():
     view = MenuView()
     swiss_chess_manager = MenuController(menu, view)
 
-    """2: Lance le programme avec le controlleur (affiche le menu interactif principal)"""
+    """2: Lance le programme"""
 
-    swiss_chess_manager.run_interactive_menu()
+    swiss_chess_manager.run_swiss_chess_manager()
 
 
 if __name__ == "__main__":

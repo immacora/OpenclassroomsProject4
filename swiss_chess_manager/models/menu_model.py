@@ -2,9 +2,23 @@ class Menu:
     """Menu."""
 
     def __init__(self, menu: list):
-        """Méthode spéciale : Initialise le menu (constante reçue en paramètre), son titre et ses options,
-        initialise la liste des numéros d'option."""
+        """Initialise le menu (constante reçue en paramètre)."""
         self.menu = menu
+
+    def __str__(self):
+        """Représentation de l'objet sous forme de chaîne de caractères (retourne le titre et les options de la constante menu."""
+        str_options = ""
+        for option in self.get_menu_options():
+            option_number = str(option[0])
+            option_title = option[1]
+            str_option = option_number + " : " + option_title
+            str_options += str_option
+        str_menu = self.get_menu_title() + str_options
+        return str_menu
+
+    def __repr__(self):
+        """Représentation de l'objet : titre et dictionnaire (phase développement app)."""
+        return __class__.__name__ + " " + str(self.__dict__)
 
     def get_menu_title(self):
         menu_title = self.menu[0]
@@ -22,13 +36,10 @@ class Menu:
             options_numbers.append(option_number)
         return options_numbers
 
-    def str_menu(self):
-        """Retourne le titre et les options de la constante menu au format str pour affichage."""
-        str_options = ""
-        for option in self.get_menu_options():
-            option_number = str(option[0])
-            option_title = option[1]
-            str_option = option_number + " : " + option_title
-            str_options += str_option
-        str_menu = self.get_menu_title() + str_options
-        return str_menu
+    def get_options_title(self):
+        """Retourne la liste des titres d'option du menu à comparer au choix de l'utilisateur."""
+        options_title = []
+        for title in self.get_menu_options():
+            option_title = title[1]
+            options_title.append(option_title)
+        return options_title

@@ -1,6 +1,6 @@
 """Constants"""
 
-# listes de tuple (immutables)
+# listes de tuple (immutables) non liés
 MAIN_MENU = [
     "\n----- SWISS CHESS MANAGER MENU -----\n",
     [
