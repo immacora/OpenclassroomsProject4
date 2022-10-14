@@ -6,6 +6,7 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
 ## Prérequis :
     - python 3.10.7
     - pip
+    - pyinputplus
     - tinyDB
     - flake8
 
@@ -30,7 +31,7 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
         - Appel de la fonction de lancement du menu interactif (controlleur) pour lancer le programme 
 
     2- Choix d'une option de menu (fichier constants.py du dossier models):
-        Le menu principal propose 2 sous-menus qui donnent accès aux fonctionnalités demandées:
+        Le menu principal propose 3 sous-menus qui donnent accès aux fonctionnalités demandées:
 
         2.1 PLAYERS_MENU:
             - Créer un nouveau joueur
@@ -50,5 +51,8 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
             - Afficher un rapport
             - Retourner au menu principal
 
-    3- Générer 1 nouveau rapport flake8 (exemple)
+        3. REPORT_MENU:
+            - Afficher un rapport
+            - Retourner au menu principal
 
+    3- Générer 1 nouveau rapport flake8 (exemple)
