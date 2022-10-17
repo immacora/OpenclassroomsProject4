@@ -6,7 +6,7 @@ class Menu:
         self.menu = menu
 
     def __str__(self):
-        """Représentation de l'objet sous forme de chaîne de caractères (retourne le titre et les options de la constante menu."""
+        """Représentation de l'objet sous forme de chaîne de caractères (retourne le titre et les options de la constante menu)."""
         str_options = ""
         for option in self.get_menu_options():
             option_number = str(option[0])
@@ -15,10 +15,6 @@ class Menu:
             str_options += str_option
         str_menu = self.get_menu_title() + str_options
         return str_menu
-
-    def __repr__(self):
-        """Représentation de l'objet : titre et dictionnaire (phase développement app)."""
-        return __class__.__name__ + " " + str(self.__dict__)
 
     def get_menu_title(self):
         menu_title = self.menu[0]
