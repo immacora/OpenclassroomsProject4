@@ -74,7 +74,7 @@ class MenuController:
             elif user_option_int == 2:
                 PlayerController(player, view).edit_player()
             elif user_option_int == 3:
-                PlayerController(player, view).display_player_report()
+                PlayerController(player, view).show_players_list()
             elif user_option_int == 4:
                 self.run_swiss_chess_manager()
             else:

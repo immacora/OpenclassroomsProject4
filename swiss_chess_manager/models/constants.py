@@ -16,8 +16,8 @@ PLAYERS_MENU = [
     "\n----- MENU JOUEURS -----\n",
     [
         (1, "Créer un nouveau joueur\n"),
-        (2, "Modifier les données d'un joueur\n"),
-        (3, "Afficher un rapport\n"),
+        (2, "Modifier la fiche d'un joueur\n"),
+        (3, "Afficher la liste des joueurs\n"),
         (4, "Retourner au menu principal\n")
     ]
 ]

@@ -11,18 +11,10 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
     - flake8
 
 ## Installation
-    PyCharm (Windows, Mac ou Linux):
-        - Téléchargez les fichiers du projet dans l'IDE PyCharm via VCS
-        - Vérifier l'import et lancez le programme SwissChessManager.py
-    Terminal Windows :
-        - Accédez à l’emplacement où placer vos projets : cd Users\Username\RepertoireProjects ou créez le : mkdir RepertoireProjects
-        - Déplacez-vous dans le répertoire : cd RepertoireProjects
-        - Clonez le projet : git clone https://github.com/immacora/OpenclassroomsProject4.git
-        - Déplacez-vous dans le répertoire : cd OpenclassroomsProject4
-        - Créez l’environnement virtuel du projet : python3 -m venv .venv
-        - Activez le projet : .venv\Scripts\activate
+    - Créez l’environnement virtuel du projet : python3 -m venv .venv
+        - Activez l’environnement virtuel
         - Installer les modules : pip install -r requirements.txt
-        - Exécutez le programme : python swiss_chess_manager.py
+        - Exécutez le programme : python XXXXXXXXXXXXXX.py
 
 ## Utilisation
 
