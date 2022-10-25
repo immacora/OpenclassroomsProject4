@@ -1,6 +1,6 @@
 from swiss_chess_manager.models import constants
 from swiss_chess_manager.models.menu_model import Menu
-from swiss_chess_manager.models.player_model import Player
+from swiss_chess_manager.models.player_model import PlayerModel
 from swiss_chess_manager.models.tournament_model import Tournament
 from swiss_chess_manager.views.menu_view import MenuView
 from swiss_chess_manager.views.player_view import PlayerView
@@ -67,7 +67,7 @@ class MenuController:
             else:
                 print(constants_error)
         elif active_menu_title == constants.PLAYERS_MENU[0]:
-            player = Player
+            player = PlayerModel
             view = PlayerView
             if user_option_int == 1:
                 PlayerController(player, view).add_new_player()

@@ -1,5 +1,4 @@
 """Entry point."""
-
 from models import constants
 from models.menu_model import Menu
 from controllers.menu_controller import MenuController

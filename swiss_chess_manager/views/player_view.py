@@ -31,8 +31,8 @@ class PlayerView:
     @staticmethod
     def player_id_input():
         """Demande la saisie (vérifiée) d'un id à l'utilisateur et le retourne."""
-        id_choice: int = pyip.inputNum(prompt="Saisir l'identifiant du joueur à modifier: ", min=1)
-        return id_choice
+        player_id: int = pyip.inputNum(prompt="Saisir l'identifiant du joueur à modifier: ", min=1)
+        return player_id
 
     @staticmethod
     def field_to_update(player, doc_id):
@@ -59,3 +59,8 @@ class PlayerView:
             "rating": rating
         }
         return player_input
+
+    @staticmethod
+    def list_sort():
+        """Demande à l'utilisateur de choisir le type de tri."""
+        return pyip.inputChoice(prompt="Afficher les joueurs par: ordre alphabétique (A), classement (C)", choices=["A", "C"])
