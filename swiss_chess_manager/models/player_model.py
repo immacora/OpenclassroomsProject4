@@ -22,7 +22,7 @@ class PlayerModel:
 
     def __str__(self):
         """Représentation de l'objet (datas du joueur) sous forme de chaîne de caractères."""
-        player: str = f"Prénom : {self.lastname}\n Nom : {self.firstname}\n Né(e) le : {self.date_of_birth}\n Genre : {self.gender}\n Classement : {self.rating}"
+        player: str = f"Prénom : {self.lastname}\n Nom : {self.firstname}\n Date de naissance : {self.date_of_birth}\n Genre : {self.gender}\n Classement : {self.rating}"
         return player
 
     def serialize_player(self):
@@ -54,9 +54,10 @@ class PlayerModel:
 
     @staticmethod
     def get_all_players():
+        """Charge le contenu de la PLAYERS_TABLE et insère l'id de chaque document de la liste renvoyée."""
         players = PlayerModel.PLAYERS_TABLE.all()
-        players_list = ["Liste de tous les joueurs"]
+        players_list = []
         for player in players:
-            player = player.doc_id, player
+            player["player_id"] = player.doc_id
             players_list.append(player)
         return players_list

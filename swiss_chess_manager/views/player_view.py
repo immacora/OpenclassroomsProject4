@@ -1,4 +1,5 @@
 import pyinputplus as pyip
+import pandas as pd
 
 
 class PlayerView:
@@ -30,24 +31,40 @@ class PlayerView:
 
     @staticmethod
     def player_id_input():
-        """Demande la saisie (vérifiée) d'un id à l'utilisateur et le retourne."""
-        player_id: int = pyip.inputNum(prompt="Saisir l'identifiant du joueur à modifier: ", min=1)
+        """Demande la saisie d'un id à l'utilisateur et le retourne."""
+        player_id: int = pyip.inputNum(prompt="\nSaisir l'identifiant du joueur à modifier: ", min=1)
         return player_id
 
     @staticmethod
     def field_to_update(player, doc_id):
         """Affiche le joueur à modifier,
-        Demande à l'utilisateur la saisie (vérifiée) d'une option de champ à modifier et le retourne."""
-        print(f"Vous allez modifier le joueur n° {doc_id}:\n {player}")
-        field_to_update = pyip.inputMenu(choices=["Prénom", "Nom", "Date de naissance", "Genre", "Classement", "Quitter la modification"], prompt="Saisir le numéro correspondant au champ à modifier:\n", numbered=True)
+        Demande à l'utilisateur la saisie d'une option de champ à modifier et le retourne."""
+        print(f"\nVous allez modifier le joueur n° {doc_id}:\n {player}")
+        field_to_update = pyip.inputMenu(choices=["Prénom", "Nom", "Date de naissance", "Genre", "Classement", "Quitter la modification"], prompt="\nSaisir le numéro correspondant au champ à modifier:\n", numbered=True)
         return field_to_update
 
+    @staticmethod
+    def list_sort(players_list):
+        """Demande à l'utilisateur de choisir le type de tri et affiche la liste des joueurs triés par ordre alphabétique ou classement."""
+        sort = pyip.inputChoice(prompt="\nAfficher les joueurs par ordre alphabétique: 1 ou classement: 2", choices=["1", "2"])
+        players_table = pd.DataFrame(players_list)
+        players_table.rename(columns={"lastname": "Prénom", "firstname": "Nom", "date_of_birth": "Date de naissance", "gender": "Genre", "rating": "Classement", "player_id": "Identifiant"}, inplace=True)
+        players_table = players_table.reindex(columns=["Identifiant", "Nom", "Prénom", "Date de naissance", "Genre", "Classement"])
+        players_table.set_index("Identifiant", inplace=True)
+        if sort == "1":
+            sorted_list = players_table.sort_values(by=["Nom"])
+            print(f"\nListe des joueurs triée par ordre alphabétique:\n{sorted_list}")
+        elif sort == "2":
+            sorted_list = players_table.sort_values(by=["Classement"], ascending=False)
+            print(f"\nListe des joueurs triée par classement:\n{sorted_list}")
+        else:
+            print("ERREUR: L'affichage a échoué")
+
     def player_input(self):
-        """Demande à l'utilisateur de saisir les renseignements nécessaires à la création de la fiche du joueur et vérifie les saisies à l'aide du module pyinputplus
-        Renvoie le dictionnaire des datas."""
-        print("Créer un nouveau joueur: ")
+        """Saisie vérifiée de la fiche du joueur par utilisateur et renvoi du dictionnaire des datas."""
+        print("\nCréer un nouveau joueur: ")
         lastname = self.lastname_input()
-        firstname = self.lastname_input()
+        firstname = self.firstname_input()
         date_of_birth = self.date_of_birth_input()
         gender = self.gender_input()
         rating = self.rating_input()
@@ -59,8 +76,3 @@ class PlayerView:
             "rating": rating
         }
         return player_input
-
-    @staticmethod
-    def list_sort():
-        """Demande à l'utilisateur de choisir le type de tri."""
-        return pyip.inputChoice(prompt="Afficher les joueurs par: ordre alphabétique (A), classement (C)", choices=["A", "C"])

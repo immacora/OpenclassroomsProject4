@@ -7,6 +7,7 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
     - python 3.10.7
     - pip
     - pyinputplus
+    - pandas 
     - tinyDB
     - flake8
 
@@ -28,7 +29,7 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
         2.1 PLAYERS_MENU:
             - Créer un nouveau joueur
             - Modifier les données d'un joueur
-            - Afficher un rapport
+            - Afficher la liste des joueurs
             - Retourner au menu principal
     
         2.2 TOURNAMENTS_MENU:
