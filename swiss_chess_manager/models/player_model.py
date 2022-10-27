@@ -37,7 +37,7 @@ class PlayerModel:
 
     @staticmethod
     def get_player_by_id(player_id):
-        """Cherche le joueur sérialisé de la bdd par son id et le retourne."""
+        """Cherche le joueur sérialisé de la db par son id et le retourne."""
         db_serialized_player = PlayerModel.PLAYERS_TABLE.get(doc_id=player_id)
         return db_serialized_player
 
@@ -54,7 +54,7 @@ class PlayerModel:
 
     @staticmethod
     def get_all_players():
-        """Charge le contenu de la PLAYERS_TABLE et insère l'id de chaque document de la liste renvoyée."""
+        """Charge le contenu de la PLAYERS_TABLE et insère l'id de chaque document dans la liste renvoyée."""
         players = PlayerModel.PLAYERS_TABLE.all()
         players_list = []
         for player in players:
