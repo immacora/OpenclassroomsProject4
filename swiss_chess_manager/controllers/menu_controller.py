@@ -52,8 +52,8 @@ class MenuController:
 
     @staticmethod
     def run_submenu_function(submenu_option):
-        """Exécute les fonctions du programme:
-        Appelle la fonction du contrôleur concerné selon l'option sélectionné,
+        """Exécute la fonction liée à l'option sélectionnée:
+        Appelle la fonction du contrôleur concerné,
         Demande un choix d'action à l'utilisateur,
         Boucle sur l'action ou retourne au menu principal selon le choix."""
 

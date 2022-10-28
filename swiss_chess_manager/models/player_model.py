@@ -1,19 +1,21 @@
 import os
 
-from tinydb import TinyDB, Query, where
+from tinydb import TinyDB
 
 
 class PlayerModel:
     """Player."""
 
     repertoire_courant = os.getcwd()
+
+    #db_dir = os.path.dirname(repertoire_courant)
+
     db_path = os.path.join(repertoire_courant, "data", "db.json")
     DB = TinyDB(db_path)
     PLAYERS_TABLE = DB.table("players")
-    # USER = Query()
 
     def __init__(self, lastname, firstname, date_of_birth, gender, rating):
-        """Initialise le joueur, la bdd."""
+        """Initialise le joueur."""
         self.lastname: str = lastname
         self.firstname: str = firstname
         self.date_of_birth: str = date_of_birth
@@ -22,12 +24,20 @@ class PlayerModel:
 
     def __str__(self):
         """Représentation de l'objet (datas du joueur) sous forme de chaîne de caractères."""
-        player: str = f"Prénom : {self.lastname}\n Nom : {self.firstname}\n Date de naissance : {self.date_of_birth}\n Genre : {self.gender}\n Classement : {self.rating}"
+        player: str = f"Prénom : {self.lastname}\n Nom : {self.firstname}\n " \
+                      f"Date de naissance : {self.date_of_birth}\n Genre : {self.gender}\n " \
+                      f"Classement : {self.rating} "
         return player
 
     def serialize_player(self):
         """Sérialise l'instance du joueur dans un dictionnaire pour insertion des datas dans la db."""
-        serialized_player: dict = {"lastname": self.lastname, "firstname": self.firstname, "date_of_birth": self.date_of_birth, "gender": self.gender, "rating": self.rating}
+        serialized_player: dict = {
+            "lastname": self.lastname,
+            "firstname": self.firstname,
+            "date_of_birth": self.date_of_birth,
+            "gender": self.gender,
+            "rating": self.rating
+        }
         return serialized_player
 
     def save_player(self):
@@ -44,7 +54,13 @@ class PlayerModel:
     @staticmethod
     def unserialize_player(serialized_player):
         """Convertit le joueur sérialisé en instance."""
-        unserialized_player = PlayerModel(lastname=serialized_player["lastname"], firstname=serialized_player["firstname"], date_of_birth=serialized_player["date_of_birth"], gender=serialized_player["gender"], rating=serialized_player["rating"])
+        unserialized_player = PlayerModel(
+            lastname=serialized_player["lastname"],
+            firstname=serialized_player["firstname"],
+            date_of_birth=serialized_player["date_of_birth"],
+            gender=serialized_player["gender"],
+            rating=serialized_player["rating"]
+        )
         return unserialized_player
 
     @staticmethod

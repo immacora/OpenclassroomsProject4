@@ -11,7 +11,7 @@ class PlayerController:
         self.view = view
 
     def add_new_player(self):
-        """Créer un nouveau joueur (fonctionnalité de l'option 1 PLAYERS_MENU):
+        """Créer un nouveau joueur (fonctionnalité de l'option 1 MENU JOUEURS):
         Initialise le joueur,
         Formate la data datetime->str(annee-mois-jour),
         Crée l'objet joueur, l'insère en base et affiche le joueur créé ou un message d'erreur."""
@@ -27,7 +27,7 @@ class PlayerController:
             print("ERREUR: L'enregistrement du joueur a échoué")
 
     def edit_player(self):
-        """Modifier la fiche d'un joueur (fonctionnalité de l'option 2 PLAYERS_MENU):
+        """Modifier la fiche d'un joueur (fonctionnalité de l'option 2 MENU JOUEURS):
         Initialise l'identifiant du joueur à modifier et la fiche correspondante dans la db,
         Si le numéro saisi par l'utilisateur n'existe pas : Affiche un message d'erreur puis le menu PLAYERS_MENU,
         Sinon : Initialise l'objet joueur, le label et le champ à modifier,
@@ -68,7 +68,7 @@ class PlayerController:
             print(f"\nVous avez modifié le joueur n° {player_id}:\n {updated_player}")
 
     def show_players_list(self):
-        """Afficher la liste des joueurs de la table PLAYERS_TABLE (fonctionnalité de l'option 3 PLAYERS_MENU):
+        """Afficher la liste des joueurs de la table PLAYERS_TABLE (fonctionnalité de l'option 3 MENU JOUEURS):
         Initialise la liste des joueurs,
         Si aucun joueur n'a été récupéré : Affiche un message d'erreur puis le menu PLAYERS_MENU,
         Sinon : Affiche la liste triée

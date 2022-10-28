@@ -1,5 +1,5 @@
 """Entry point."""
-from controllers.menu_controller import MenuController
+from swiss_chess_manager.controllers.menu_controller import MenuController
 
 
 def main():

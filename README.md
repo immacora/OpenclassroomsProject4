@@ -15,16 +15,15 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
     - Créez l’environnement virtuel du projet : python3 -m venv .venv
         - Activez l’environnement virtuel
         - Installer les modules : pip install -r requirements.txt
-        - Exécutez le programme : python XXXXXXXXXXXXXX.py
+        - Exécutez le programme : python swiss_chess_manager.py
 
 ## Utilisation
 
     1- Lancement du programme:
-        - Initialisation des variables modèle, vue et controller du menu avec la constante MAIN_MENU en paramètre du menu.
-        - Appel de la fonction de lancement du menu interactif (controlleur) pour lancer le programme 
+        - Appel de la fonction de lancement du menu MenuController.run_menu() pour lancer le programme 
 
-    2- Choix d'une option de menu (fichier constants.py du dossier models):
-        Le menu principal propose 3 sous-menus qui donnent accès aux fonctionnalités demandées:
+    2- Choix d'une option de menu :
+        Le menu principal propose 3 sous-menus qui donnent accès aux fonctionnalités suivantes :
 
         2.1 PLAYERS_MENU:
             - Créer un nouveau joueur
