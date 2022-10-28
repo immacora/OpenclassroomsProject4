@@ -1,5 +1,5 @@
-from swiss_chess_manager.views.player_view import PlayerView
 from swiss_chess_manager.models.player_model import PlayerModel
+from swiss_chess_manager.views.player_view import PlayerView
 
 
 class PlayerController:
@@ -33,7 +33,7 @@ class PlayerController:
         Sinon : Initialise l'objet joueur, le label et le champ à modifier,
         Assigne les nouvelles valeurs et affiche le joueur modifié."""
 
-        player_id = PlayerView.player_id_input()
+        player_id = PlayerView.player_id()
         db_serialized_player = PlayerModel.get_player_by_id(player_id)
 
         if db_serialized_player is None:
@@ -44,19 +44,19 @@ class PlayerController:
             field_to_update = PlayerView.field_to_update(player, player_id)
             if field_to_update == "Prénom":
                 label = "lastname"
-                field_to_update = PlayerView.lastname_input()
+                field_to_update = PlayerView.lastname()
             elif field_to_update == "Nom":
                 label = "firstname"
-                field_to_update = PlayerView.firstname_input()
+                field_to_update = PlayerView.firstname()
             elif field_to_update == "Date de naissance":
                 label = "date_of_birth"
-                field_to_update = PlayerView.date_of_birth_input().strftime('%Y-%m-%d')
+                field_to_update = PlayerView.date_of_birth().strftime('%Y-%m-%d')
             elif field_to_update == "Genre":
                 label = "gender"
-                field_to_update = PlayerView.gender_input()
+                field_to_update = PlayerView.gender()
             elif field_to_update == "Classement":
                 label = "rating"
-                field_to_update = PlayerView.rating_input()
+                field_to_update = PlayerView.rating()
             elif field_to_update == "Quitter la modification":
                 return
             else:
@@ -75,7 +75,6 @@ class PlayerController:
         Affiche le menu PLAYERS_MENU."""
 
         players_list = PlayerModel.get_all_players()
-
         if players_list is None:
             print("ERREUR: La requête a échoué")
             print("#######################FIN DU PROGRAMME DANS player_controller, show_players_list", "ajouter l'appel à la fonction de retour au PLAYERS_MENU : Revenir au menu Joueurs")

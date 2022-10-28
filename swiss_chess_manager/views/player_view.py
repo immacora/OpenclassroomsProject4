@@ -9,31 +9,38 @@ class PlayerView:
         pass
 
     @staticmethod
-    def lastname_input():
+    def lastname():
+        """Prénom du joueur"""
         return pyip.inputStr(
-            prompt="Saisir le prénom du joueur (chiffres interdits): ", blank=False, blockRegexes="0123456789"
+            prompt="Saisir le prénom du joueur (en lettres uniquement): ",
+            blank=False, blockRegexes=[r"[0-9&@=£%<>,;:/§\^\$\\\|\{\}\[\]\(\)\?\#\!\+\*\.]"]
         )
 
     @staticmethod
-    def firstname_input():
+    def firstname():
+        """Nom du joueur"""
         return pyip.inputStr(
-            prompt="Saisir le nom du joueur (chiffres interdits): ", blank=False, blockRegexes="0123456789"
+            prompt="Saisir le nom du joueur (en lettres uniquement): ",
+            blank=False, blockRegexes=[r"[0-9&@=£%<>,;:/§\^\$\\\|\{\}\[\]\(\)\?\#\!\+\*\.]"]
         )
 
     @staticmethod
-    def date_of_birth_input():
+    def date_of_birth():
+        """Date de naissance du joueur"""
         return pyip.inputDate(prompt="Saisir la date de naissance du joueur au format (YYYY/MM/DD): ")
 
     @staticmethod
-    def gender_input():
+    def gender():
+        """Genre du joueur"""
         return pyip.inputChoice(prompt="Saisir le genre du joueur (M : Masculin, F : Féminin): ", choices=["M", "F"])
 
     @staticmethod
-    def rating_input():
-        return pyip.inputNum(prompt="Saisir le classement du joueur (0 ou un nombre entier positif): ", min=0)
+    def rating():
+        """Classement du joueur (valeurs min et max du classement ELO FIDE)"""
+        return pyip.inputNum(prompt="Saisir le classement du joueur (0 ou un nombre entier positif): ", min=1000, max=3500)
 
     @staticmethod
-    def player_id_input():
+    def player_id():
         """Demande la saisie d'un id à l'utilisateur et le retourne."""
         player_id: int = pyip.inputNum(prompt="\nSaisir l'identifiant du joueur à modifier: ", min=1)
         return player_id
@@ -79,15 +86,15 @@ class PlayerView:
             print("ERREUR: L'affichage a échoué")
 
     def player_input(self):
-        """Saisie vérifiée de la fiche du joueur par utilisateur et renvoi du dictionnaire des datas."""
+        """Saisie vérifiée de la fiche du joueur par l'utilisateur et renvoi du dictionnaire des datas."""
 
         print("\nCréer un nouveau joueur: ")
 
-        lastname = self.lastname_input()
-        firstname = self.firstname_input()
-        date_of_birth = self.date_of_birth_input()
-        gender = self.gender_input()
-        rating = self.rating_input()
+        lastname = self.lastname()
+        firstname = self.firstname()
+        date_of_birth = self.date_of_birth()
+        gender = self.gender()
+        rating = self.rating()
         player_input: dict = {
             "lastname": lastname,
             "firstname": firstname,

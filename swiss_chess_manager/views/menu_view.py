@@ -25,7 +25,7 @@ class MenuView:
     @staticmethod
     def display_tournaments_menu():
         menu = pyip.inputMenu(
-            choices=["Créer un nouveau tournoi", "Afficher un rapport", "Retourner au menu principal"],
+            choices=["Créer un nouveau tournoi", "Lancer un tournoi créé", "Afficher un rapport", "Retourner au menu principal"],
             prompt="\n----- MENU TOURNOIS -----\n", numbered=True)
         return menu
 
@@ -37,5 +37,9 @@ class MenuView:
         return menu
 
     @staticmethod
-    def ask_user_option():
+    def ask_player_menu_option():
         return pyip.inputChoice(prompt="\nSaisir 'S' pour sortir et revenir au menu principal ou 'R' pour recommencer", choices=["S", "R"])
+
+    @staticmethod
+    def ask_tournament_menu_option():
+        return pyip.inputChoice(prompt="\nSaisir 'S' pour sortir et revenir au menu principal ou 'T' pour lancer le tournoi", choices=["S", "T"])

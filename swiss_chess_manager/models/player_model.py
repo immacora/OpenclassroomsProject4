@@ -7,9 +7,6 @@ class PlayerModel:
     """Player."""
 
     repertoire_courant = os.getcwd()
-
-    #db_dir = os.path.dirname(repertoire_courant)
-
     db_path = os.path.join(repertoire_courant, "data", "db.json")
     DB = TinyDB(db_path)
     PLAYERS_TABLE = DB.table("players")
@@ -25,7 +22,8 @@ class PlayerModel:
     def __str__(self):
         """Représentation de l'objet (datas du joueur) sous forme de chaîne de caractères."""
         player: str = f"Prénom : {self.lastname}\n Nom : {self.firstname}\n " \
-                      f"Date de naissance : {self.date_of_birth}\n Genre : {self.gender}\n " \
+                      f"Date de naissance : {self.date_of_birth}\n " \
+                      f"Genre : {self.gender}\n " \
                       f"Classement : {self.rating} "
         return player
 

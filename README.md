@@ -15,12 +15,11 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
     - Créez l’environnement virtuel du projet : python3 -m venv .venv
         - Activez l’environnement virtuel
         - Installer les modules : pip install -r requirements.txt
-        - Exécutez le programme : python swiss_chess_manager.py
 
 ## Utilisation
 
     1- Lancement du programme:
-        - Appel de la fonction de lancement du menu MenuController.run_menu() pour lancer le programme 
+        - Exécutez le programme depuis la console : saisir python swiss_chess_manager.py 
 
     2- Choix d'une option de menu :
         Le menu principal propose 3 sous-menus qui donnent accès aux fonctionnalités suivantes :
@@ -28,12 +27,12 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
         2.1 PLAYERS_MENU:
             - Créer un nouveau joueur
             - Modifier les données d'un joueur
-            - Afficher la liste des joueurs
+            - Afficher la liste des joueurs (par ordre alphabétique ou classement)
             - Retourner au menu principal
     
         2.2 TOURNAMENTS_MENU:
-            - Créer un nouveau tournoi
-                - Ajout de 8 joueurs (par défaut)
+            - Créer un nouveau tournoi (8 joueurs et 4 tours par défaut)
+            - Lancer un tournoi créé
                 - Créer 1 tour (générer les paires de joueurs)
                 - Afficher l'appariement des joueurs dans le tour
                 - Saisir les résultats des matchs du tour lorsqu'il est terminé (Gagner/Perdre 1 match = aléatoire)

@@ -1,10 +1,10 @@
 from swiss_chess_manager.controllers.player_controller import PlayerController
-#from swiss_chess_manager.controllers.tournament_controller import TournamentController
+from swiss_chess_manager.controllers.tournament_controller import TournamentController
 from swiss_chess_manager.models.player_model import PlayerModel
-#from swiss_chess_manager.models.tournament_model import TournamentModel
+from swiss_chess_manager.models.tournament_model import TournamentModel
 from swiss_chess_manager.views.menu_view import MenuView
 from swiss_chess_manager.views.player_view import PlayerView
-#from swiss_chess_manager.views.tournament_view import TournamentView
+from swiss_chess_manager.views.tournament_view import TournamentView
 
 
 class MenuController:
@@ -39,16 +39,28 @@ class MenuController:
             MenuController.run_submenu_function(submenu_option)
 
     @staticmethod
-    def user_option():
+    def user_player_menu_option():
         """Choisir l'action à exécuter:
         Initialise le choix de l'utilisateur,
         Sort et relance le menu principal (S) ou retourne le choix (R)."""
 
-        user_option = MenuView.ask_user_option()
-        if user_option == "S":
+        user_player_menu_option = MenuView.ask_player_menu_option()
+        if user_player_menu_option == "S":
             MenuController.run_menu()
         else:
-            return user_option
+            return user_player_menu_option
+
+    @staticmethod
+    def user_tournament_menu_option():
+        """Choisir l'action à exécuter:
+        Initialise le choix de l'utilisateur,
+        Sort et relance le menu principal (S) ou retourne le choix (T)."""
+
+        user_tournament_menu_option = MenuView.ask_tournament_menu_option()
+        if user_tournament_menu_option == "S":
+            MenuController.run_menu()
+        else:
+            return user_tournament_menu_option
 
     @staticmethod
     def run_submenu_function(submenu_option):
@@ -59,29 +71,33 @@ class MenuController:
 
         if submenu_option == "Créer un nouveau joueur":
             PlayerController(PlayerModel, PlayerView).add_new_player()
-            user_option = MenuController.user_option()
+            user_option = MenuController.user_player_menu_option()
             while user_option == "R":
                 PlayerController(PlayerModel, PlayerView).add_new_player()
-                user_option = MenuController.user_option()
+                user_option = MenuController.user_player_menu_option()
         elif submenu_option == "Modifier la fiche d'un joueur":
             PlayerController(PlayerModel, PlayerView).edit_player()
-            user_option = MenuController.user_option()
+            user_option = MenuController.user_player_menu_option()
             while user_option == "R":
                 PlayerController(PlayerModel, PlayerView).edit_player()
-                user_option = MenuController.user_option()
+                user_option = MenuController.user_player_menu_option()
         elif submenu_option == "Afficher la liste des joueurs":
             PlayerController(PlayerModel, PlayerView).show_players_list()
-            user_option = MenuController.user_option()
+            user_option = MenuController.user_player_menu_option()
             while user_option == "R":
                 PlayerController(PlayerModel, PlayerView).show_players_list()
-                user_option = MenuController.user_option()
+                user_option = MenuController.user_player_menu_option()
         elif submenu_option == "Créer un nouveau tournoi":
-            #TournamentController(TournamentModel, TournamentView).FONCTION.create_tournament()
-            #user_option = MenuController.user_option()
-            #while user_option == "R":
-                #TournamentController(TournamentModel, TournamentView).FONCTION.create_tournament()
-                #user_option = MenuController.user_option()
-            print("#######################FIN DU PROGRAMME DANS menu_controller, run_submenu_function")
+            TournamentController(TournamentModel, TournamentView).create_tournament()
+            user_option = MenuController.user_tournament_menu_option()
+            if user_option == "T":
+                TournamentController(TournamentModel, TournamentView).run_tournament()
+            else:
+                print("ERREUR: La requête a échoué")
+                MenuController.run_menu()
+        elif submenu_option == "Lancer un tournoi créé":
+            TournamentController(TournamentModel, TournamentView).run_tournament()
+            print("####################### FIN DU PROGRAMME DANS menu_controller, run_submenu_function")
         elif submenu_option == "Afficher un rapport":
             print("####################### VOIR SI CONSERVER FIN DU PROGRAMME DANS menu_controller, run_submenu_function")
         else:
