@@ -70,7 +70,6 @@ class TournamentView:
 
     def tournament_input(self):
         """Saisie vérifiée de la fiche du tournoi par l'utilisateur et renvoi du dictionnaire des datas."""
-
         print("\nCréer un nouveau tournoi: ")
 
         name = self.name()
@@ -93,3 +92,51 @@ class TournamentView:
             "description": description
         }
         return tournament_input
+
+
+""" Test
+print(6)
+#blockRegexes=r"^[0-9]{5}$"
+listejtournois = [tournoi1, tournoi2, tournoi3]"""
+
+"""
+
+    @staticmethod
+    def field_to_update(player, doc_id):
+        #Affiche le joueur à modifier,
+        #Demande à l'utilisateur la saisie d'une option de champ à modifier et le retourne.#
+
+        print(f"\nVous allez modifier le joueur n° {doc_id}:\n {player}")
+        field_to_update = pyip.inputMenu(
+            choices=["Prénom", "Nom", "Date de naissance", "Genre", "Classement", "Quitter la modification"],
+            prompt="\nSaisir le numéro correspondant au champ à modifier:\n", numbered=True
+        )
+        return field_to_update
+
+    @staticmethod
+    def list_sort(players_list):
+        #Demande à l'utilisateur de choisir le type de tri
+        #Formate le dataframe,
+        #Affiche la liste des joueurs triés selon le type choisi (alphabétique ou classement).#
+
+        sort = pyip.inputChoice(
+            prompt="\nAfficher les joueurs par ordre alphabétique: 1 ou classement: 2", choices=["1", "2"]
+        )
+
+        players_table = pd.DataFrame(players_list)
+        players_table.rename(
+            columns={"lastname": "Prénom", "firstname": "Nom", "date_of_birth": "Date de naissance", "gender": "Genre",
+                     "rating": "Classement", "player_id": "Identifiant"}, inplace=True)
+        players_table = players_table.reindex(
+            columns=["Identifiant", "Nom", "Prénom", "Date de naissance", "Genre", "Classement"]
+        )
+        players_table.set_index("Identifiant", inplace=True)
+
+        if sort == "1":
+            sorted_list = players_table.sort_values(by=["Nom"])
+            print(f"\nListe des joueurs triée par ordre alphabétique:\n{sorted_list}")
+        elif sort == "2":
+            sorted_list = players_table.sort_values(by=["Classement"], ascending=False)
+            print(f"\nListe des joueurs triée par classement:\n{sorted_list}")
+        else:
+            print("ERREUR: L'affichage a échoué")"""

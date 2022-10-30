@@ -1,5 +1,6 @@
 from swiss_chess_manager.models.player_model import PlayerModel
 from swiss_chess_manager.views.player_view import PlayerView
+from swiss_chess_manager.controllers import functions
 
 
 class PlayerController:
@@ -11,36 +12,47 @@ class PlayerController:
         self.view = view
 
     def add_new_player(self):
-        """Créer un nouveau joueur (fonctionnalité de l'option 1 MENU JOUEURS):
-        Initialise le joueur,
-        Formate la data datetime->str(annee-mois-jour),
-        Crée l'objet joueur, l'insère en base et affiche le joueur créé ou un message d'erreur."""
+        """Créer un joueur.
 
+        Initialise le joueur.
+        Formate la datetime.
+        Crée l'objet joueur.
+        Sauvegarde le joueur.
+        Affiche le joueur créé ou un message d'erreur.
+        """
         player_input: dict = PlayerView.player_input(self.view)
         player_input["date_of_birth"] = player_input["date_of_birth"].strftime('%Y-%m-%d')
+        player = PlayerModel(player_input["lastname"],
+                             player_input["firstname"],
+                             player_input["date_of_birth"],
+                             player_input["gender"],
+                             player_input["rating"])
+        saved_player = player.save_player()
 
-        player = PlayerModel(player_input["lastname"], player_input["firstname"], player_input["date_of_birth"], player_input["gender"], player_input["rating"])
-        try:
-            saved_player = player.save_player()
+        if saved_player is not None:
             print(f"\nVous avez créé le joueur n° {saved_player}:\n {player}")
-        except RuntimeError:
-            print("ERREUR: L'enregistrement du joueur a échoué")
+        else:
+            print("L'enregistrement du joueur n'a pas été effectué")
 
     def edit_player(self):
-        """Modifier la fiche d'un joueur (fonctionnalité de l'option 2 MENU JOUEURS):
-        Initialise l'identifiant du joueur à modifier et la fiche correspondante dans la db,
-        Si le numéro saisi par l'utilisateur n'existe pas : Affiche un message d'erreur puis le menu PLAYERS_MENU,
-        Sinon : Initialise l'objet joueur, le label et le champ à modifier,
-        Assigne les nouvelles valeurs et affiche le joueur modifié."""
+        """Modifier la fiche d'un joueur.
 
-        player_id = PlayerView.player_id()
+        Initialise l'identifiant cherché.
+        Initialise le document correspondant de la table players.
+        Si l'identifiant cherché n'existe pas dans la table, affiche un message d'erreur
+        Sinon : Initialise l'objet joueur et le champ à modifier.
+            Assigne les nouvelles valeurs
+            Modifie le joueur
+            Cherche le joueur modifié dans la table.
+            Affiche le joueur modifié.
+        """
+        player_id = PlayerView.ask_player_id()
         db_serialized_player = PlayerModel.get_player_by_id(player_id)
 
         if db_serialized_player is None:
             print("ERREUR: L'identifiant saisi n'existe pas")
         else:
             player = PlayerModel.unserialize_player(db_serialized_player)
-            label = ""
             field_to_update = PlayerView.field_to_update(player, player_id)
             if field_to_update == "Prénom":
                 label = "lastname"
@@ -68,15 +80,21 @@ class PlayerController:
             print(f"\nVous avez modifié le joueur n° {player_id}:\n {updated_player}")
 
     def show_players_list(self):
-        """Afficher la liste des joueurs de la table PLAYERS_TABLE (fonctionnalité de l'option 3 MENU JOUEURS):
-        Initialise la liste des joueurs,
-        Si aucun joueur n'a été récupéré : Affiche un message d'erreur puis le menu PLAYERS_MENU,
-        Sinon : Affiche la liste triée
-        Affiche le menu PLAYERS_MENU."""
+        """Afficher la liste des joueurs de la table players par ordre alphabétique ou classement.
 
-        players_list = PlayerModel.get_all_players()
-        if players_list is None:
-            print("ERREUR: La requête a échoué")
-            print("#######################FIN DU PROGRAMME DANS player_controller, show_players_list", "ajouter l'appel à la fonction de retour au PLAYERS_MENU : Revenir au menu Joueurs")
+        Initialise la liste des joueurs.
+        Si aucun joueur n'a été récupéré, affiche un message d'erreur.
+        Sinon : Initialise le dataframe de la liste des joueurs triée.
+            Initialise la demande d'export.
+            Exporte le rapport si la demande est True.
+        """
+        players = PlayerModel.get_all_players()
+
+        if players is None:
+            print("ERREUR: Aucun joueur n'a été trouvé dans la table players")
         else:
-            PlayerView.list_sort(players_list)
+            report = PlayerView.list_sort(players)
+            report_request = PlayerView.report_request()
+            if report_request == "Y":
+                functions.save_report(report)
+                print("Le rapport est consultable depuis le répertoire 'reports'")
