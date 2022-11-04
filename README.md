@@ -18,43 +18,40 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
 
 ## Contenu
     - Un répertoire data (données des tables players et tournaments de tinydb)
-    - Un répertoire documentation ##################################
     - Un répertoire flake8_rapport #################################
     - Un répertoire reports (rapports exportés depuis l'application)
     - Le répertoire swiss_chess_manager contenant le code de l'application (les 3 répertoires : models, views, controllers)
     - Le fichier swiss_chess_manager.py permettant d'exécuter l'application
+    - Le fichier requirements
     - Un fichier .flake8###########################
     - Le fichier README
-    - Le fichier requirements
 
 ## Utilisation
+### Remarques générales
+    Le logiciel comporte un menu principal, le MENU SWISS CHESS MANAGER, qui propose 2 sous-menus : MENU JOUEURS et MENU TOURNOIS.
 
-    1- Lancement du programme :
-        - Exécutez le programme depuis la console : saisir python swiss_chess_manager.py 
+    Le MENU JOUEURS est une section dédiée à l'ajout, la modification et l'affichage des joueurs contenus dans la base de données du programme. Elle permet également d'exporter des rapports.
 
-    2- Choix d'une option de menu :
-        Le menu principal propose 2 sous-menus qui donnent accès aux fonctionnalités suivantes :
+    Le MENU TOURNOIS est une section dédiée à la gestion d'un tournoi d'échecs selon le système suisse et son affichage. Elle permet également d'exporter des rapports.
+
+### Déroulement d'un tournoi
+
+    1- Exécutez le programme depuis la console :
+        Pour afficher le MENU SWISS CHESS MANAGER, saisir : python swiss_chess_manager.py
+
+    2- Choisir un sous-menu :
         2.1 MENU JOUEURS :
             - Créer un nouveau joueur
-            - Modifier les données d'un joueur
-            - Afficher la liste des joueurs par ordre alphabétique ou classement (permet d'exporter un rapport)
+            - Modifier la fiche d'un joueur
+            - Afficher la liste des joueurs (par ordre alphabétique ou classement)
             - Retourner au menu principal
         2.2 MENU TOURNOIS :
-            - Créer un tournoi (8 joueurs et 4 tours par défaut)
+            - Lancer un tournoi (créer un tournoi : 8 joueurs et 4 tours par défaut)
+            - Gérer le tournoi en cours (créer les tours, les appariements, saisir les résultats, clôturer le tournoi)
+            - Afficher les tournois (afficher la liste des tournois, le détail d'un tournoi)
 
-##########################
-                - Créer 1 tour (générer les paires de joueurs)
-                - Afficher l'appariement des joueurs dans le tour
-                - Saisir les résultats des matchs du tour lorsqu'il est terminé (Gagner/Perdre 1 match = aléatoire)
-                - Afficher le classement (mis à jour) des joueurs dans le tournoi
-                - Jouer les tours suivants à l'identique
-                - Afficher le résulat final
-            - Accéder au tournoi en cours
-            - Retourner au menu principal
-
-    3- Rapports (fonctionnalité ajoutée à titre d'exemple pour l'amélioration souhaitée):
-        Les rapports produits au cours d'un tournoi ou depuis le menu joueurs peuvent être exportés en csv.
-        Ils seront consultables depuis le dossier reports une fois le programme terminé.
-        Proposés à titre d'exemple, les fichiers contiennent les données brutes uniquement et sont nommés par date uniquement.  
+    3- Rapports (fonctionnalité ajoutée à titre d'exemple pour l'amélioration souhaitée) :
+        Les rapports produits au cours d'un tournoi ou depuis le menu joueurs peuvent être exportés en csv (dataframes bruts et nommés par date).
+        Ils sont consultables depuis le dossier reports après l'arrêt du programme.
 
     4- Générer 1 nouveau rapport flake8 (exemple)

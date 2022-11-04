@@ -12,7 +12,7 @@ class MenuView:
         """Affiche le menu principal et retourne le sous-menu choisi."""
         submenu = pyip.inputMenu(
             choices=["Joueurs", "Tournois", "Quitter"],
-            prompt="\n----- SWISS CHESS MANAGER MENU -----\n", numbered=True)
+            prompt="\n----- MENU SWISS CHESS MANAGER -----\n", numbered=True)
         return submenu
 
     @staticmethod
@@ -27,7 +27,7 @@ class MenuView:
     def display_tournaments_menu():
         """Affiche le sous-menu tournois et retourne l'option choisie."""
         submenu_option = pyip.inputMenu(
-            choices=["Créer un tournoi", "Accéder au tournoi en cours", "Retourner au menu principal"],
+            choices=["Lancer un tournoi", "Gérer le tournoi en cours", "Afficher les tournois", "Retourner au menu principal"],
             prompt="\n----- MENU TOURNOIS -----\n", numbered=True)
         return submenu_option
 

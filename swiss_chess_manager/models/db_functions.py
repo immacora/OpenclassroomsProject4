@@ -1,7 +1,7 @@
 """Module de fonctions communes aux modèles concernant l'échange avec la base de données."""
 import os
 
-from tinydb import TinyDB
+from tinydb import TinyDB, Query #Query est utilisé dans le modèle
 
 
 def db_connect():

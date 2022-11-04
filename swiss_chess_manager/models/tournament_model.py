@@ -6,7 +6,8 @@ class TournamentModel:
 
     TOURNAMENTS_TABLE = db_functions.tournaments_table()
 
-    def __init__(self, name, location, start_date, end_date, players, rounds_number, cadence, description, closed=False):
+    def __init__(self, name, location, start_date, end_date, players, rounds_number, cadence, description,
+                 closed=False):
         """Initialise le tournois."""
         self.name: str = name
         self.location: str = location
@@ -18,11 +19,11 @@ class TournamentModel:
         self.description = description
 
         ########## CALCUL SELON NB ROUNDS/TOURS #############
-        self.matchs_number: int #. Chaque match consiste en une paire de joueurs avec un champ de résultats pour chaque joueur.
-         ####################################################
+        self.matchs_number: int  # . Chaque match consiste en une paire de joueurs avec un champ de résultats pour chaque joueur.
+        ####################################################
 
         ########## LISTE DES RONDES/TOURS/ROUNDS (Rapport???)#############
-        self.rounds: list # Tournées/Tours(list) : La liste des instances rondes. / Les matchs multiples doivent être stockés sous forme de liste sur l'instance du tour.
+        self.rounds: list  # Tournées/Tours(list) : liste des instances rondes. / Les matchs multiples???? doivent être stockés sous forme de liste sur l'instance du tour. / Chaque tour(round) est une liste de matchs
         ####################################################
 
         self.closed = closed
@@ -32,6 +33,14 @@ class TournamentModel:
         """Cherche le tournoi sérialisé de la db par son id et le retourne."""
         db_serialized_tournament = TournamentModel.TOURNAMENTS_TABLE.get(doc_id=tournament_id)
         return db_serialized_tournament
+
+    @staticmethod
+    def get_open_tournament():
+        """Cherche le tournoi en cours retourne son id."""
+        tournament_query = db_functions.Query()
+        open_tournament = TournamentModel.TOURNAMENTS_TABLE.get(tournament_query.closed == False)#ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
+        if open_tournament:
+            return open_tournament.doc_id
 
     @staticmethod
     def get_all_tournaments():
@@ -55,8 +64,13 @@ class TournamentModel:
         )
         return unserialized_tournament
 
+    @staticmethod
+    def close_tournament(tournament_id):
+        """Cloturer le tournoi."""
+        TournamentModel.TOURNAMENTS_TABLE.update({"closed": True}, doc_ids=[tournament_id])
+
     def __str__(self):
-        """Représentation de l'objet (datas du tournoi) sous forme de chaîne de caractères."""
+        """Représentation de l'objet tournoi sous forme de chaîne de caractères."""
         tournament: str = f"Nom : {self.name}\n " \
                           f"Lieu : {self.location}\n " \
                           f"Date de début : {self.start_date}\n " \
@@ -69,7 +83,7 @@ class TournamentModel:
         return tournament
 
     def serialize_tournament(self):
-        """Sérialise l'instance du joueur dans un dictionnaire pour insertion des datas dans la db."""
+        """Sérialise l'instance du joueur dans un dictionnaire."""
         serialized_tournament: dict = {
             "name": self.name,
             "location": self.location,
@@ -84,15 +98,6 @@ class TournamentModel:
         return serialized_tournament
 
     def save_tournament(self):
-        """Insère le tournoi dans la base de données et retourne son id."""
+        """Insère le tournoi dans la table tournaments et retourne son id."""
         tournament_id: int = TournamentModel.TOURNAMENTS_TABLE.insert(self.serialize_tournament())
         return tournament_id
-
-
-"""PAS DE MAJ DU TOURNOIS MAIS DU classement du JOUEUR (copie de la méthode du player ici)
-    @staticmethod
-    def update_player(label, field_to_update, player_id):
-        #Met à jour la fiche du joueur sélectionné.
-        PlayerModel.PLAYERS_TABLE.update({label: field_to_update}, doc_ids=[player_id])
-
-"""

@@ -41,9 +41,15 @@ class MenuController:
     def run_submenu_function(submenu_option):
         """Exécute la fonction liée à l'option sélectionnée.
 
-        Appelle la fonction du contrôleur concerné.
-        Initialise le choix d'action de l'utilisateur.
-        Boucle sur l'action ou retourne au menu principal selon le choix(R: recommencer / T: tournoi / S: sortir).
+        Initialise la fonction du contrôleur concerné.
+        Initialise l'action choisie par l'utilisateur.
+        Exécute le choix
+        MENU JOUEURS :
+            Boucle sur l'action (ajouter ou modifier un joueur, afficher la liste des joueurs)
+            Retourne au menu principal (R: recommencer / S: sortir).
+        MENU TOURNOIS :
+            Lance un tournoi, gère le tournoi en cours ou affiche les tournois.
+        Affiche le menu principal.
         """
         if submenu_option == "Créer un nouveau joueur":
             PlayerController(PlayerModel, PlayerView).add_new_player()
@@ -63,17 +69,23 @@ class MenuController:
             while player_menu_action == "R":
                 PlayerController(PlayerModel, PlayerView).show_players_list()
                 player_menu_action = MenuView.player_action_choice()
+        elif submenu_option == "Lancer un tournoi":
+            TournamentController(TournamentModel, TournamentView).start_tournament()
+        elif submenu_option == "Gérer le tournoi en cours":
+            TournamentController(TournamentModel, TournamentView).manage_current_tournament()
+        elif submenu_option == "Afficher les tournois":
+            #Liste de tous les tournois
+            TournamentController(TournamentModel, TournamentView).show_tournaments_list()
 
-        ################TODO####################
-        elif submenu_option == "Créer un tournoi":
-            TournamentController(TournamentModel, TournamentView).create_tournament()
-            tournament_menu_action = MenuView.tournament_action_choice()
-            if tournament_menu_action == "T":
-                TournamentController(TournamentModel, TournamentView).run_tournament()
+            #Liste de tous les joueurs d'un tournoi (par ordre alphabétique / par classement)
+            print("####################### AFFICHER la liste de tous les joueurs d'un tournoi (par ordre alphabétique / par classement)")
 
-            else:
-                print("ERREUR: La requête a échoué")
-        elif submenu_option == "Accéder au tournoi en cours":
+            #Liste de tous les tours d'un tournoi
+            print("####################### AFFICHER la liste de tous les tours d'un tournoi")
+
+            # Liste de tous les matchs d'un tournoi
+            print("####################### AFFICHER la liste de tous les matchs d'un tournoi")
+
             print("####################### FIN DU PROGRAMME DANS menu_controller, run_submenu_function")
         else:
             print("ERREUR: La requête a échoué (retour au menu principal)")

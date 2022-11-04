@@ -13,7 +13,8 @@ class PlayerView:
         """Demande la saisie du prénom du joueur et le retourne."""
         return pyip.inputStr(
             prompt="Saisir le prénom du joueur (en lettres uniquement): ",
-            blank=False, blockRegexes=[r"[0-9&@=£%<>,;:/§\^\$\\\|\{\}\[\]\(\)\?\#\!\+\*\.]"]
+            blank=False,
+            blockRegexes=[r"^[0-9&@=£%<>,;:/§\^\$\\\|\{\}\[\]\(\)\?\#\!\+\*\.]$"]
         )
 
     @staticmethod
@@ -21,7 +22,8 @@ class PlayerView:
         """Demande la saisie du nom du joueur et le retourne."""
         return pyip.inputStr(
             prompt="Saisir le nom du joueur (en lettres uniquement): ",
-            blank=False, blockRegexes=[r"[0-9&@=£%<>,;:/§\^\$\\\|\{\}\[\]\(\)\?\#\!\+\*\.]"]
+            blank=False,
+            blockRegexes=[r"^[0-9&@=£%<>,;:/§\^\$\\\|\{\}\[\]\(\)\?\#\!\+\*\.]$"]
         )
 
     @staticmethod
@@ -36,8 +38,8 @@ class PlayerView:
 
     @staticmethod
     def rating():
-        """Demande la saisie du classement du joueur (entre 1000 et 3500) et le retourne."""
-        return pyip.inputNum(prompt="Saisir le classement du joueur (entre 1000 et 3500): ", min=1000, max=3500)
+        """Demande la saisie du classement du joueur (entre 799 plancher ELO rapide et 3500) et le retourne."""
+        return pyip.inputNum(prompt="Saisir le classement du joueur (entre 799 et 3500): ", min=799, max=3500)
 
     @staticmethod
     def ask_player_id():
@@ -61,11 +63,11 @@ class PlayerView:
 
         Initialise le type de tri.
         Initialise le dataframe.
-        Renomme les colonnes du dataframe.
-        Réorganise les colonnes du dataframe.
-        Remplace la colonne d'index du dataframe par celle des identifiants des joueurs.
+        Renomme ses colonnes.
+        Réorganise ses colonnes.
+        Remplace la colonne d'index par celle des identifiants.
         Effectue le tri du dataframe selon le type de tri demandé.
-        Affiche le dataframe trié et le retourne (pour export).
+        Affiche le dataframe trié et le retourne.
         """
         sort = pyip.inputChoice(
             prompt="\nAfficher les joueurs par ordre alphabétique: 1 ou classement: 2", choices=["1", "2"]
@@ -94,7 +96,8 @@ class PlayerView:
     @staticmethod
     def report_request():
         """Retourne la demande de sauvegarde (booléen)."""
-        return pyip.inputYesNo(prompt="\nVoulez-vous sauvegarder le rapport 'Y' (yes) / 'N' (no) ?\n", yesVal="Y", noVal="N")
+        return pyip.inputYesNo(prompt="\nVoulez-vous sauvegarder le rapport 'Y' (yes) / 'N' (no) ?\n", yesVal="Y",
+                               noVal="N")
 
     def player_input(self):
         """Saisie vérifiée de la fiche du joueur par l'utilisateur et renvoi du dictionnaire des datas."""

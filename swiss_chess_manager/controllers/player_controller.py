@@ -84,8 +84,8 @@ class PlayerController:
 
         Initialise la liste des joueurs.
         Si aucun joueur n'a été récupéré, affiche un message d'erreur.
-        Sinon : Initialise le dataframe de la liste des joueurs triée.
-            Initialise la demande d'export.
+        Sinon : Initialise le rapport de la liste des joueurs triée.
+            Initialise la demande d'export du rapport.
             Exporte le rapport si la demande est True.
         """
         players = PlayerModel.get_all_players()
