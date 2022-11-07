@@ -1,6 +1,9 @@
 from swiss_chess_manager.models.tournament_model import TournamentModel
-from swiss_chess_manager.models.player_model import PlayerModel
 from swiss_chess_manager.views.tournament_view import TournamentView
+from swiss_chess_manager.models.player_model import PlayerModel
+from swiss_chess_manager.controllers.player_controller import PlayerController
+from swiss_chess_manager.views.player_view import PlayerView
+from swiss_chess_manager.controllers import functions
 
 
 class TournamentController:
@@ -11,64 +14,69 @@ class TournamentController:
         self.model = model
         self.view = view
 
-    @staticmethod
-    def save_tournament(tournament):
-        """Sauvegarde le tournoi.
+    def check_player_id(self, players_df, tournament_players):
+        """Vérifie l'id et la fiche du joueur avant enregistrement dans la liste des joueurs du tournoi.
 
-        Affiche les données saisies.
-        Initialise la demande de sauvegarde des données
-        Si la sauvegarde est demandée :
-            Initialise l'id du tournoi sauvegardé
-            Affiche le tournoi sauvegardé et retourne son id, ou affiche un message d'erreur et quitte le programme
+        Initialise l'id du joueur demandé.
+        Affiche un message d'erreur et redemande l'id tant qu'il n'est pas dans la liste de tous les joueurs ou se trouve déjà dans la liste des joueurs du tournoi.
+        Initialise la fiche du joueur correspondant à l'id.
+        Affiche le joueur.
+        Demande la confirmation d'enregistrement du joueur dans la liste des joueurs du tournoi.
+        Retourne False ou l'id vérifié si la demande de sauvegarde est True.
         """
-        print(f"\nVous allez créer le tournoi :\n {tournament}")
-        save_tournament_request = TournamentView.save_tournament_request()
-        if save_tournament_request == "Y":
-            try:
-                saved_tournament_id: int = tournament.save_tournament()
-                print(f"\nVous avez créé le tournoi n° {saved_tournament_id}:\n {tournament}")
-                return saved_tournament_id
-            except RuntimeError:
-                print("ERREUR: L'enregistrement du tournoi a échoué, veuillez relancer le programme.")
-                exit()
+        player_id = TournamentView.ask_tournament_player_id()
+        while (player_id not in players_df.index.values) or (player_id in tournament_players):
+            print("L'identifiant choisi ne correspond à aucun joueur disponible (il n'existe pas ou se trouve déjà dans la liste des joueurs sélectionnés pour le tournoi)")
+            player_id = TournamentView.ask_tournament_player_id()
+        player = PlayerModel.unserialize_player(PlayerModel.get_player_by_id(player_id))
+        print(f"\nVous allez enregistrer le joueur n°{player_id} dans le tournoi:\n{player}")
+        save_player_tournament = TournamentView.ask_save_player_tournament()
+        if save_player_tournament == "Y":
+            return player_id
+        else:
+            return False
+
+    def create_tournament_players(self, players_number):
+        """Crée la liste des joueurs du tournoi.
+
+        Initialise le dataframe de tous les joueurs.
+        Initialise la liste des joueurs du tournoi.
+        Boucle sur le nombre de joueurs à sélectionner.
+            Initialise l'id vérifié du joueur.
+             Boucle tant que l'id est false.
+             Ajoute l'id du joueur sélectionné à la liste des joueurs du tournoi.
+        Retourne la liste des joueurs du tournoi.
+        """
+        print("Vous allez saisir la liste des joueurs du tournoi. Pour sélectionner le joueur, saisir l'identifiant correspondant dans la liste qui s'affiche ou taper ################################################################## pour créer un joueur")
+        players_df = PlayerController.show_players_list()
+        tournament_players = []
+        for number in range(0, players_number):
+
+            #Si selection == Yes : sélectionner le joueur ds le dataframe
+            player_id = self.check_player_id(players_df, tournament_players)
+            while player_id is False:
+                player_id = self.check_player_id(players_df, tournament_players)
+            tournament_players.append(player_id)
+            #Sinon : créer le joueur
+        return tournament_players
 
     def create_tournament(self):
         """Créer un tournoi.
 
         Initialise le tournoi.
         Formate les datetime.
-        Crée l'objet tournoi.
-        Initialise l'id du tournoi sauvegardé.
-        Tant que l'id n'existe pas: initialise l'action (field_to_edit), Quitte ou assigne la nouvelle valeur et boucle sur la sauvegarde
+        Initialise la liste des joueurs.
+        Crée le tournoi.
+        Propose de sauvegarder le tournoi (Y) ou de modifier un champ (N):
+            Si oui (Y) : Sauvegarde le tournoi et initialise l'id du tournoi sauvegardé.
+            Si non (N) : Tant que l'id n'existe pas, propose la modification d'un champ et boucle sur la sauvegarde
         Retourne l'id du tournoi créé ou quitte le programme
         """
-
-
 
         tournament_input: dict = TournamentView.tournament_input(self.view)
         tournament_input["start_date"] = tournament_input["start_date"].strftime('%Y-%m-%d')
         tournament_input["end_date"] = tournament_input["end_date"].strftime('%Y-%m-%d')
-
-
-
-        ################ GERER LA LISTE DES JOUEURS #################
-        # Initialise la liste des joueurs de la db
-        #db_players = PlayerModel.get_all_players()
-
-        # Initialise le nombre de joueurs à sélectionner
-        #players_number = tournament_input["players"]
-
-        #Initialise la liste des joueurs du tournoi
-        tournament_players = []
-        #Boucle sur le nombre de joueurs à sélectionner
-        #for player in range(0, players_number):
-            #print(player)
-
-        #tournament_input["players"] = ["joueur n°1", "joueur n°2", "joueur n°3", "joueur n°4"]
-
-        ################ GERER LA LISTE DES JOUEURS #################
-
-
+        tournament_input["players"] = self.create_tournament_players(tournament_input["players"])
         tournament = TournamentModel(
             tournament_input["name"],
             tournament_input["location"],
@@ -124,6 +132,27 @@ class TournamentController:
                 exit()
         return saved_tournament_id
 
+    @staticmethod
+    def save_tournament(tournament):
+        """Sauvegarde le tournoi.
+
+        Affiche les données saisies.
+        Initialise la demande de sauvegarde des données
+        Si la sauvegarde est demandée :
+            Initialise l'id du tournoi sauvegardé
+            Affiche le tournoi sauvegardé et retourne son id, ou affiche un message d'erreur et quitte le programme
+        """
+        print(f"\nVous allez créer le tournoi :\n {tournament}")
+        save_tournament_request = TournamentView.ask_save_tournament()
+        if save_tournament_request == "Y":
+            try:
+                saved_tournament_id: int = tournament.save_tournament()
+                print(f"\nVous avez créé le tournoi n° {saved_tournament_id}:\n {tournament}")
+                return saved_tournament_id
+            except RuntimeError:
+                print("ERREUR: L'enregistrement du tournoi a échoué, veuillez relancer le programme.")
+                exit()
+
     def start_tournament(self):
         """Lancer un tournoi.
 
@@ -177,7 +206,7 @@ class TournamentController:
             print("Jouer les tours suivants à l'identique")
             print("Afficher le résulat final")
 
-            close_request = TournamentView.close_request()
+            close_request = TournamentView.ask_close_tournament()
             if close_request == "Y":
                 TournamentModel.close_tournament(tournament_id)
         else:
@@ -196,7 +225,14 @@ class TournamentController:
         if tournaments is None:
             print("ERREUR: Aucun tournoi n'a été trouvé dans la table tournaments")
         else:
-            TournamentView.display_tournaments(tournaments)
-            tournament_id = TournamentView.ask_tournament_id()
-            if isinstance(tournament_id, int):
-                return tournament_id
+            return TournamentView.display_tournaments(tournaments)
+
+    def show_tournament(self):
+        """Afficher le détail d'un tournoi de la table tournaments.
+
+        Initialise la demande de saisie de l'id du tournoi à afficher.
+        Retourne le tournoi si la réponse est un int.
+        """
+        tournament_id = TournamentView.ask_tournament_id()
+        if isinstance(tournament_id, int):
+            return tournament_id

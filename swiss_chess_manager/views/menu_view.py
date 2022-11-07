@@ -32,17 +32,18 @@ class MenuView:
         return submenu_option
 
     @staticmethod
-    def player_action_choice():
-        """Propose de revenir au menu principal ou de recommencer l'action et retourne le choix."""
-        return pyip.inputChoice(
-            prompt="\nSaisir 'S' pour sortir et revenir au menu principal ou 'R' pour recommencer\n",
-            choices=["S", "R"]
+    def ask_to_restart():
+        """Propose de recommencer l'action ou de revenir au menu principal et retourne le choix."""
+        return pyip.inputYesNo(
+            prompt="\nVoulez-vous relancer l'action précédente ? 'Y' (yes) "
+                   "ou saisir 'N' (no) pour revenir au menu principal\n",
+            yesVal="Y", noVal="N"
         )
 
     @staticmethod
-    def tournament_action_choice():
-        """Propose de revenir au menu principal ou de lancer le tournoi et retourne le choix."""
-        return pyip.inputChoice(
-            prompt="\nSaisir 'S' pour sortir et revenir au menu principal ou 'T' pour lancer le tournoi\n",
-            choices=["S", "T"]
+    def save_report_request():
+        """Propose de sauvegarder le rapport ou de revenir au menu principal et retourne le choix."""
+        return pyip.inputYesNo(
+            prompt="\nVoulez-vous sauvegarder le rapport ? Saisir 'Y' (yes) ou 'N' (no) pour revenir au menu principal\n",
+            yesVal="Y", noVal="N"
         )

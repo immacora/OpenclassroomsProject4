@@ -5,6 +5,7 @@ from swiss_chess_manager.models.tournament_model import TournamentModel
 from swiss_chess_manager.views.menu_view import MenuView
 from swiss_chess_manager.views.player_view import PlayerView
 from swiss_chess_manager.views.tournament_view import TournamentView
+from swiss_chess_manager.controllers import functions
 
 
 class MenuController:
@@ -53,29 +54,59 @@ class MenuController:
         """
         if submenu_option == "Créer un nouveau joueur":
             PlayerController(PlayerModel, PlayerView).add_new_player()
-            player_menu_action = MenuView.player_action_choice()
-            while player_menu_action == "R":
+            restart = MenuView.ask_to_restart()
+            while restart == "Y":
                 PlayerController(PlayerModel, PlayerView).add_new_player()
-                player_menu_action = MenuView.player_action_choice()
+                restart = MenuView.ask_to_restart()
         elif submenu_option == "Modifier la fiche d'un joueur":
             PlayerController(PlayerModel, PlayerView).edit_player()
-            player_menu_action = MenuView.player_action_choice()
-            while player_menu_action == "R":
+            restart = MenuView.ask_to_restart()
+            while restart == "Y":
                 PlayerController(PlayerModel, PlayerView).edit_player()
-                player_menu_action = MenuView.player_action_choice()
+                restart = MenuView.ask_to_restart()
         elif submenu_option == "Afficher la liste des joueurs":
-            PlayerController(PlayerModel, PlayerView).show_players_list()
-            player_menu_action = MenuView.player_action_choice()
-            while player_menu_action == "R":
-                PlayerController(PlayerModel, PlayerView).show_players_list()
-                player_menu_action = MenuView.player_action_choice()
+            report = PlayerController(PlayerModel, PlayerView).show_players_list()
+            save_report_request = MenuView.save_report_request()
+            if save_report_request == "Y":
+                functions.save_report(report)
+                print("Le rapport sera consultable depuis le répertoire 'reports' après l'arrêt du programme")
+            restart = MenuView.ask_to_restart()
+            while restart == "Y":
+                report = PlayerController(PlayerModel, PlayerView).show_players_list()
+                save_report_request = MenuView.save_report_request()
+                if save_report_request == "Y":
+                    functions.save_report(report)
+                    print("Le rapport sera consultable depuis le répertoire 'reports' après l'arrêt du programme")
+                restart = MenuView.ask_to_restart()
         elif submenu_option == "Lancer un tournoi":
             TournamentController(TournamentModel, TournamentView).start_tournament()
         elif submenu_option == "Gérer le tournoi en cours":
             TournamentController(TournamentModel, TournamentView).manage_current_tournament()
         elif submenu_option == "Afficher les tournois":
             #Liste de tous les tournois
-            TournamentController(TournamentModel, TournamentView).show_tournaments_list()
+            report = TournamentController(TournamentModel, TournamentView).show_tournaments_list()
+            save_report_request = MenuView.save_report_request()
+            if save_report_request == "Y":
+                functions.save_report(report)
+                print("Le rapport sera consultable depuis le répertoire 'reports' après l'arrêt du programme")
+
+                # Affiche le détail d'un tournoi
+                tournament_id = TournamentController(TournamentModel, TournamentView).show_tournament()
+                print(tournament_id)
+
+
+
+            restart = MenuView.ask_to_restart()
+            while restart == "Y":
+                report = TournamentController(TournamentModel, TournamentView).show_tournaments_list()
+                save_report_request = MenuView.save_report_request()
+                if save_report_request == "Y":
+                    functions.save_report(report)
+                    print("Le rapport sera consultable depuis le répertoire 'reports' après l'arrêt du programme")
+                restart = MenuView.ask_to_restart()
+
+
+
 
             #Liste de tous les joueurs d'un tournoi (par ordre alphabétique / par classement)
             print("####################### AFFICHER la liste de tous les joueurs d'un tournoi (par ordre alphabétique / par classement)")

@@ -1,6 +1,5 @@
 from swiss_chess_manager.models.player_model import PlayerModel
 from swiss_chess_manager.views.player_view import PlayerView
-from swiss_chess_manager.controllers import functions
 
 
 class PlayerController:
@@ -79,7 +78,8 @@ class PlayerController:
             updated_player = PlayerModel.unserialize_player(PlayerModel.get_player_by_id(player_id))
             print(f"\nVous avez modifié le joueur n° {player_id}:\n {updated_player}")
 
-    def show_players_list(self):
+    @staticmethod
+    def show_players_list():
         """Afficher la liste des joueurs de la table players par ordre alphabétique ou classement.
 
         Initialise la liste des joueurs.
@@ -89,12 +89,7 @@ class PlayerController:
             Exporte le rapport si la demande est True.
         """
         players = PlayerModel.get_all_players()
-
         if players is None:
             print("ERREUR: Aucun joueur n'a été trouvé dans la table players")
         else:
-            report = PlayerView.list_sort(players)
-            report_request = PlayerView.report_request()
-            if report_request == "Y":
-                functions.save_report(report)
-                print("Le rapport est consultable depuis le répertoire 'reports'")
+            return PlayerView.display_list_sort(players)

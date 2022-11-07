@@ -18,6 +18,7 @@ class TournamentModel:
         self.cadence: float = cadence
         self.description = description
 
+
         ########## CALCUL SELON NB ROUNDS/TOURS #############
         self.matchs_number: int  # . Chaque match consiste en une paire de joueurs avec un champ de résultats pour chaque joueur.
         ####################################################

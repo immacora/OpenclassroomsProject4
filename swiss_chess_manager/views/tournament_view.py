@@ -10,7 +10,7 @@ class TournamentView:
 
     @staticmethod
     def name():
-        """Demande la saisie du nom du tournoi et le retourne."""
+        """Demande la saisie du du nom du tournoi et le retourne."""
         return pyip.inputStr(
             prompt="Saisir le nom du tournoi (caractères spéciaux interdits): ",
             blank=False,
@@ -52,6 +52,8 @@ class TournamentView:
         )
         if isinstance(players_number_input, int):
             players_number = players_number_input
+        else:
+            print(players_number)
         return players_number
 
     @staticmethod
@@ -64,15 +66,19 @@ class TournamentView:
         Retourne le nombre de tours
         """
         rounds_number = 4
-        rounds_number_input: int = pyip.inputNum(prompt="Saisir le nombre de rondes ou valider (4 par défaut)\n",
-                                                 blank=True, min=1)
+        rounds_number_input: int = pyip.inputNum(
+            prompt="Saisir le nombre de rondes ou valider (4 par défaut)\n",
+            blank=True, min=1
+        )
         if isinstance(rounds_number_input, int):
             rounds_number = rounds_number_input
+        else:
+            print(rounds_number)
         return rounds_number
 
     @staticmethod
     def cadence():
-        """Demande la saisie du type de contrôle du temps : bullet, blitz ou coup rapide."""
+        """Demande la saisie du type de contrôle du temps du tournoi (bullet, blitz ou coup rapide) et le retourne."""
         cadence = pyip.inputMenu(
             choices=["Bullet", "Blitz", "Coup rapide"],
             prompt="\nSaisir le numéro correspondant à la cadence du tournoi:\n", numbered=True
@@ -81,7 +87,7 @@ class TournamentView:
 
     @staticmethod
     def description():
-        """Demande la saisie (facultative) des remarques générales"""
+        """Demande la saisie (facultative) des remarques générales sur le tournoi et les retourne."""
         return pyip.inputStr(
             prompt="Saisir les remarques générales sur le tournoi (caractères spéciaux interdits):\n",
             blank=True,
@@ -89,17 +95,8 @@ class TournamentView:
         )
 
     @staticmethod
-    def save_tournament_request():
-        """Retourne la demande de sauvegarde des données du tournoi."""
-        return pyip.inputYesNo(
-            prompt="\nVoulez-vous sauvegarder ces données ? "
-                   "(Attention, aucune modification ne pourra être effectuée ensuite) 'Y' (yes) / 'N' (no) ?\n",
-            yesVal="Y", noVal="N"
-        )
-
-    @staticmethod
     def field_to_edit():
-        """Retourne le champ à modifier."""
+        """Retourne le champ à modifier ou la demande d'annulation."""
         return pyip.inputMenu(
             choices=["Nom", "Lieu", "Date de début", "Date de fin", "Joueurs", "Nombre de tours", "Cadence",
                      "Description", "Annuler et quitter le programme"],
@@ -107,27 +104,49 @@ class TournamentView:
         )
 
     @staticmethod
-    def report_request():
-        """Retourne la demande de sauvegarde (booléen)."""
+    def ask_save_tournament():
+        """Retourne la réponse à la demande de sauvegarde des données dans le tournoi."""
         return pyip.inputYesNo(
-            prompt="\nVoulez-vous sauvegarder le rapport 'Y' (yes) / 'N' (no) ?\n",
+            prompt="\nVoulez-vous sauvegarder ces données ? "
+                   "Saisir 'N' (no) pour revenir à la saisie et modifier un champ ou 'Y' (yes) pour sauvegarder"
+                   "(Attention, aucune modification ne pourra être effectuée ensuite)\n",
+            yesVal="Y", noVal="N"
+        )
+
+    @staticmethod
+    def ask_save_player_tournament():
+        """Retourne la réponse à la demande d'enregistrement du joueur dans le tournoi."""
+        return pyip.inputYesNo(
+            prompt="\nConfirmer l'enregistrement du joueur :\n"
+                   "Saisir 'N' (no) pour revenir à la saisie et modifier le joueur ou 'Y' (yes) pour sauvegarder"
+                   "(Attention, aucune modification ne pourra être effectuée ensuite)\n",
             yesVal="Y", noVal="N"
         )
 
     @staticmethod
     def ask_tournament_id():
-        """Demande la saisie de l'id du tournoi à afficher et le retourne."""
-        tournament_id: int = pyip.inputNum(prompt="\nSaisir l'identifiant du tournoi à afficher ou valider pour revenir au menu principal: ", blank=True, min=1)
+        """Retourne la réponse à la demande de saisie de l'id du tournoi à afficher."""
+        tournament_id: int = pyip.inputNum(
+            prompt="\nPour afficher le détail d'un tournoi, saisir son identifiant. Sinon, valider pour revenir au menu principal.",
+            blank=True, min=1)
         return tournament_id
 
     @staticmethod
-    def close_request():
-        """Retourne la demande de cloture du tournoi (booléen)."""
+    def ask_close_tournament():
+        """Retourne la réponse à la demande de cloture du tournoi."""
         return pyip.inputYesNo(
             prompt="\nVoulez-vous cloturer le tournoi ? "
                    "(Attention, aucune modification ne pourra être effectuée ensuite) 'Y' (yes) / 'N' (no) ?\n",
             yesVal="Y", noVal="N"
         )
+
+    @staticmethod
+    def ask_tournament_player_id():
+        """Retourne la réponse à la demande de saisie de l'id du joueur à inclure dans le tournoi."""
+        tournament_player_id: int = pyip.inputNum(
+            prompt="\nSaisir l'identifiant du joueur à inclure dans le tournoi: ", min=1
+        )
+        return tournament_player_id
 
     @staticmethod
     def display_tournaments(tournaments):
@@ -140,15 +159,17 @@ class TournamentView:
         Remplace la colonne d'index par celle des identifiants.
         Retourne le dataframe.
         """
-        tournaments_table = pd.DataFrame(tournaments)
+        tournaments_df = pd.DataFrame(tournaments)
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_rows', None)
-        del tournaments_table["players"], tournaments_table["description"], tournaments_table["end_date"], tournaments_table["rounds_number"], tournaments_table["cadence"], tournaments_table["closed"]
-        tournaments_table.rename(
-            columns={"name": "Nom", "location": "Lieu", "start_date": "Date de début", "tournament_id": "Identifiant"}, inplace=True)
-        tournaments_table.set_index("Identifiant", inplace=True)
-        print(f"\nListe de tous les tournois :\n{tournaments_table}")
-        return tournaments_table
+        del tournaments_df["players"], tournaments_df["description"], tournaments_df["end_date"],\
+            tournaments_df["rounds_number"], tournaments_df["cadence"], tournaments_df["closed"]
+        tournaments_df.rename(
+            columns={"name": "Nom", "location": "Lieu", "start_date": "Date de début", "tournament_id": "Identifiant"},
+            inplace=True)
+        tournaments_df.set_index("Identifiant", inplace=True)
+        print(f"\nListe de tous les tournois :\n{tournaments_df}")
+        return tournaments_df
 
     def tournament_input(self):
         """Demande la saisie de la fiche du tournoi et renvoie le dictionnaire des datas."""
@@ -157,7 +178,7 @@ class TournamentView:
         location = self.location()
         start_date = self.start_date()
         end_date = self.end_date()
-        players_number = self.players_number
+        players_number = self.players_number()
         rounds_number = self.rounds_number()
         cadence = self.cadence()
         description = self.description()

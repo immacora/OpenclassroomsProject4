@@ -58,7 +58,7 @@ class PlayerView:
         return field_to_update
 
     @staticmethod
-    def list_sort(players_list):
+    def display_list_sort(players):
         """Affiche la liste des joueurs par ordre alphabétique ou classement.
 
         Initialise le type de tri.
@@ -72,37 +72,28 @@ class PlayerView:
         sort = pyip.inputChoice(
             prompt="\nAfficher les joueurs par ordre alphabétique: 1 ou classement: 2", choices=["1", "2"]
         )
-
-        players_table = pd.DataFrame(players_list)
-        players_table.rename(
+        players_df = pd.DataFrame(players)
+        players_df.rename(
             columns={"lastname": "Prénom", "firstname": "Nom", "date_of_birth": "Date de naissance", "gender": "Genre",
                      "rating": "Classement", "player_id": "Identifiant"}, inplace=True)
-        players_table = players_table.reindex(
+        players_df = players_df.reindex(
             columns=["Identifiant", "Nom", "Prénom", "Date de naissance", "Genre", "Classement"]
         )
-        players_table.set_index("Identifiant", inplace=True)
-
+        players_df.set_index("Identifiant", inplace=True)
         if sort == "1":
-            sorted_list = players_table.sort_values(by=["Nom"])
+            sorted_list = players_df.sort_values(by=["Nom"])
             print(f"\nListe des joueurs triée par ordre alphabétique:\n{sorted_list}")
             return sorted_list
         elif sort == "2":
-            sorted_list = players_table.sort_values(by=["Classement"], ascending=False)
+            sorted_list = players_df.sort_values(by=["Classement"], ascending=False)
             print(f"\nListe des joueurs triée par classement:\n{sorted_list}")
             return sorted_list
         else:
             print("ERREUR: L'affichage a échoué")
 
-    @staticmethod
-    def report_request():
-        """Retourne la demande de sauvegarde (booléen)."""
-        return pyip.inputYesNo(prompt="\nVoulez-vous sauvegarder le rapport 'Y' (yes) / 'N' (no) ?\n", yesVal="Y",
-                               noVal="N")
-
     def player_input(self):
         """Saisie vérifiée de la fiche du joueur par l'utilisateur et renvoi du dictionnaire des datas."""
         print("\nCréer un nouveau joueur: ")
-
         lastname = self.lastname()
         firstname = self.firstname()
         date_of_birth = self.date_of_birth()
