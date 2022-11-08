@@ -32,7 +32,7 @@ class TournamentView:
         return pyip.inputDate(prompt="Saisir la date de début du tournoi au format (YYYY/MM/DD): ")
 
     @staticmethod
-    def end_date():###########self ou controller pour vérif date antérieure/postérieure?????
+    def end_date():
         """Demande la saisie de la date de fin du tournoi et la retourne."""
         return pyip.inputDate(prompt="Saisir la date de fin du tournoi au format (YYYY/MM/DD): ")
 
@@ -98,7 +98,7 @@ class TournamentView:
     def field_to_edit():
         """Retourne le champ à modifier ou la demande d'annulation."""
         return pyip.inputMenu(
-            choices=["Nom", "Lieu", "Date de début", "Date de fin", "Joueurs", "Nombre de tours", "Cadence",
+            choices=["Nom", "Lieu", "Date de début", "Date de fin", "Nombre de tours", "Cadence",
                      "Description", "Annuler et quitter le programme"],
             prompt="\nSaisir un numéro pour corriger les données du tournoi ou quitter le programme :\n", numbered=True
         )
@@ -107,9 +107,9 @@ class TournamentView:
     def ask_save_tournament():
         """Retourne la réponse à la demande de sauvegarde des données dans le tournoi."""
         return pyip.inputYesNo(
-            prompt="\nVoulez-vous sauvegarder ces données ? "
-                   "Saisir 'N' (no) pour revenir à la saisie et modifier un champ ou 'Y' (yes) pour sauvegarder"
-                   "(Attention, aucune modification ne pourra être effectuée ensuite)\n",
+            prompt="\nVoulez-vous sauvegarder ce tournoi ? "
+                   "Saisir 'N' (no) pour modifier un champ (liste des joueurs exclue) ou 'Y' (yes) pour sauvegarder "
+                   "(Attention, aucune modification ne pourra être effectuée ensuite.)\n",
             yesVal="Y", noVal="N"
         )
 
@@ -117,9 +117,9 @@ class TournamentView:
     def ask_save_player_tournament():
         """Retourne la réponse à la demande d'enregistrement du joueur dans le tournoi."""
         return pyip.inputYesNo(
-            prompt="\nConfirmer l'enregistrement du joueur :\n"
-                   "Saisir 'N' (no) pour revenir à la saisie et modifier le joueur ou 'Y' (yes) pour sauvegarder"
-                   "(Attention, aucune modification ne pourra être effectuée ensuite)\n",
+            prompt="\nConfirmer l'enregistrement du joueur dans le tournoi :\n"
+                   "Saisir 'N' (no) pour revenir à la saisie ou 'Y' (yes) pour sauvegarder "
+                   "(Attention, la liste des joueurs du tournoi ne sera plus modifiable)\n",
             yesVal="Y", noVal="N"
         )
 
@@ -127,7 +127,8 @@ class TournamentView:
     def ask_tournament_id():
         """Retourne la réponse à la demande de saisie de l'id du tournoi à afficher."""
         tournament_id: int = pyip.inputNum(
-            prompt="\nPour afficher le détail d'un tournoi, saisir son identifiant. Sinon, valider pour revenir au menu principal.",
+            prompt="\nPour afficher le détail d'un tournoi, saisir son identifiant. "
+                   "Sinon, valider pour revenir au menu principal.",
             blank=True, min=1)
         return tournament_id
 
@@ -147,6 +148,14 @@ class TournamentView:
             prompt="\nSaisir l'identifiant du joueur à inclure dans le tournoi: ", min=1
         )
         return tournament_player_id
+
+    @staticmethod
+    def select_tournament_player():
+        """Retourne la réponse à la demande de sélection ou création du joueur."""
+        return pyip.inputChoice(
+            prompt="Saisir 'S' pour sélectionner un joueur dans la liste, ou 'C' pour créer un joueur.\n",
+            choices=["S", "C"]
+        )
 
     @staticmethod
     def display_tournaments(tournaments):

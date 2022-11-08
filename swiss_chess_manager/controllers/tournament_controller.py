@@ -3,7 +3,6 @@ from swiss_chess_manager.views.tournament_view import TournamentView
 from swiss_chess_manager.models.player_model import PlayerModel
 from swiss_chess_manager.controllers.player_controller import PlayerController
 from swiss_chess_manager.views.player_view import PlayerView
-from swiss_chess_manager.controllers import functions
 
 
 class TournamentController:
@@ -18,7 +17,8 @@ class TournamentController:
         """Vérifie l'id et la fiche du joueur avant enregistrement dans la liste des joueurs du tournoi.
 
         Initialise l'id du joueur demandé.
-        Affiche un message d'erreur et redemande l'id tant qu'il n'est pas dans la liste de tous les joueurs ou se trouve déjà dans la liste des joueurs du tournoi.
+        Affiche un message d'erreur et redemande l'id tant qu'il n'est pas dans la liste de tous les joueurs
+        ou se trouve déjà dans la liste des joueurs du tournoi.
         Initialise la fiche du joueur correspondant à l'id.
         Affiche le joueur.
         Demande la confirmation d'enregistrement du joueur dans la liste des joueurs du tournoi.
@@ -26,7 +26,8 @@ class TournamentController:
         """
         player_id = TournamentView.ask_tournament_player_id()
         while (player_id not in players_df.index.values) or (player_id in tournament_players):
-            print("L'identifiant choisi ne correspond à aucun joueur disponible (il n'existe pas ou se trouve déjà dans la liste des joueurs sélectionnés pour le tournoi)")
+            print("L'identifiant choisi ne correspond à aucun joueur disponible "
+                  "(il n'existe pas ou se trouve déjà dans la liste des joueurs sélectionnés pour le tournoi)")
             player_id = TournamentView.ask_tournament_player_id()
         player = PlayerModel.unserialize_player(PlayerModel.get_player_by_id(player_id))
         print(f"\nVous allez enregistrer le joueur n°{player_id} dans le tournoi:\n{player}")
@@ -39,25 +40,38 @@ class TournamentController:
     def create_tournament_players(self, players_number):
         """Crée la liste des joueurs du tournoi.
 
-        Initialise le dataframe de tous les joueurs.
-        Initialise la liste des joueurs du tournoi.
+        Affiche un message d'information.
+        Initialise le dataframe de tous les joueurs et la liste des joueurs du tournoi.
         Boucle sur le nombre de joueurs à sélectionner.
-            Initialise l'id vérifié du joueur.
-             Boucle tant que l'id est false.
-             Ajoute l'id du joueur sélectionné à la liste des joueurs du tournoi.
+            Initialise le choix de sélection ou création du joueur.
+            Si le joueur est sélectionné dans la liste :
+                Initialise l'id vérifié du joueur.
+                 Boucle tant que l'id est false.
+                 Ajoute l'id du joueur sélectionné à la liste des joueurs du tournoi.
+            Si le joueur est créé :
+                Initialise l'id du joueur créé.
+                 Boucle tant que l'id n'existe pas.
+                 Ajoute l'id du joueur créé à la liste des joueurs du tournoi.
+            Affiche la liste des joueurs du tournoi (récap).
         Retourne la liste des joueurs du tournoi.
         """
-        print("Vous allez saisir la liste des joueurs du tournoi. Pour sélectionner le joueur, saisir l'identifiant correspondant dans la liste qui s'affiche ou taper ################################################################## pour créer un joueur")
+        print("Vous allez saisir la liste des joueurs du tournoi. "
+              "Sélectionnez le joueur dans la liste qui s'affiche ou créez le. Attention, cette saisie sera définitive.")
         players_df = PlayerController.show_players_list()
         tournament_players = []
         for number in range(0, players_number):
-
-            #Si selection == Yes : sélectionner le joueur ds le dataframe
-            player_id = self.check_player_id(players_df, tournament_players)
-            while player_id is False:
+            select_tournament_player = TournamentView.select_tournament_player()
+            if select_tournament_player == "S":
                 player_id = self.check_player_id(players_df, tournament_players)
-            tournament_players.append(player_id)
-            #Sinon : créer le joueur
+                while player_id is False:
+                    player_id = self.check_player_id(players_df, tournament_players)
+                tournament_players.append(player_id)
+            elif select_tournament_player == "C":
+                player_id = PlayerController(PlayerModel, PlayerView).add_new_player()
+                while player_id is None:
+                    player_id = PlayerController(PlayerModel, PlayerView).add_new_player()
+                tournament_players.append(player_id)
+            print(f"\nListe des joueurs enregistrés dans le tournoi : {tournament_players}")
         return tournament_players
 
     def create_tournament(self):
@@ -111,10 +125,6 @@ class TournamentController:
                 new_end_date = new_end_date.strftime('%Y-%m-%d')
                 tournament.end_date = new_end_date
                 saved_tournament_id = self.save_tournament(tournament)
-            #elif field_to_edit == "Joueurs":
-                #new_players = TournamentView.players()
-                #tournament.players = new_players
-                #saved_tournament_id = self.save_tournament(tournament)
             elif field_to_edit == "Nombre de tours":
                 new_rounds_number = TournamentView.rounds_number()
                 tournament.rounds_number = new_rounds_number
@@ -171,9 +181,9 @@ class TournamentController:
             print("Un tournoi est déjà en cours, vous devez le clôturer avant d'en lancer un nouveau.")
         else:
             tournament_id = self.create_tournament()
-            tournament = TournamentModel.get_tournament_by_id(tournament_id)
-            if tournament["closed"] is False:
-                print(f"\nVous avez lancé le tournoi n° {tournament_id}:\n {tournament}\nVous pouvez maintenant y accéder depuis le MENU TOURNOIS - Rejoindre le tournoi en cours")
+            tournament = TournamentModel.unserialize_tournament(TournamentModel.get_tournament_by_id(tournament_id))
+            if tournament.closed is False:
+                print(f"\nVous avez lancé le tournoi n° {tournament_id}:\n {tournament}\nVous pouvez maintenant y accéder depuis le MENU TOURNOIS - Gérer le tournoi en cours")
             else:
                 print("ERREUR: Le lancement du tournoi a échoué, veuillez relancer le programme.")
                 exit()
