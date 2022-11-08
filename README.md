@@ -48,7 +48,7 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
         2.2 MENU TOURNOIS :
             - Lancer un tournoi (créer un tournoi : 8 joueurs et 4 tours par défaut)
             - Gérer le tournoi en cours (créer les tours, les appariements, saisir les résultats, clôturer le tournoi)
-            - Afficher les tournois (afficher la liste des tournois, le détail d'un tournoi)
+            - Afficher les tournois (afficher la liste des tournois, le détail des tournoi)
 
     3- Rapports (fonctionnalité ajoutée à titre d'exemple pour l'amélioration souhaitée) :
         Les rapports produits au cours d'un tournoi ou depuis le menu joueurs peuvent être exportés en csv (dataframes bruts et nommés par date).

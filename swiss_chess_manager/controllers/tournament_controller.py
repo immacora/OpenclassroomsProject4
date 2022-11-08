@@ -222,27 +222,41 @@ class TournamentController:
         else:
             print("Il n'existe aucun tournoi en cours, vous devez en lancer un nouveau.")
 
-    def show_tournaments_list(self):
+    def show_tournaments(self):
         """Afficher la liste des tournois de la table tournaments.
 
         Initialise la liste des tournois.
         Si aucun tournoi n'a été récupéré, affiche un message d'erreur.
-        Sinon : Affiche la liste des tournois.
-            Initialise la demande de saisie de l'id du tournoi à afficher.
-            Affiche le tournoi si le retour est un int.
+        Sinon : Retourne le dataframe des tournois.
         """
         tournaments = TournamentModel.get_all_tournaments()
         if tournaments is None:
             print("ERREUR: Aucun tournoi n'a été trouvé dans la table tournaments")
         else:
-            return TournamentView.display_tournaments(tournaments)
+            tournament_df = TournamentView.display_tournaments(tournaments)
+            return tournament_df
 
-    def show_tournament(self):
+    def show_tournament(self, tournament_id):
         """Afficher le détail d'un tournoi de la table tournaments.
 
-        Initialise la demande de saisie de l'id du tournoi à afficher.
-        Retourne le tournoi si la réponse est un int.
+        Initialise le tournoi à afficher.
+        Initialise la fiche du tournoi.
+        Retourne la fiche.
         """
-        tournament_id = TournamentView.ask_tournament_id()
-        if isinstance(tournament_id, int):
-            return tournament_id
+        tournament = TournamentModel.get_tournament_by_id(tournament_id)
+        tournament_se = TournamentView.display_tournament_card(tournament_id, tournament)
+        return tournament_se
+
+    def show_tournament_players(self, tournament_players_id):
+        """Afficher la liste des joueurs d'un tournoi par ordre alphabétique ou classement.
+
+        Initialise la liste des joueurs du tournoi.
+        Retourne le rapport de la liste des joueurs triée.
+        """
+        tournament_players = []
+        for tournament_player_id in tournament_players_id:
+            tournament_player = PlayerModel.get_player_by_id(tournament_player_id)
+            tournament_player["player_id"] = tournament_player_id
+            tournament_players.append(tournament_player)
+        tournament_players_df = PlayerView.display_list_sort(tournament_players)
+        return tournament_players_df

@@ -19,7 +19,10 @@ class MenuView:
     def display_players_menu():
         """Affiche le sous-menu players et retourne l'option choisie."""
         submenu_option = pyip.inputMenu(
-            choices=["Créer un nouveau joueur", "Modifier la fiche d'un joueur", "Afficher la liste des joueurs", "Retourner au menu principal"],
+            choices=["Créer un nouveau joueur",
+                     "Modifier la fiche d'un joueur",
+                     "Afficher la liste des joueurs",
+                     "Retourner au menu principal"],
             prompt="\n----- MENU JOUEURS -----\n", numbered=True)
         return submenu_option
 
@@ -27,7 +30,10 @@ class MenuView:
     def display_tournaments_menu():
         """Affiche le sous-menu tournois et retourne l'option choisie."""
         submenu_option = pyip.inputMenu(
-            choices=["Lancer un tournoi", "Gérer le tournoi en cours", "Afficher les tournois", "Retourner au menu principal"],
+            choices=["Lancer un tournoi",
+                     "Gérer le tournoi en cours",
+                     "Afficher les tournois",
+                     "Retourner au menu principal"],
             prompt="\n----- MENU TOURNOIS -----\n", numbered=True)
         return submenu_option
 
@@ -41,9 +47,19 @@ class MenuView:
         )
 
     @staticmethod
-    def save_report_request():
-        """Propose de sauvegarder le rapport ou de revenir au menu principal et retourne le choix."""
+    def ask_save_report():
+        """Propose de sauvegarder le rapport ou de revenir au menu et retourne le choix."""
         return pyip.inputYesNo(
-            prompt="\nVoulez-vous sauvegarder le rapport ? Saisir 'Y' (yes) ou 'N' (no) pour revenir au menu principal\n",
+            prompt="\nVoulez-vous sauvegarder le rapport ? "
+                   "Saisir 'Y' (yes) ou 'N' (no).\n",
             yesVal="Y", noVal="N"
         )
+
+    @staticmethod
+    def ask_tournament_id():
+        """Retourne la réponse à la demande de saisie de l'id du tournoi à afficher."""
+        tournament_id: int = pyip.inputNum(
+            prompt="Pour afficher le détail d'un tournoi (joueurs, tours, matchs), saisir son identifiant. "
+                   "Sinon, valider pour revenir au menu.",
+            blank=True, min=1)
+        return tournament_id

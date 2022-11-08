@@ -65,59 +65,44 @@ class MenuController:
                 PlayerController(PlayerModel, PlayerView).edit_player()
                 restart = MenuView.ask_to_restart()
         elif submenu_option == "Afficher la liste des joueurs":
-            report = PlayerController(PlayerModel, PlayerView).show_players_list()
-            save_report_request = MenuView.save_report_request()
-            if save_report_request == "Y":
-                functions.save_report(report)
-                print("Le rapport sera consultable depuis le répertoire 'reports' après l'arrêt du programme")
+            report = PlayerController(PlayerModel, PlayerView).show_players()
+            functions.save_report(report)
             restart = MenuView.ask_to_restart()
             while restart == "Y":
-                report = PlayerController(PlayerModel, PlayerView).show_players_list()
-                save_report_request = MenuView.save_report_request()
-                if save_report_request == "Y":
-                    functions.save_report(report)
-                    print("Le rapport sera consultable depuis le répertoire 'reports' après l'arrêt du programme")
+                report = PlayerController(PlayerModel, PlayerView).show_players()
+                functions.save_report(report)
                 restart = MenuView.ask_to_restart()
         elif submenu_option == "Lancer un tournoi":
             TournamentController(TournamentModel, TournamentView).start_tournament()
         elif submenu_option == "Gérer le tournoi en cours":
             TournamentController(TournamentModel, TournamentView).manage_current_tournament()
         elif submenu_option == "Afficher les tournois":
-            #Liste de tous les tournois
-            report = TournamentController(TournamentModel, TournamentView).show_tournaments_list()
-            save_report_request = MenuView.save_report_request()
-            if save_report_request == "Y":
+            report = TournamentController(TournamentModel, TournamentView).show_tournaments()
+            functions.save_report(report)
+            tournament_id = MenuView.ask_tournament_id()
+            if isinstance(tournament_id, int):
+                while tournament_id not in report.index.values:
+                    print("L'identifiant choisi ne correspond à aucun tournoi")
+                    tournament_id = MenuView.ask_tournament_id()
+                report = TournamentController(TournamentModel, TournamentView).show_tournament(tournament_id)
                 functions.save_report(report)
-                print("Le rapport sera consultable depuis le répertoire 'reports' après l'arrêt du programme")
-
-                # Affiche le détail d'un tournoi
-                tournament_id = TournamentController(TournamentModel, TournamentView).show_tournament()
-                print(tournament_id)
-
-
-
-            restart = MenuView.ask_to_restart()
-            while restart == "Y":
-                report = TournamentController(TournamentModel, TournamentView).show_tournaments_list()
-                save_report_request = MenuView.save_report_request()
-                if save_report_request == "Y":
+                tournament_display_option = TournamentView.ask_tournament_display_option()
+                if tournament_display_option == "Liste de tous les joueurs du tournoi":
+                    tournament_players_id = report.get(key="Joueurs")
+                    report = TournamentController(TournamentModel, TournamentView).show_tournament_players(tournament_players_id)
                     functions.save_report(report)
-                    print("Le rapport sera consultable depuis le répertoire 'reports' après l'arrêt du programme")
-                restart = MenuView.ask_to_restart()
-
-
-
-
-            #Liste de tous les joueurs d'un tournoi (par ordre alphabétique / par classement)
-            print("####################### AFFICHER la liste de tous les joueurs d'un tournoi (par ordre alphabétique / par classement)")
-
-            #Liste de tous les tours d'un tournoi
-            print("####################### AFFICHER la liste de tous les tours d'un tournoi")
-
-            # Liste de tous les matchs d'un tournoi
-            print("####################### AFFICHER la liste de tous les matchs d'un tournoi")
-
-            print("####################### FIN DU PROGRAMME DANS menu_controller, run_submenu_function")
+                    restart = MenuView.ask_to_restart()
+                    while restart == "Y":
+                        report = TournamentController(TournamentModel, TournamentView).show_tournament_players(tournament_players_id)
+                        functions.save_report(report)
+                        restart = MenuView.ask_to_restart()
+                elif tournament_display_option == "Liste de tous les tours du tournoi":
+                    print("####################### AFFICHER la liste de tous les tours d'un tournoi")
+                elif tournament_display_option == "Liste de tous les matchs du tournoi":
+                    print("####################### AFFICHER la liste de tous les matchs d'un tournoi")
+                MenuController.run_menu()
+            else:
+                MenuController.run_menu()
         else:
             print("ERREUR: La requête a échoué (retour au menu principal)")
         MenuController.run_menu()

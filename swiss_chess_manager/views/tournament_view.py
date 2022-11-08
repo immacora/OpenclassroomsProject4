@@ -124,15 +124,6 @@ class TournamentView:
         )
 
     @staticmethod
-    def ask_tournament_id():
-        """Retourne la réponse à la demande de saisie de l'id du tournoi à afficher."""
-        tournament_id: int = pyip.inputNum(
-            prompt="\nPour afficher le détail d'un tournoi, saisir son identifiant. "
-                   "Sinon, valider pour revenir au menu principal.",
-            blank=True, min=1)
-        return tournament_id
-
-    @staticmethod
     def ask_close_tournament():
         """Retourne la réponse à la demande de cloture du tournoi."""
         return pyip.inputYesNo(
@@ -159,26 +150,92 @@ class TournamentView:
 
     @staticmethod
     def display_tournaments(tournaments):
-        """Affiche la liste des tournois (Nom, lieu, date de début).
+        """Affiche la liste des tournois.
 
         Initialise le dataframe.
         Modifie les options d'affichage du dataframe.
-        Supprime les colonnes de détail.
-        Renomme ces colonnes.
+        Renomme les colonnes à afficher.
         Remplace la colonne d'index par celle des identifiants.
         Retourne le dataframe.
         """
         tournaments_df = pd.DataFrame(tournaments)
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_rows', None)
-        del tournaments_df["players"], tournaments_df["description"], tournaments_df["end_date"],\
-            tournaments_df["rounds_number"], tournaments_df["cadence"], tournaments_df["closed"]
         tournaments_df.rename(
-            columns={"name": "Nom", "location": "Lieu", "start_date": "Date de début", "tournament_id": "Identifiant"},
+            columns={
+                "name": "Nom",
+                "location": "Lieu",
+                "start_date": "Date de début",
+                "end_date": "Date de fin",
+                "players": "Joueurs",
+                "rounds_number": "Nombre de tours",
+                "cadence": "Cadence",
+                "description": "Description",
+                "closed": "Archivé",
+                "tournament_id": "Identifiant"
+            },
             inplace=True)
         tournaments_df.set_index("Identifiant", inplace=True)
         print(f"\nListe de tous les tournois :\n{tournaments_df}")
         return tournaments_df
+
+    @staticmethod
+    def display_tournament_card(tournament_id, tournament):
+        """Affiche le tournoi sélectionné.
+
+        Initialise la fiche du tournoi.
+        Renomme les colonnes à afficher.
+        Affiche le tournoi.
+        """
+        tournament_se = pd.Series(tournament)
+        tournament_se.index = ["Nom", "Lieu", "Date de début", "Date de fin", "Joueurs", "Nombre de tours", "Cadence", "Description", "Archivé"]
+        print(f"\nTournoi n° {tournament_id}:\n{tournament_se}")
+        return tournament_se
+
+    @staticmethod
+    def ask_tournament_display_option():
+        """Affiche les options d'affichage de détail du tournoi et retourne l'option choisie."""
+        tournament_display_option = pyip.inputMenu(
+            choices=[
+                "Liste de tous les joueurs du tournoi",
+                "Liste de tous les tours du tournoi",
+                "Liste de tous les matchs du tournoi"],
+            prompt="Afficher le rapport :\n", numbered=True)
+        return tournament_display_option
+
+
+    ####################################################
+    """@staticmethod
+    def display_tournament_players(tournament_players):
+        #Affiche les joueurs du tournoi.
+
+        #Initialise le dataframe.
+
+
+
+        #Renomme les colonnes à afficher.
+        #Remplace la colonne d'index par celle des identifiants.
+        #Retourne le dataframe.
+        
+        tournament_players_df = pd.DataFrame(tournament_players)
+        tournament_players_df.rename(
+            columns={
+                "name": "Nom",
+                "location": "Lieu",
+                "start_date": "Date de début",
+                "end_date": "Date de fin",
+                "players": "Joueurs",
+                "rounds_number": "Nombre de tours",
+                "cadence": "Cadence",
+                "description": "Description",
+                "closed": "Archivé",
+                "tournament_id": "Identifiant"
+            },
+            inplace=True)
+        tournament_players_df.set_index("Identifiant", inplace=True)
+        print(f"\nListe de tous les joueurs du tournoi :\n{tournament_players_df}")
+        return tournament_players_df"""
+    ##################################################################
 
     def tournament_input(self):
         """Demande la saisie de la fiche du tournoi et renvoie le dictionnaire des datas."""

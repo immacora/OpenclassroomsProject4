@@ -80,14 +80,12 @@ class PlayerController:
             print(f"\nVous avez modifié le joueur n° {player_id}:\n {updated_player}")
 
     @staticmethod
-    def show_players_list():
+    def show_players():
         """Afficher la liste des joueurs de la table players par ordre alphabétique ou classement.
 
         Initialise la liste des joueurs.
         Si aucun joueur n'a été récupéré, affiche un message d'erreur.
-        Sinon : Initialise le rapport de la liste des joueurs triée.
-            Initialise la demande d'export du rapport.
-            Exporte le rapport si la demande est True.
+        Sinon : Retourne le rapport de la liste des joueurs triée.
         """
         players = PlayerModel.get_all_players()
         if players is None:
