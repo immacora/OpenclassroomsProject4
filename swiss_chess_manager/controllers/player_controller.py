@@ -48,7 +48,6 @@ class PlayerController:
         """
         player_id = PlayerView.ask_player_id()
         db_serialized_player = PlayerModel.get_player_by_id(player_id)
-
         if db_serialized_player is None:
             print("ERREUR: L'identifiant saisi n'existe pas")
         else:
@@ -74,7 +73,6 @@ class PlayerController:
             else:
                 print("ERREUR: La modification du joueur a échoué")
                 return
-
             PlayerModel.update_player(label, field_to_update, player_id)
             updated_player = PlayerModel.unserialize_player(PlayerModel.get_player_by_id(player_id))
             print(f"\nVous avez modifié le joueur n° {player_id}:\n {updated_player}")
@@ -84,11 +82,14 @@ class PlayerController:
         """Afficher la liste des joueurs de la table players par ordre alphabétique ou classement.
 
         Initialise la liste des joueurs.
+        Initialise le type de tri.
         Si aucun joueur n'a été récupéré, affiche un message d'erreur.
         Sinon : Retourne le rapport de la liste des joueurs triée.
         """
         players = PlayerModel.get_all_players()
+        sort = PlayerView.ask_sort()
         if players is None:
             print("ERREUR: Aucun joueur n'a été trouvé dans la table players")
         else:
-            return PlayerView.display_list_sort(players)
+            report = PlayerView.display_sorted_df(sort, players)
+            return report

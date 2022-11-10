@@ -3,7 +3,7 @@ import pandas as pd
 
 
 class PlayerView:
-    """Joueur."""
+    """Player view."""
 
     def __init__(self):
         pass
@@ -58,20 +58,20 @@ class PlayerView:
         return field_to_update
 
     @staticmethod
-    def display_list_sort(players):
-        """Affiche la liste des joueurs par ordre alphabétique ou classement.
-
-        Initialise le type de tri.
-        Initialise le dataframe.
-        Renomme ses colonnes.
-        Réorganise ses colonnes.
-        Remplace la colonne d'index par celle des identifiants.
-        Effectue le tri du dataframe selon le type de tri demandé.
-        Affiche le dataframe trié et le retourne.
-        """
-        sort = pyip.inputChoice(
-            prompt="\nAfficher les joueurs par ordre alphabétique: 1 ou classement: 2", choices=["1", "2"]
+    def ask_sort():
+        """Demande le type de tri (alphabétique ou classement) et le retourne."""
+        sort = pyip.inputMenu(
+            choices=["Ordre alphabétique", "Classement"],
+            prompt="\nAfficher les joueurs par:\n", numbered=True
         )
+        return sort
+
+    @staticmethod
+    def display_sorted_df(sort, players):
+        """Affiche le dataframe des joueurs par ordre alphabétique ou classement.
+
+        Initialise le dataframe, renomme, réorganise ses colonnes (index = identifiants), le trie et retourne la version de tri demandé.
+        """
         players_df = pd.DataFrame(players)
         players_df.rename(
             columns={"lastname": "Prénom", "firstname": "Nom", "date_of_birth": "Date de naissance", "gender": "Genre",
@@ -80,14 +80,14 @@ class PlayerView:
             columns=["Identifiant", "Nom", "Prénom", "Date de naissance", "Genre", "Classement"]
         )
         players_df.set_index("Identifiant", inplace=True)
-        if sort == "1":
-            sorted_list = players_df.sort_values(by=["Nom"])
-            print(f"\nListe des joueurs triée par ordre alphabétique:\n{sorted_list}")
-            return sorted_list
-        elif sort == "2":
-            sorted_list = players_df.sort_values(by=["Classement"], ascending=False)
-            print(f"\nListe des joueurs triée par classement:\n{sorted_list}")
-            return sorted_list
+        if sort == "Ordre alphabétique":
+            sorted_df = players_df.sort_values(by=["Nom"])
+            print(f"Liste des joueurs triée par ordre alphabétique:\n{sorted_df}")
+            return sorted_df
+        elif sort == "Classement":
+            sorted_df = players_df.sort_values(by=["Classement"], ascending=False)
+            print(f"Liste des joueurs triée par classement:\n{sorted_df}")
+            return sorted_df
         else:
             print("ERREUR: L'affichage a échoué")
 
