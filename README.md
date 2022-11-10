@@ -30,9 +30,9 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
 ### Remarques générales
     Le logiciel comporte un menu principal, le MENU SWISS CHESS MANAGER, qui propose 2 sous-menus : MENU JOUEURS et MENU TOURNOIS.
 
-    Le MENU JOUEURS est une section dédiée à l'ajout, la modification et l'affichage des joueurs contenus dans la base de données du programme. Elle permet également d'exporter des rapports.
+    Le MENU JOUEURS est une section dédiée à l'ajout, la modification et l'affichage des joueurs contenus dans la base de données du programme. Elle permet également d'exporter des rapports : Affichage de la liste des joueurs (par ordre alphabétique ou classement).
 
-    Le MENU TOURNOIS est une section dédiée à la gestion d'un tournoi d'échecs selon le système suisse et son affichage. Elle permet également d'exporter des rapports.
+    Le MENU TOURNOIS est une section dédiée à la gestion d'un tournoi d'échecs selon le système suisse et son affichage. Elle permet également d'exporter des rapports : Affichage de la liste des tournois, de la fiche détaillée d'un tournoi, sa liste des joueurs (par ordre alphabétique ou classement), celle de ses tours et celle de ses matchs).
 
 ### Déroulement d'un tournoi
 
@@ -48,9 +48,9 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
         2.2 MENU TOURNOIS :
             - Lancer un tournoi (créer un tournoi : 8 joueurs et 4 tours par défaut)
             - Gérer le tournoi en cours (créer les tours, les appariements, saisir les résultats, clôturer le tournoi)
-            - Afficher les tournois (afficher la liste des tournois, le détail des tournoi)
+            - Afficher les tournois (afficher la liste des tournois, le détail d'un tournoi : la liste de ses joueurs, celle de ses tours et de ses matchs)
 
-    3- Rapports (fonctionnalité ajoutée à titre d'exemple pour l'amélioration souhaitée) :
+    3- Consulter les rapports (fonctionnalité ajoutée à titre d'exemple pour l'amélioration souhaitée) :
         Les rapports produits au cours d'un tournoi ou depuis le menu joueurs peuvent être exportés en csv (dataframes bruts et nommés par date).
         Ils sont consultables depuis le dossier reports après l'arrêt du programme.
 
