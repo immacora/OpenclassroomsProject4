@@ -124,6 +124,14 @@ class TournamentView:
         )
 
     @staticmethod
+    def ask_play_round():
+        """Retourne la réponse à la demande de lancement du tour."""
+        return pyip.inputYesNo(
+            prompt="Voulez-vous lancer le tour ? Saisir 'Y' (yes) pour le lancer ou 'N' (no) pour revenir au menu\n",
+            yesVal="Y", noVal="N"
+        )
+
+    @staticmethod
     def ask_close_tournament():
         """Retourne la réponse à la demande de cloture du tournoi."""
         return pyip.inputYesNo(
@@ -202,40 +210,6 @@ class TournamentView:
                 "Liste de tous les matchs du tournoi"],
             prompt="Afficher le rapport :\n", numbered=True)
         return tournament_display_option
-
-
-    ####################################################
-    """@staticmethod
-    def display_tournament_players(tournament_players):
-        #Affiche les joueurs du tournoi.
-
-        #Initialise le dataframe.
-
-
-
-        #Renomme les colonnes à afficher.
-        #Remplace la colonne d'index par celle des identifiants.
-        #Retourne le dataframe.
-        
-        tournament_players_df = pd.DataFrame(tournament_players)
-        tournament_players_df.rename(
-            columns={
-                "name": "Nom",
-                "location": "Lieu",
-                "start_date": "Date de début",
-                "end_date": "Date de fin",
-                "players": "Joueurs",
-                "rounds_number": "Nombre de tours",
-                "cadence": "Cadence",
-                "description": "Description",
-                "closed": "Archivé",
-                "tournament_id": "Identifiant"
-            },
-            inplace=True)
-        tournament_players_df.set_index("Identifiant", inplace=True)
-        print(f"\nListe de tous les joueurs du tournoi :\n{tournament_players_df}")
-        return tournament_players_df"""
-    ##################################################################
 
     def tournament_input(self):
         """Demande la saisie de la fiche du tournoi et renvoie le dictionnaire des datas."""
