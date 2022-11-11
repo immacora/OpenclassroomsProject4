@@ -209,15 +209,38 @@ class TournamentController:
     def player_pairing(self, tournament):
         """Associe les joueurs dans le tour selon le système suisse d'appariement.
 
-        Initialise les listes de joueurs, le compteur
+        Initialise les listes de joueurs, le compteur.
+        Trie tous les joueurs en fonction de leur classement.
+        Demande si le tour doit etre lancé et si oui:
+            Scinde les joueurs en 2 groupes selon leur niveau.
+
+
+        Retourne l'appariement.
         """
         strong_group = []
         week_group = []
         count = 0
 
-        pairing = print("pairing")
 
-        return pairing
+        # ??? CONSERVER ?????Initialise et affiche le dataframe des joueurs du tournoi trié par classement.
+        round_players = self.show_tournament_players(tournament.players, sort="Classement")
+
+        # demande si le tour doit etre lancé
+        play_round = TournamentView.ask_play_round()
+        if play_round == "Y":
+            # pour chaque id de joueur du round dans le dataframe trié par classement.
+            for round_player_id in round_players.index.values:
+                count += 1
+                # si count est <= à la moitié du nombre de joueurs, ajoute le joueur à la liste des forts et ajoute le reste à la liste des faibles
+                if count <= (len(round_players.index) // 2):
+                    strong_group.append(round_player_id)
+                else:
+                    week_group.append(round_player_id)
+
+
+
+            pairing = strong_group, week_group
+            return pairing
 
     def manage_current_tournament(self):
         """Gérer le tournoi en cours.
@@ -227,7 +250,6 @@ class TournamentController:
             Initialise l'objet tournoi et l'affiche.
             Initialise la liste des tours et l'affiche.
 
-            Trie tous les joueurs en fonction de leur classement.
 
 
 
@@ -244,19 +266,15 @@ class TournamentController:
 
             for round in tournament.rounds:
                 print(round)
+                print(type(round))
 
 
-            # demande si le tour doit etre lancé
-            play_round = TournamentView.ask_play_round()
 
 
-            # Affiche le numéro du tour
-            #print(f"Créer le tour n° {round_number}:\n")
-
-            # Affiche l'appariement des joueurs dans le tour
+            # Apparie les joueurs dans le tour
             pairing = self.player_pairing(tournament)
-            print(pairing)
-
+            if pairing:
+                print(pairing)
 
 
 
