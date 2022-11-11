@@ -37,6 +37,24 @@ class TournamentView:
         return pyip.inputDate(prompt="Saisir la date de fin du tournoi au format (YYYY/MM/DD): ")
 
     @staticmethod
+    def cadence():
+        """Demande la saisie du type de contrôle du temps du tournoi (bullet, blitz ou coup rapide) et le retourne."""
+        cadence = pyip.inputMenu(
+            choices=["Bullet", "Blitz", "Coup rapide"],
+            prompt="\nSaisir le numéro correspondant à la cadence du tournoi:\n", numbered=True
+        )
+        return cadence
+
+    @staticmethod
+    def description():
+        """Demande la saisie (facultative) des remarques générales sur le tournoi et les retourne."""
+        return pyip.inputStr(
+            prompt="Saisir les remarques générales sur le tournoi (caractères spéciaux interdits):\n",
+            blank=True,
+            blockRegexes=[r"^[0-9&@=£%<>,;:/§\^\$\\\|\{\}\[\]\(\)\?\#\!\+\*\.]$"]
+        )
+
+    @staticmethod
     def players_number():
         """Nombre de joueurs du tournoi : 8 par défaut (min 2).
 
@@ -47,7 +65,7 @@ class TournamentView:
         """
         players_number = 8
         players_number_input: int = pyip.inputNum(
-            prompt="Saisir le nombre de joueurs ou valider (8 par défaut)\n",
+            prompt="Saisir le nombre de joueurs ou valider (8 par défaut)",
             blank=True, min=2
         )
         if isinstance(players_number_input, int):
@@ -67,7 +85,7 @@ class TournamentView:
         """
         rounds_number = 4
         rounds_number_input: int = pyip.inputNum(
-            prompt="Saisir le nombre de rondes ou valider (4 par défaut)\n",
+            prompt="Saisir le nombre de rondes ou valider (4 par défaut)",
             blank=True, min=1
         )
         if isinstance(rounds_number_input, int):
@@ -75,24 +93,6 @@ class TournamentView:
         else:
             print(rounds_number)
         return rounds_number
-
-    @staticmethod
-    def cadence():
-        """Demande la saisie du type de contrôle du temps du tournoi (bullet, blitz ou coup rapide) et le retourne."""
-        cadence = pyip.inputMenu(
-            choices=["Bullet", "Blitz", "Coup rapide"],
-            prompt="\nSaisir le numéro correspondant à la cadence du tournoi:\n", numbered=True
-        )
-        return cadence
-
-    @staticmethod
-    def description():
-        """Demande la saisie (facultative) des remarques générales sur le tournoi et les retourne."""
-        return pyip.inputStr(
-            prompt="Saisir les remarques générales sur le tournoi (caractères spéciaux interdits):\n",
-            blank=True,
-            blockRegexes=[r"^[0-9&@=£%<>,;:/§\^\$\\\|\{\}\[\]\(\)\?\#\!\+\*\.]$"]
-        )
 
     @staticmethod
     def field_to_edit():
@@ -175,10 +175,11 @@ class TournamentView:
                 "location": "Lieu",
                 "start_date": "Date de début",
                 "end_date": "Date de fin",
-                "players": "Joueurs",
-                "rounds_number": "Nombre de tours",
                 "cadence": "Cadence",
                 "description": "Description",
+                "players": "Joueurs",
+                "rounds_number": "Nombre de tours",
+                "rounds": "Tours",
                 "closed": "Archivé",
                 "tournament_id": "Identifiant"
             },
@@ -186,6 +187,21 @@ class TournamentView:
         tournaments_df.set_index("Identifiant", inplace=True)
         print(f"\nListe de tous les tournois :\n{tournaments_df}")
         return tournaments_df
+
+    @staticmethod
+    def display_rounds(rounds):
+        """Affiche les tours du tournoi.
+        Initialise le dataframe, renomme, réorganise ses colonnes (index = round_number) et le retourne.
+        """
+        rounds_df = pd.DataFrame(rounds)
+        rounds_df.rename(
+            columns={"round_number": "Numéro de tour", "round_name": "Nom du tour", "matchs_number": "Nombre de matchs", "matchs": "Liste des matchs",
+                     "start_datetime": "Date et heure de début", "end_datetime": "Date et heure de fin", "closed": "Archivé"},
+            inplace=True
+        )
+        rounds_df.set_index("Numéro de tour", inplace=True)
+        print(f"Liste des tours du tournoi:\n{rounds_df}")
+        return rounds_df
 
     @staticmethod
     def display_tournament_card(tournament_id, tournament):
@@ -196,7 +212,8 @@ class TournamentView:
         Affiche le tournoi.
         """
         tournament_se = pd.Series(tournament)
-        tournament_se.index = ["Nom", "Lieu", "Date de début", "Date de fin", "Joueurs", "Nombre de tours", "Cadence", "Description", "Archivé"]
+        tournament_se.index = ["Nom", "Lieu", "Date de début", "Date de fin", "Cadence", "Description", "Joueurs",
+                               "Nombre de tours", "Tours", "Archivé"]
         print(f"\nTournoi n° {tournament_id}:\n{tournament_se}")
         return tournament_se
 
@@ -218,19 +235,19 @@ class TournamentView:
         location = self.location()
         start_date = self.start_date()
         end_date = self.end_date()
-        players_number = self.players_number()
-        rounds_number = self.rounds_number()
         cadence = self.cadence()
         description = self.description()
+        players_number = self.players_number()
+        rounds_number = self.rounds_number()
 
         tournament_input: dict = {
             "name": name,
             "location": location,
             "start_date": start_date,
             "end_date": end_date,
-            "players": players_number,
-            "rounds_number": rounds_number,
             "cadence": cadence,
-            "description": description
+            "description": description,
+            "players": players_number,
+            "rounds_number": rounds_number
         }
         return tournament_input
