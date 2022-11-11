@@ -210,71 +210,13 @@ class TournamentController:
         """Associe les joueurs dans le tour selon le système suisse d'appariement.
 
         Initialise les listes de joueurs, le compteur
-
-
-        Scinde les joueurs en 2 groupes selon leur niveau.
-
-
         """
         strong_group = []
         week_group = []
         count = 0
 
+        pairing = print("pairing")
 
-        #rounds_number = tournament.rounds_number
-
-        # Initialise les matchs
-        match = ()
-        # Initialise le statut exempt(joueur impair exempté)
-        exempt = False
-
-        # demande si le tour doit etre lancé
-        play_round = TournamentView.ask_play_round()
-
-        # ??? CONSERVER ?????Initialise et affiche le dataframe des joueurs du tournoi trié par classement.
-        round_players = self.show_tournament_players(tournament.players, sort="Classement")
-        print(round_players.index)
-
-        # Affiche l'appariement des joueurs dans le tour
-        # si oui
-        if play_round == "Y":
-            # pour chaque index dans la liste des joueurs du round.
-            #for i in range(0, len(round_players.index)):
-
-            # pour chaque id de joueur du round (dataframe) trié par classement.
-            for round_player_id in round_players.index.values:
-
-                print(round_player_id, round_players.index.values)
-                count += 1
-                print(count)
-                # si count est inférieur à la moitié de la longueur de la liste des index (quotient de la division euclidienne)
-
-                if count <= (len(round_players.index)//2):
-                    strong_group.append(round_player_id)
-                else:
-                    week_group.append(round_player_id)
-
-            print(strong_group)
-            print(week_group)
-
-            # pour chaque id de joueur du round (dataframe) trié par classement.
-            #for round_player_id in round_players.index.values:
-                #if index < (len(round_players.index)//2):
-                #print(round_player_id, round_players.index.values)
-
-
-
-                #for i in range(0, len(round_players.index)//2):
-                    #strong_group.append(round_player_id)
-                    #print(strong_group)
-
-                #match = ()
-
-
-            print(round_players.index.values)
-
-
-        pairing = tournament.rounds_number
         return pairing
 
     def manage_current_tournament(self):
@@ -283,6 +225,7 @@ class TournamentController:
         Initialise l'id du tournoi en cours.
         S'il en existe un :
             Initialise l'objet tournoi et l'affiche.
+            Initialise la liste des tours et l'affiche.
 
             Trie tous les joueurs en fonction de leur classement.
 
@@ -297,16 +240,14 @@ class TournamentController:
             tournament = TournamentModel.unserialize_tournament(TournamentModel.get_tournament_by_id(tournament_id))
             print(f"Vous gérez le tournoi n° {tournament_id}:\n {tournament}\n")
 
+            print("pb affichage tour")
+
+            for round in tournament.rounds:
+                print(round)
 
 
-
-            # Crée la liste des instances tours/rondes
-            #rounds = TournamentModel.rounds
-
-
-            #rounds_df = pd.DataFrame(rounds)
-            #print(rounds, "rounds")
-            #print(tournament.rounds_number)
+            # demande si le tour doit etre lancé
+            play_round = TournamentView.ask_play_round()
 
 
             # Affiche le numéro du tour
@@ -317,40 +258,7 @@ class TournamentController:
             print(pairing)
 
 
-            print("Triez tous les joueurs en fonction de leur classement.")
-            print("Créer 1 tour (générer les paires de joueurs).")
-            print("Afficher l'appariement des joueurs dans le tour")
-            print("Saisir les résultats des matchs du tour lorsqu'il est terminé (Gagner/Perdre 1 match = aléatoire)")
-            print("Afficher le classement (mis à jour) des joueurs dans le tournoi")
 
-
-                # Trie le dataframe par Classement de joueur
-
-                # Apparie les joueurs selon leur niveau
-
-                #Crée l'instance ronde
-                #round = RoundModel(round_number, round_name, start_datetime, end_datetime, name, location, start_date, end_date, players, rounds_number, cadence, description)
-
-
-            #Initialise la liste des id des joueurs du tournoi
-            # Initialise la liste vide des joueurs du tournoi
-            #tournament_players_id = tournament.players
-            #tournament_players = []
-            #pour chaque id de joueur dans la liste d'id:
-            #for tournament_player_id in tournament_players_id:
-
-            #for round in len(int(tournament.rounds_number)):
-            #print(type(tournament.rounds_number))
-            #print(tournament.rounds_number)
-
-            #1.	Au début du premier tour, triez tous les joueurs en fonction de leur classement."
-
-
-            print(f"menu : lancer le premier tour / revenir au menu principal")
-
-
-            print("Jouer les tours suivants à l'identique")
-            print("Afficher le résulat final")
 
             #Si le dernier tour est terminé: propose de clôturer le tournoi
             x = "z"
