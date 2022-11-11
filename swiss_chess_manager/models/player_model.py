@@ -16,19 +16,19 @@ class PlayerModel:
 
     @staticmethod
     def get_player_by_id(player_id):
-        """Cherche le joueur sérialisé de la db par son id et le retourne."""
+        """Retourne le joueur cherché par id."""
         db_serialized_player = PlayerModel.PLAYERS_TABLE.get(doc_id=player_id)
         return db_serialized_player
 
     @staticmethod
     def get_all_players():
-        """Initialise la liste des joueurs avec leur id et la retourne."""
+        """Retourne la liste des joueurs et leur id."""
         players = db_functions.get_all_documents(PlayerModel.PLAYERS_TABLE.all(), "player_id")
         return players
 
     @staticmethod
     def update_player(label, field_to_update, player_id):
-        """Met à jour la fiche du joueur sélectionné."""
+        """Met à jour la fiche du joueur."""
         PlayerModel.PLAYERS_TABLE.update({label: field_to_update}, doc_ids=[player_id])
 
     @staticmethod
@@ -80,6 +80,8 @@ class PlayerModel:
         double = False
         players = self.get_all_players()
         for player in players:
-            if (serialized_player["lastname"] == player["lastname"]) and (serialized_player["firstname"] == player["firstname"]) and (serialized_player["date_of_birth"] == player["date_of_birth"]):
+            if (serialized_player["lastname"] == player["lastname"])\
+                    and (serialized_player["firstname"] == player["firstname"])\
+                    and (serialized_player["date_of_birth"] == player["date_of_birth"]):
                 double = True
         return double
