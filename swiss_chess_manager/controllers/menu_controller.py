@@ -97,7 +97,9 @@ class MenuController:
                         functions.save_report(report)
                         restart = MenuView.ask_to_restart()
                 elif tournament_display_option == "Liste de tous les tours du tournoi":
-                    print("####################### AFFICHER la liste de tous les tours d'un tournoi")
+                    rounds = report.get(key="Tours")
+                    report = TournamentController(TournamentModel, TournamentView).show_rounds(rounds)
+                    functions.save_report(report)
                 elif tournament_display_option == "Liste de tous les matchs du tournoi":
                     print("####################### AFFICHER la liste de tous les matchs d'un tournoi")
                 MenuController.run_menu()
