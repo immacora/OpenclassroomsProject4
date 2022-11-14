@@ -6,7 +6,8 @@ class TournamentModel:
 
     TOURNAMENTS_TABLE = db_functions.tournaments_table()
 
-    def __init__(self, name, location, start_date, end_date, cadence, description, players, rounds_number, rounds=None, closed=False):
+    def __init__(self, name, location, start_date, end_date, cadence, description,
+                 players, rounds_number, rounds, standings_grid, closed=False):
         """Initialise le tournois."""
         if rounds is None:
             rounds = []
@@ -18,7 +19,8 @@ class TournamentModel:
         self.description = description
         self.players: list = players
         self.rounds_number: int = rounds_number
-        self.rounds = rounds
+        self.rounds: list = rounds
+        self.standings_grid: dict = standings_grid
         self.closed = closed
 
     @staticmethod
@@ -31,7 +33,8 @@ class TournamentModel:
     def get_open_tournament():
         """Retourne l'id du tournoi en cours."""
         tournament_query = db_functions.Query()
-        open_tournament = TournamentModel.TOURNAMENTS_TABLE.get(tournament_query.closed == False)#ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
+        open_tournament = TournamentModel.TOURNAMENTS_TABLE.get(
+            tournament_query.closed == False)  # ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
         if open_tournament:
             return open_tournament.doc_id
 
@@ -57,6 +60,7 @@ class TournamentModel:
             players=serialized_tournament["players"],
             rounds_number=serialized_tournament["rounds_number"],
             rounds=unserialized_rounds,
+            standings_grid=serialized_tournament["standings_grid"],
             closed=serialized_tournament["closed"]
         )
         return unserialized_tournament
@@ -68,6 +72,7 @@ class TournamentModel:
 
     def __str__(self):
         """Représentation de l'objet tournoi sous forme de chaîne de caractères."""
+
         tournament: str = f"Nom : {self.name}\n " \
                           f"Lieu : {self.location}\n " \
                           f"Date de début : {self.start_date}\n " \
@@ -76,7 +81,6 @@ class TournamentModel:
                           f"Description : {self.description}\n " \
                           f"Joueurs : {self.players}\n " \
                           f"Nombre de tours : {self.rounds_number}\n " \
-                          f"Tours : {self.rounds}\n " \
                           f"Archivé : {self.closed}"
         return tournament
 
@@ -95,6 +99,7 @@ class TournamentModel:
             "players": self.players,
             "rounds_number": self.rounds_number,
             "rounds": serialized_rounds,
+            "standings_grid": self.standings_grid,
             "closed": self.closed
         }
         return serialized_tournament
@@ -108,7 +113,10 @@ class TournamentModel:
 class RoundModel:
     """Tour (ronde)."""
 
-    def __init__(self, round_number, round_name, matchs_number, matchs=None, start_datetime="", end_datetime="", closed=False):
+    TOURNAMENTS_TABLE = db_functions.tournaments_table()
+
+    def __init__(self, round_number, round_name, matchs_number, matchs=None, start_datetime="", end_datetime="",
+                 closed=False):
         """Initialise le tour."""
         self.round_number: int = round_number
         self.round_name: str = round_name
@@ -135,12 +143,12 @@ class RoundModel:
     def __str__(self):
         """Représentation de l'objet tour (ronde) sous forme de chaîne de caractères."""
         round: str = f"Tour n° {self.round_number}\n " \
-                          f"Nom : {self.round_name}\n " \
-                          f"Nombre de matchs : {self.matchs_number}\n " \
-                          f"Liste des matchs : {self.matchs}\n " \
-                          f"Date et heure de début : {self.start_datetime}\n " \
-                          f"Date et heure de fin : {self.end_datetime}\n " \
-                          f"Archivé : {self.closed}"
+                     f"Nom : {self.round_name}\n " \
+                     f"Nombre de matchs : {self.matchs_number}\n " \
+                     f"Liste des matchs : {self.matchs}\n " \
+                     f"Date et heure de début : {self.start_datetime}\n " \
+                     f"Date et heure de fin : {self.end_datetime}\n " \
+                     f"Archivé : {self.closed}"
         return round
 
     def serialize_round(self):
