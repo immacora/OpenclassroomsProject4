@@ -88,8 +88,9 @@ class PlayerController:
         """
         players = PlayerModel.get_all_players()
         sort = PlayerView.ask_sort()
-        if players is None:
+        if len(players) == 0:
             print("ERREUR: Aucun joueur n'a été trouvé dans la table players")
+            return False
         else:
             report = PlayerView.display_sorted_df(sort, players)
             return report
