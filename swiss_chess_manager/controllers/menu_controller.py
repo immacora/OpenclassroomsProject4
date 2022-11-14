@@ -66,42 +66,40 @@ class MenuController:
                 restart = MenuView.ask_to_restart()
         elif submenu_option == "Afficher la liste des joueurs":
             report = PlayerController(PlayerModel, PlayerView).show_players()
-            functions.save_report(report)
-            restart = MenuView.ask_to_restart()
-            while restart == "Y":
-                report = PlayerController(PlayerModel, PlayerView).show_players()
+            if report is not False:
                 functions.save_report(report)
-                restart = MenuView.ask_to_restart()
         elif submenu_option == "Lancer un tournoi":
             TournamentController(TournamentModel, TournamentView).start_tournament()
         elif submenu_option == "Gérer le tournoi en cours":
             TournamentController(TournamentModel, TournamentView).manage_current_tournament()
         elif submenu_option == "Afficher les tournois":
             report = TournamentController(TournamentModel, TournamentView).show_tournaments()
-            functions.save_report(report)
-            tournament_id = MenuView.ask_tournament_id()
-            if isinstance(tournament_id, int):
-                while tournament_id not in report.index.values:
-                    print("L'identifiant choisi ne correspond à aucun tournoi")
-                    tournament_id = MenuView.ask_tournament_id()
-                report = TournamentController(TournamentModel, TournamentView).show_tournament(tournament_id)
+            if report is not False:
                 functions.save_report(report)
-                tournament_display_option = TournamentView.ask_tournament_display_option()
-                if tournament_display_option == "Liste de tous les joueurs du tournoi":
-                    tournament_players_id = report.get(key="Joueurs")
-                    report = TournamentController(TournamentModel, TournamentView).show_tournament_players(tournament_players_id)
+                tournament_id = MenuView.ask_tournament_id()
+                if isinstance(tournament_id, int):
+                    while tournament_id not in report.index.values:
+                        print("L'identifiant choisi ne correspond à aucun tournoi")
+                        tournament_id = MenuView.ask_tournament_id()
+                    report = TournamentController(TournamentModel, TournamentView).show_tournament(tournament_id)
                     functions.save_report(report)
-                    restart = MenuView.ask_to_restart()
-                    while restart == "Y":
+                    tournament_display_option = TournamentView.ask_tournament_display_option()
+                    if tournament_display_option == "Liste de tous les joueurs du tournoi":
+                        tournament_players_id = report.get(key="Joueurs")
                         report = TournamentController(TournamentModel, TournamentView).show_tournament_players(tournament_players_id)
                         functions.save_report(report)
                         restart = MenuView.ask_to_restart()
-                elif tournament_display_option == "Liste de tous les tours du tournoi":
-                    rounds = report.get(key="Tours")
-                    report = TournamentController(TournamentModel, TournamentView).show_rounds(rounds)
-                    functions.save_report(report)
-                elif tournament_display_option == "Liste de tous les matchs du tournoi":
-                    print("####################### AFFICHER la liste de tous les matchs d'un tournoi")
+                        while restart == "Y":
+                            report = TournamentController(TournamentModel, TournamentView).show_tournament_players(tournament_players_id)
+                            functions.save_report(report)
+                            restart = MenuView.ask_to_restart()
+                    elif tournament_display_option == "Liste de tous les tours du tournoi":
+                        rounds = report.get(key="Tours")
+                        report = TournamentController(TournamentModel, TournamentView).show_rounds(rounds)
+                        if report is not False:
+                            functions.save_report(report)
+                    elif tournament_display_option == "Liste de tous les matchs du tournoi":
+                        print("####################### AFFICHER la liste de tous les matchs d'un tournoi")
                 MenuController.run_menu()
             else:
                 MenuController.run_menu()
