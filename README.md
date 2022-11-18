@@ -28,11 +28,15 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
 
 ## Utilisation
 ### Remarques générales
-    Le logiciel comporte un menu principal, le MENU SWISS CHESS MANAGER, qui propose 2 sous-menus : MENU JOUEURS et MENU TOURNOIS.
+    Le logiciel comporte un menu principal, le MENU SWISS CHESS MANAGER, qui propose 2 sous-menus :
+    MENU JOUEURS et MENU TOURNOIS.
 
-    Le MENU JOUEURS est une section dédiée à l'ajout, la modification et l'affichage des joueurs contenus dans la base de données du programme. Elle permet également d'exporter des rapports : Affichage de la liste des joueurs (par ordre alphabétique ou classement).
+    Le MENU JOUEURS est une section dédiée à l'ajout, la modification et l'affichage des joueurs contenus dans la base de données du programme.
+    Elle permet également d'exporter des rapports : Affichage de la liste des joueurs (par ordre alphabétique ou classement).
 
-    Le MENU TOURNOIS est une section dédiée à la gestion d'un tournoi d'échecs selon le système suisse et son affichage. Elle permet également d'exporter des rapports : Affichage de la liste des tournois, de la fiche détaillée d'un tournoi, sa liste des joueurs (par ordre alphabétique ou classement), celle de ses tours et celle de ses matchs).
+    Le MENU TOURNOIS est une section dédiée à la gestion d'un tournoi d'échecs selon le système suisse et son affichage.
+    Elle permet également d'exporter des rapports : 
+        Affichage de la liste des tournois, de la fiche détaillée d'un tournoi, sa liste des joueurs (par ordre alphabétique ou classement), celle de ses tours et celle de ses matchs).
 
 ### Déroulement d'un tournoi
 

@@ -26,6 +26,13 @@ def tournaments_table():
     return tournaments_table
 
 
+def players_standings_grid_table():
+    """Retourne la table des tournois."""
+    db = db_connect()
+    players_standings_grid_table = db.table("players_standings_grid_table")
+    return players_standings_grid_table
+
+
 def get_all_documents(db_documents, document_id):
     """Charge le contenu de la table donnée en paramètre et insère l'id de chaque document dans la liste renvoyée."""
     documents: list = []

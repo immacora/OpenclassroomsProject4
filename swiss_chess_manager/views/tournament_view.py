@@ -189,6 +189,31 @@ class TournamentView:
         return tournaments_df
 
     @staticmethod
+    def display_sorted_players_df(sort, tournament_players):
+        """Affiche le dataframe des joueurs du tournoi par ordre alphabétique ou classement.
+
+        Initialise le dataframe, renomme, réorganise ses colonnes (index = identifiants), le trie et retourne la version de tri demandé.
+        """
+        players_df = pd.DataFrame(tournament_players)
+        players_df.rename(
+            columns={"lastname": "Prénom", "firstname": "Nom", "date_of_birth": "Date de naissance", "gender": "Genre",
+                     "rating": "Classement", "player_id": "Identifiant"}, inplace=True)
+        players_df = players_df.reindex(
+            columns=["Identifiant", "Nom", "Prénom", "Date de naissance", "Genre", "Classement"]
+        )
+        players_df.set_index("Identifiant", inplace=True)
+        if sort == "Ordre alphabétique":
+            sorted_df = players_df.sort_values(by=["Nom"])
+            print(f"Liste des joueurs triée par ordre alphabétique:\n{sorted_df}")
+            return sorted_df
+        elif sort == "Classement":
+            sorted_df = players_df.sort_values(by=["Classement"], ascending=False)
+            print(f"Liste des joueurs triée par classement:\n{sorted_df}")
+            return sorted_df
+        else:
+            print("ERREUR: L'affichage a échoué")
+
+    @staticmethod
     def display_rounds(rounds):
         """Affiche les tours du tournoi.
         Initialise le dataframe, renomme, réorganise ses colonnes (index = round_number) et le retourne.
@@ -212,6 +237,7 @@ class TournamentView:
         Affiche le tournoi.
         """
         tournament_se = pd.Series(tournament)
+        del tournament_se["standings_grid"]
         tournament_se.index = ["Nom", "Lieu", "Date de début", "Date de fin", "Cadence", "Description", "Joueurs",
                                "Nombre de tours", "Tours", "Archivé"]
         print(f"\nTournoi n° {tournament_id}:\n{tournament_se}")

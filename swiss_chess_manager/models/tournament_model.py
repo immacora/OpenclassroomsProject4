@@ -1,13 +1,68 @@
 from swiss_chess_manager.models import db_functions
 
 
+class Round:
+    """Tour (ronde)."""
+
+    TOURNAMENTS_TABLE = db_functions.tournaments_table()
+
+    def __init__(self, round_number, round_name, matches_number, matches=None, start_datetime="", end_datetime="",
+                 closed=False):
+        """Initialise le tour."""
+        self.round_number: int = round_number
+        self.round_name: str = round_name
+        self.matches_number: int = matches_number
+        self.matches: list = matches
+        self.start_datetime: str = start_datetime
+        self.end_datetime: str = end_datetime
+        self.closed = closed
+
+    @staticmethod
+    def unserialize_round(serialized_round):
+        """Convertit le tour sérialisé en instance."""
+        unserialize_round = Round(
+            round_number=serialized_round["round_number"],
+            round_name=serialized_round["round_name"],
+            matches_number=serialized_round["matches_number"],
+            matches=serialized_round["matches"],
+            start_datetime=serialized_round["start_datetime"],
+            end_datetime=serialized_round["end_datetime"],
+            closed=serialized_round["closed"]
+        )
+        return unserialize_round
+
+    def __str__(self):
+        """Représentation de l'objet tour (ronde) sous forme de chaîne de caractères."""
+        round: str = f"Tour n° {self.round_number}\n " \
+                     f"Nom : {self.round_name}\n " \
+                     f"Nombre de matchs : {self.matches_number}\n " \
+                     f"Liste des matchs : {self.matches}\n " \
+                     f"Date et heure de début : {self.start_datetime}\n " \
+                     f"Date et heure de fin : {self.end_datetime}\n " \
+                     f"Archivé : {self.closed}"
+        return round
+
+    def serialize_round(self):
+        """Sérialise l'instance du tour dans un dictionnaire."""
+        serialized_round: dict = {
+            "round_number": self.round_number,
+            "round_name": self.round_name,
+            "matches_number": self.matches_number,
+            "matches": self.matches,
+            "start_datetime": self.start_datetime,
+            "end_datetime": self.end_datetime,
+            "closed": self.closed
+        }
+        return serialized_round
+
+
 class TournamentModel:
     """Tournament."""
 
     TOURNAMENTS_TABLE = db_functions.tournaments_table()
 
     def __init__(self, name, location, start_date, end_date, cadence, description,
-                 players, rounds_number, rounds, standings_grid, closed=False):
+                 players, rounds_number, rounds, closed=False):
         """Initialise le tournois."""
         if rounds is None:
             rounds = []
@@ -20,7 +75,6 @@ class TournamentModel:
         self.players: list = players
         self.rounds_number: int = rounds_number
         self.rounds: list = rounds
-        self.standings_grid: dict = standings_grid
         self.closed = closed
 
     @staticmethod
@@ -49,7 +103,7 @@ class TournamentModel:
         """Convertit le tournoi sérialisé en instance."""
         unserialized_rounds = []
         for serialized_round in serialized_tournament["rounds"]:
-            unserialized_rounds.append(RoundModel.unserialize_round(serialized_round))
+            unserialized_rounds.append(Round.unserialize_round(serialized_round))
         unserialized_tournament = TournamentModel(
             name=serialized_tournament["name"],
             location=serialized_tournament["location"],
@@ -60,7 +114,6 @@ class TournamentModel:
             players=serialized_tournament["players"],
             rounds_number=serialized_tournament["rounds_number"],
             rounds=unserialized_rounds,
-            standings_grid=serialized_tournament["standings_grid"],
             closed=serialized_tournament["closed"]
         )
         return unserialized_tournament
@@ -88,7 +141,7 @@ class TournamentModel:
         """Sérialise l'instance du tournoi dans un dictionnaire."""
         serialized_rounds = []
         for round in self.rounds:
-            serialized_rounds.append(RoundModel.serialize_round(round))
+            serialized_rounds.append(Round.serialize_round(round))
         serialized_tournament: dict = {
             "name": self.name,
             "location": self.location,
@@ -99,7 +152,6 @@ class TournamentModel:
             "players": self.players,
             "rounds_number": self.rounds_number,
             "rounds": serialized_rounds,
-            "standings_grid": self.standings_grid,
             "closed": self.closed
         }
         return serialized_tournament
@@ -110,56 +162,71 @@ class TournamentModel:
         return tournament_id
 
 
-class RoundModel:
-    """Tour (ronde)."""
+class PlayerStandingsGrid:
+    """Grille des scores des joueurs du tournoi."""
 
-    TOURNAMENTS_TABLE = db_functions.tournaments_table()
+    PLAYERS_STANDINGS_GRID_TABLE = db_functions.players_standings_grid_table()
 
-    def __init__(self, round_number, round_name, matchs_number, matchs=None, start_datetime="", end_datetime="",
-                 closed=False):
-        """Initialise le tour."""
-        self.round_number: int = round_number
-        self.round_name: str = round_name
-        self.matchs_number: int = matchs_number
-        self.matchs: list = matchs
-        self.start_datetime: str = start_datetime
-        self.end_datetime: str = end_datetime
-        self.closed = closed
+    def __init__(self, player_rank, player_name,
+                 rounds_scores, exempted_round, rounds_opponents, player_id, tournament_id):
+        """Initialise le joueur de la grille."""
+        self.player_rank: int = player_rank
+        self.player_name: str = player_name
+        self.rounds_scores: list = rounds_scores
+        self.exempted_round: int = exempted_round
+        self.rounds_opponents: list = rounds_opponents
+        self.player_id: int = player_id
+        self.tournament_id: int = tournament_id
 
     @staticmethod
-    def unserialize_round(serialized_round):
-        """Convertit le tour sérialisé en instance."""
-        unserialize_round = RoundModel(
-            round_number=serialized_round["round_number"],
-            round_name=serialized_round["round_name"],
-            matchs_number=serialized_round["matchs_number"],
-            matchs=serialized_round["matchs"],
-            start_datetime=serialized_round["start_datetime"],
-            end_datetime=serialized_round["end_datetime"],
-            closed=serialized_round["closed"]
+    def unserialize_player_standings_grid(serialized_player_standings_grid):
+        """Convertit le joueur sérialisé de la grille en instance."""
+        unserialized_player_standings_grid = PlayerStandingsGrid(
+            player_rank=serialized_player_standings_grid["player_rank"],
+            player_name=serialized_player_standings_grid["player_name"],
+            rounds_scores=serialized_player_standings_grid["rounds_scores"],
+            exempted_round=serialized_player_standings_grid["exempted_round"],
+            rounds_opponents=serialized_player_standings_grid["rounds_opponents"],
+            player_id=serialized_player_standings_grid["player_id"],
+            tournament_id=serialized_player_standings_grid["tournament_id"]
         )
-        return unserialize_round
+        return unserialized_player_standings_grid
 
     def __str__(self):
-        """Représentation de l'objet tour (ronde) sous forme de chaîne de caractères."""
-        round: str = f"Tour n° {self.round_number}\n " \
-                     f"Nom : {self.round_name}\n " \
-                     f"Nombre de matchs : {self.matchs_number}\n " \
-                     f"Liste des matchs : {self.matchs}\n " \
-                     f"Date et heure de début : {self.start_datetime}\n " \
-                     f"Date et heure de fin : {self.end_datetime}\n " \
-                     f"Archivé : {self.closed}"
-        return round
+        """Représentation de l'objet grille des scores sous forme de chaîne de caractères."""
+        player_standings_grid: str = \
+            f"Place du joueur dans le tournoi : {self.player_rank}\n"\
+            f"Nom du joueur : {self.player_name}\n"\
+            f"Scores du joueur (par ordre de tour) : {self.rounds_scores}\n"\
+            f"Exempté du round n° : {self.exempted_round}\n"\
+            f"Adversaires du joueur (par ordre de tour): {self.rounds_opponents}\n"\
+            f"Identifiant du joueur : {self.player_id}\n"\
+            f"Identifiant du tournoi : {self.tournament_id}"
+        return player_standings_grid
 
-    def serialize_round(self):
-        """Sérialise l'instance du tour dans un dictionnaire."""
-        serialized_round: dict = {
-            "round_number": self.round_number,
-            "round_name": self.round_name,
-            "matchs_number": self.matchs_number,
-            "matchs": self.matchs,
-            "start_datetime": self.start_datetime,
-            "end_datetime": self.end_datetime,
-            "closed": self.closed
+    def serialize_player_standings_grid(self):
+        """Sérialise l'instance du joueur de la grille dans un dictionnaire."""
+        serialized_player_standings_grid: dict = {
+            "player_rank": self.player_rank,
+            "player_name": self.player_name,
+            "rounds_scores": self.rounds_scores,
+            "exempted_round": self.exempted_round,
+            "rounds_opponents": self.rounds_opponents,
+            "player_id": self.player_id,
+            "tournament_id": self.tournament_id
         }
-        return serialized_round
+        return serialized_player_standings_grid
+
+    @staticmethod
+    def save_players_standings_grid(players_standings_grid):
+        """Insère les joueurs sérialisés du tournoi dans la table players_standings_grid_table
+        et retourne la liste d'id des joueurs de la grille."""
+        serialized_players_standings_grid = []
+        for player_standings_grid in players_standings_grid:
+            serialized_player_standings_grid = PlayerStandingsGrid.serialize_player_standings_grid(player_standings_grid)
+            serialized_players_standings_grid.append(serialized_player_standings_grid)
+
+        players_standings_grid_id: int = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.insert_multiple(
+            serialized_players_standings_grid
+        )
+        return players_standings_grid_id

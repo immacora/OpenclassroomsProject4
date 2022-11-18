@@ -1,4 +1,4 @@
-from swiss_chess_manager.models.tournament_model import TournamentModel, RoundModel
+from swiss_chess_manager.models.tournament_model import TournamentModel, Round, PlayerStandingsGrid
 from swiss_chess_manager.views.tournament_view import TournamentView
 from swiss_chess_manager.models.player_model import PlayerModel
 from swiss_chess_manager.controllers.player_controller import PlayerController
@@ -12,6 +12,42 @@ class TournamentController:
         """Initialise le modèle et la vue."""
         self.model = model
         self.view = view
+
+    @staticmethod
+    def impair(players):
+        if len(players) % 2 == 0:
+            return False
+        else:
+            return True
+
+    @staticmethod
+    def save_tournament(tournament):
+        """Sauvegarde le tournoi.
+
+        Affiche les données saisies.
+        Initialise la demande de sauvegarde des données
+        Si la sauvegarde est demandée :
+            Initialise l'id du tournoi sauvegardé
+            Affiche le tournoi sauvegardé et retourne son id, ou affiche un message d'erreur et quitte le programme
+        """
+        print(f"\nVous allez créer le tournoi :\n {tournament}")
+        save_tournament_request = TournamentView.ask_save_tournament()
+        if save_tournament_request == "Y":
+            try:
+                saved_tournament_id: int = tournament.save_tournament()
+                print(f"Vous avez créé le tournoi n° {saved_tournament_id}")
+                return saved_tournament_id
+            except RuntimeError:
+                print("ERREUR: L'enregistrement du tournoi a échoué, veuillez relancer le programme.")
+                exit()
+
+    @staticmethod
+    def get_open_round(tournament):
+        """Retourne le tour (ronde) en cours."""
+        rounds = tournament.rounds
+        for open_round in rounds:
+            if open_round.closed is False:
+                return open_round
 
     def check_player_id(self, players_df, tournament_players):
         """Vérifie l'id et la fiche du joueur avant enregistrement dans la liste des joueurs du tournoi.
@@ -56,7 +92,8 @@ class TournamentController:
         Retourne la liste des joueurs du tournoi.
         """
         print("Vous allez saisir la liste des joueurs du tournoi. "
-              "Sélectionnez le joueur dans la liste qui s'affiche ou créez le. Attention, cette saisie sera définitive.")
+              "Sélectionnez le joueur dans la liste qui s'affiche ou créez le. "
+              "Attention, cette saisie sera définitive.")
         players_df = PlayerController.show_players()
         tournament_players = []
         for number in range(0, players_number):
@@ -74,39 +111,194 @@ class TournamentController:
             print(f"\nListe des joueurs enregistrés dans le tournoi : {tournament_players}")
         return tournament_players
 
-    def create_rounds(self, rounds_number, players_number):
+    @staticmethod
+    def get_tournament_players(tournament_players_id):
+        """Initialise le dictionnaire des joueurs du tournoi avec leur id (PlayerModel) et le retourne."""
+        tournament_players = []
+        for tournament_player_id in tournament_players_id:
+            tournament_player = PlayerModel.get_player_by_id(tournament_player_id)
+            tournament_player["player_id"] = tournament_player_id
+            tournament_players.append(tournament_player)
+        return tournament_players
+
+    def create_rounds(self, rounds_number, players):
         """Crée la liste des instances tours (rondes) du tournoi.
 
-        Crée une instance de tour par numéro de tour (n° et nom de tour) et retourne la liste des instances de tours.
+        Initialise le compteur, la liste des tours, le joueur exempté si la liste est impaire, le dataframe des joueurs
+        triés par Classement (si classement identique->nom), la liste triée des id des joueurs et le booléen impair.
+        Si la liste des id de joueurs est impaire, initialise l'id du joueur exempté.
+        Crée une instance de tour par numéro de tour (n° et nom de tour + nb de matchs pour le premier tour)
+        Retourne le joueur exempté du tour, la liste des instances de tours
+        et la liste des id de joueurs triés par classement.
         """
-        count = 0
-        rounds = []
+        count: int = 0
+        rounds: list = []
+        round_player_exempt_id: int = 0
+        tournament_players_df = self.show_tournament_players(players, sort="Classement")
+        sorted_tournament_players_id: list = list(tournament_players_df.index.values)
+        impair: bool = self.impair(sorted_tournament_players_id)
+
+        if impair:
+            round_player_exempt_id = sorted_tournament_players_id[-1]
+
         for round_number in range(0, rounds_number):
             count += 1
-            round = RoundModel(
+            if count == 1:
+                matches_number = len(players) // 2
+            else:
+                matches_number = None
+            round = Round(
                 round_number=count,
                 round_name=f"Round {count}",
-                matchs_number=players_number//2
+                matches_number=matches_number,
+                matches=[]
             )
             rounds.append(round)
-        return rounds
+        return round_player_exempt_id, rounds, sorted_tournament_players_id
+
+    def extract_exempted_player(self, players_standings_grid):
+        """Extrait le joueur exempté de la liste des joueurs du round et retourne le joueur et la liste paire."""
+        for player in players_standings_grid:
+            if player['exempted_round'] == 1:
+                players_standings_grid.remove(player)
+                return player, players_standings_grid
+
+    def create_round_opponent(self, players_standings_grid):
+        """Crée l'appariement des joueurs d'un tour selon le système suisse.
+
+        Initialise le nombre de matchs, le booléen impair, le joueur exempté et la liste paire,
+        les listes de joueurs par niveau, la liste des paires de joueurs et le compteur.
+        Extrait le joueur exempté et la liste paire le cas échéant.
+        Divise les joueurs en deux moitiés, une supérieure et une inférieure.
+        Assigne l'adversaire du round à chaque joueur et crée les couples de joueurs par force
+         (boucle sur les 1ers joueurs de chaque liste).
+        Assigne l'adversaire du round.
+        Ajoute le couple joueur exempté-description.
+        Retourne la liste des joueurs mise à jour des adversaires du tour.
+        """
+        matches_number = len(players_standings_grid) // 2
+        impair: bool = self.impair(players_standings_grid)
+        exempted_player = None
+        even_players = players_standings_grid
+        strong_players = []
+        week_players = []
+        updated_opponents_players = []
+        count = 0
+
+        if impair:
+            extract_exempted_player = self.extract_exempted_player(players_standings_grid)
+            exempted_player = extract_exempted_player[0]
+            even_players = extract_exempted_player[1]
+
+        for player in even_players:
+            count += 1
+            if count <= matches_number:
+                strong_players.append(player)
+            else:
+                week_players.append(player)
+
+        for match_number in range(0, matches_number):
+            player_1 = strong_players[0]
+            player_1_id = player_1["player_id"]
+            player_1_rounds_opponents = player_1["rounds_opponents"]
+            player_2 = week_players[0]
+            player_2_id = player_2["player_id"]
+            player_2_rounds_opponents = player_2["rounds_opponents"]
+            player_1_rounds_opponents.append(player_2_id)
+            player_2_rounds_opponents.append(player_1_id)
+            strong_players.remove(strong_players[0])
+            week_players.remove(week_players[0])
+            updated_opponents_players.append(player_1)
+            updated_opponents_players.append(player_2)
+
+        if impair:
+            exempted_player_rounds_opponents = exempted_player["rounds_opponents"]
+            exempted_player_rounds_opponents.append(0)
+            updated_opponents_players.append(exempted_player)
+
+        return updated_opponents_players
+
+    def create_players_standings_grid(self, created_rounds, saved_tournament_id):
+        """Crée la grille des scores du tournoi.
+
+        Initialise l'id du joueur exempté du premier tour, la liste des id des joueurs triés par classement,
+        la liste triée des joueurs du tournoi cherchés par id, le compteur et la liste des joueurs de la grille.
+        Crée la liste des joueurs de la grille triés par place dans le tournoi
+        (place, nom complet, scores, exempté, adversaires, id)
+        Crée la liste des joueurs appariés pour le tour avec gestion du joueur impair pour les joueurs de la grille.
+        Crée l'objet joueur de la grille et la liste des objets joueurs de la grille.
+        Retourne la liste des objets joueurs de la grille.
+        """
+        round_player_exempt_id = created_rounds[0]
+        sorted_tournament_players_id = created_rounds[2]
+        sorted_tournament_players: list = self.get_tournament_players(sorted_tournament_players_id)
+        count = 0
+        players_standings_grid: list = []
+
+        for tournament_player in sorted_tournament_players:
+            count += 1
+            player_rank = count
+            player_name = f"{tournament_player['firstname']} {tournament_player['lastname']}"
+            rounds_scores = 0
+            if tournament_player['player_id'] == round_player_exempt_id:
+                exempted_round = 1
+            else:
+                exempted_round = 0
+            player_id = int(tournament_player["player_id"])
+
+            player_standings_grid = {
+                "player_rank": player_rank,
+                "player_name": player_name,
+                "rounds_scores": rounds_scores,
+                "exempted_round": exempted_round,
+                "rounds_opponents": [],
+                "player_id": player_id,
+                "saved_tournament_id": saved_tournament_id
+            }
+            players_standings_grid.append(player_standings_grid)
+
+        updated_opponents_players = self.create_round_opponent(players_standings_grid)
+        players_standings_grid = []
+
+        for updated_opponents_player in updated_opponents_players:
+            player_standings_grid = PlayerStandingsGrid(
+                updated_opponents_player["player_rank"],
+                updated_opponents_player["player_name"],
+                updated_opponents_player["rounds_scores"],
+                updated_opponents_player["exempted_round"],
+                updated_opponents_player["rounds_opponents"],
+                updated_opponents_player["player_id"],
+                updated_opponents_player["saved_tournament_id"]
+            )
+            players_standings_grid.append(player_standings_grid)
+
+        return players_standings_grid
 
     def create_tournament(self):
         """Créer un tournoi.
 
         Initialise le tournoi.
-        Formate les datetime, crée la liste des joueurs et celle des tours.
+        Formate les data, crée la liste des joueurs, celle des tours, et la grille de scores.
         Crée le tournoi.
         Propose de sauvegarder le tournoi (Y) ou de modifier un champ (N):
             Si oui (Y) : Sauvegarde le tournoi et initialise l'id du tournoi sauvegardé.
-            Si non (N) : Tant que l'id n'existe pas, propose la modification d'un champ et boucle sur la sauvegarde
-        Retourne l'id du tournoi créé ou quitte le programme
+            Si non (N) : Tant que l'id n'existe pas, propose de quitter le programme
+            ou de modifier un champ et boucle sur la sauvegarde
+        Crée la grille des scores des joueurs du tournoi.
+        Retourne l'id du tournoi créé.
         """
         tournament_input: dict = TournamentView.tournament_input(self.view)
+
         tournament_input["start_date"] = tournament_input["start_date"].strftime('%Y-%m-%d')
         tournament_input["end_date"] = tournament_input["end_date"].strftime('%Y-%m-%d')
-        tournament_input["rounds"] = self.create_rounds(tournament_input["rounds_number"], tournament_input["players"])
-        tournament_input["players"] = self.create_tournament_players(tournament_input["players"])
+
+        tournament_players = self.create_tournament_players(tournament_input["players"])
+        tournament_input["players"] = tournament_players
+
+        created_rounds = self.create_rounds(tournament_input["rounds_number"], tournament_input["players"])
+        rounds = created_rounds[1]
+        tournament_input["rounds"] = rounds
+
         tournament = TournamentModel(
             tournament_input["name"],
             tournament_input["location"],
@@ -116,7 +308,7 @@ class TournamentController:
             tournament_input["description"],
             tournament_input["players"],
             tournament_input["rounds_number"],
-            tournament_input["rounds"]
+            tournament_input["rounds"],
         )
         saved_tournament_id = self.save_tournament(tournament)
 
@@ -158,28 +350,12 @@ class TournamentController:
             else:
                 print("ERREUR: La création du tournoi a échoué, veuillez relancer le programme.")
                 exit()
+
+        # sortir la fonction de la création du tournoi
+        players_standings_grid = self.create_players_standings_grid(created_rounds, saved_tournament_id)
+        PlayerStandingsGrid.save_players_standings_grid(players_standings_grid)
+
         return saved_tournament_id
-
-    @staticmethod
-    def save_tournament(tournament):
-        """Sauvegarde le tournoi.
-
-        Affiche les données saisies.
-        Initialise la demande de sauvegarde des données
-        Si la sauvegarde est demandée :
-            Initialise l'id du tournoi sauvegardé
-            Affiche le tournoi sauvegardé et retourne son id, ou affiche un message d'erreur et quitte le programme
-        """
-        print(f"\nVous allez créer le tournoi :\n {tournament}")
-        save_tournament_request = TournamentView.ask_save_tournament()
-        if save_tournament_request == "Y":
-            try:
-                saved_tournament_id: int = tournament.save_tournament()
-                print(f"Vous avez créé le tournoi n° {saved_tournament_id}:\n")
-                return saved_tournament_id
-            except RuntimeError:
-                print("ERREUR: L'enregistrement du tournoi a échoué, veuillez relancer le programme.")
-                exit()
 
     def start_tournament(self):
         """Lancer un tournoi.
@@ -201,46 +377,12 @@ class TournamentController:
             tournament_id = self.create_tournament()
             tournament = TournamentModel.unserialize_tournament(TournamentModel.get_tournament_by_id(tournament_id))
             if tournament.closed is False:
-                print(f"\nVous avez lancé le tournoi n° {tournament_id}:\n {tournament}\nVous pouvez maintenant y accéder depuis le MENU TOURNOIS - Gérer le tournoi en cours")
+                print(
+                    f"\nVous avez lancé le tournoi n° {tournament_id}:\n {tournament}\n"
+                    f"Vous pouvez maintenant y accéder depuis le MENU TOURNOIS - Gérer le tournoi en cours")
             else:
                 print("ERREUR: Le lancement du tournoi a échoué, veuillez relancer le programme.")
                 exit()
-
-    def player_pairing(self, tournament):
-        """Associe les joueurs dans le tour selon le système suisse d'appariement.
-
-        Initialise les listes de joueurs, le compteur.
-        Trie tous les joueurs en fonction de leur classement.
-        Demande si le tour doit etre lancé et si oui:
-            Scinde les joueurs en 2 groupes selon leur niveau.
-
-
-        Retourne l'appariement.
-        """
-        strong_group = []
-        week_group = []
-        count = 0
-
-
-        # ??? CONSERVER ?????Initialise et affiche le dataframe des joueurs du tournoi trié par classement.
-        round_players = self.show_tournament_players(tournament.players, sort="Classement")
-
-        # demande si le tour doit etre lancé
-        play_round = TournamentView.ask_play_round()
-        if play_round == "Y":
-            # pour chaque id de joueur du round dans le dataframe trié par classement.
-            for round_player_id in round_players.index.values:
-                count += 1
-                # si count est <= à la moitié du nombre de joueurs, ajoute le joueur à la liste des forts et ajoute le reste à la liste des faibles
-                if count <= (len(round_players.index) // 2):
-                    strong_group.append(round_player_id)
-                else:
-                    week_group.append(round_player_id)
-
-
-
-            pairing = strong_group, week_group
-            return pairing
 
     def manage_current_tournament(self):
         """Gérer le tournoi en cours.
@@ -248,39 +390,34 @@ class TournamentController:
         Initialise l'id du tournoi en cours.
         S'il en existe un :
             Initialise l'objet tournoi et l'affiche.
-            Initialise la liste des tours et l'affiche.
+            Initialise le tour à lancer.
+            Affiche le tour s'il en existe un.
 
-
-
-
-            Propose de clôturer le tournoi.
+                Lance le tour ou retourne au menu selon le choix.
+            Propose de clôturer le tournoi s'il n'existe plus de tours à jouer.
         Sinon :
-            Demande de créer un tournoi.
+            Affiche un message demandant de créer un tournoi.
         """
         tournament_id = TournamentModel.get_open_tournament()
         if tournament_id:
             tournament = TournamentModel.unserialize_tournament(TournamentModel.get_tournament_by_id(tournament_id))
             print(f"Vous gérez le tournoi n° {tournament_id}:\n {tournament}\n")
+            open_round = self.get_open_round(tournament)
+            if open_round:
+                print(f"Vous gérez le tour n° {open_round.round_number}:\n {open_round}\n")
 
-            print("pb affichage tour")
+                # Récupérer la fonction de création de la grille et afficher le PAIRING
+                if open_round.round_number == 1:
+                    print("pairing du tour 1")
+                else:
+                    pairing = 1
 
-            for round in tournament.rounds:
-                print(round)
-                print(type(round))
+                play_round = TournamentView.ask_play_round()
+                if play_round == "Y":
+                    print("Créer la fonction : self.start_round(open_round)")
 
-
-
-
-            # Apparie les joueurs dans le tour
-            pairing = self.player_pairing(tournament)
-            if pairing:
-                print(pairing)
-
-
-
-            #Si le dernier tour est terminé: propose de clôturer le tournoi
-            x = "z"
-            if x != "z":
+            else:
+                print("Tous les tours ont été joués.")
                 close_tournament = TournamentView.ask_close_tournament()
                 if close_tournament == "Y":
                     TournamentModel.close_tournament(tournament_id)
@@ -295,8 +432,9 @@ class TournamentController:
         Sinon : Retourne le dataframe des tournois.
         """
         tournaments = TournamentModel.get_all_tournaments()
-        if tournaments is None:
+        if len(tournaments) == 0:
             print("ERREUR: Aucun tournoi n'a été trouvé dans la table tournaments")
+            return False
         else:
             tournament_df = TournamentView.display_tournaments(tournaments)
             return tournament_df
@@ -312,29 +450,25 @@ class TournamentController:
         tournament_se = TournamentView.display_tournament_card(tournament_id, tournament)
         return tournament_se
 
-    @staticmethod
-    def show_tournament_players(tournament_players_id, sort=""):
+    def show_tournament_players(self, tournament_players_id, sort=""):
         """Afficher la liste des joueurs d'un tournoi par ordre alphabétique ou classement.
 
-        Initialise la liste des joueurs du tournoi.
         Initialise le type de tri.
+        Crée la liste des joueurs.
         Retourne le rapport de la liste des joueurs triée.
         """
-        tournament_players = []
         if sort == "":
             sort = PlayerView.ask_sort()
-        for tournament_player_id in tournament_players_id:
-            tournament_player = PlayerModel.get_player_by_id(tournament_player_id)
-            tournament_player["player_id"] = tournament_player_id
-            tournament_players.append(tournament_player)
-        report = PlayerView.display_sorted_df(sort, tournament_players)
+        tournament_players = self.get_tournament_players(tournament_players_id)
+        report = TournamentView.display_sorted_players_df(sort, tournament_players)
         return report
 
     @staticmethod
     def show_rounds(rounds):
         """Afficher la liste des tours d'un tournoi."""
         report = TournamentView.display_rounds(rounds)
-        if report is None:
+        if len(report) == 0:
             print("ERREUR: L'affichage a échoué")
+            return False
         else:
             return report
