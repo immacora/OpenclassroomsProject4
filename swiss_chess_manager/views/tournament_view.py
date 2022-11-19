@@ -10,7 +10,7 @@ class TournamentView:
 
     @staticmethod
     def name():
-        """Demande la saisie du du nom du tournoi et le retourne."""
+        """Demande la saisie du nom du tournoi et le retourne."""
         return pyip.inputStr(
             prompt="Saisir le nom du tournoi (caractères spéciaux interdits): ",
             blank=False,
@@ -63,7 +63,7 @@ class TournamentView:
         Si le résultat de l'input est un int, assigne la valeur saisie.
         Retourne le nombre de joueurs du tournoi
         """
-        players_number = 8
+        players_number = 3######################################## REMETTRE à 8 PAR DEFAUT
         players_number_input: int = pyip.inputNum(
             prompt="Saisir le nombre de joueurs ou valider (8 par défaut)",
             blank=True, min=2
@@ -105,7 +105,7 @@ class TournamentView:
 
     @staticmethod
     def ask_save_tournament():
-        """Retourne la réponse à la demande de sauvegarde des données dans le tournoi."""
+        """Demande de sauvegarde des données dans le tournoi."""
         return pyip.inputYesNo(
             prompt="\nVoulez-vous sauvegarder ce tournoi ? "
                    "Saisir 'N' (no) pour modifier un champ (liste des joueurs exclue) ou 'Y' (yes) pour sauvegarder "
@@ -115,7 +115,7 @@ class TournamentView:
 
     @staticmethod
     def ask_save_player_tournament():
-        """Retourne la réponse à la demande d'enregistrement du joueur dans le tournoi."""
+        """Demande d'enregistrement du joueur dans le tournoi."""
         return pyip.inputYesNo(
             prompt="\nConfirmer l'enregistrement du joueur dans le tournoi :\n"
                    "Saisir 'N' (no) pour revenir à la saisie ou 'Y' (yes) pour sauvegarder "
@@ -125,15 +125,24 @@ class TournamentView:
 
     @staticmethod
     def ask_play_round():
-        """Retourne la réponse à la demande de lancement du tour."""
+        """Demande de lancement du tour."""
         return pyip.inputYesNo(
             prompt="Voulez-vous lancer le tour ? Saisir 'Y' (yes) pour le lancer ou 'N' (no) pour revenir au menu\n",
             yesVal="Y", noVal="N"
         )
 
     @staticmethod
+    def ask_for_pairing():
+        """Demande de création de l'appariement."""
+        return pyip.inputYesNo(
+            prompt="Voulez-vous créer l'appariement du tour ? "
+                   "Saisir 'Y' (yes) pour le lancer ou 'N' (no) pour revenir au menu\n",
+            yesVal="Y", noVal="N"
+        )
+
+    @staticmethod
     def ask_close_tournament():
-        """Retourne la réponse à la demande de cloture du tournoi."""
+        """Demande de cloture du tournoi."""
         return pyip.inputYesNo(
             prompt="\nVoulez-vous cloturer le tournoi ? "
                    "(Attention, aucune modification ne pourra être effectuée ensuite) 'Y' (yes) / 'N' (no) ?\n",
@@ -142,7 +151,7 @@ class TournamentView:
 
     @staticmethod
     def ask_tournament_player_id():
-        """Retourne la réponse à la demande de saisie de l'id du joueur à inclure dans le tournoi."""
+        """Demande de saisie de l'id du joueur à inclure dans le tournoi."""
         tournament_player_id: int = pyip.inputNum(
             prompt="\nSaisir l'identifiant du joueur à inclure dans le tournoi: ", min=1
         )
@@ -150,7 +159,7 @@ class TournamentView:
 
     @staticmethod
     def select_tournament_player():
-        """Retourne la réponse à la demande de sélection ou création du joueur."""
+        """Demande de sélection ou création du joueur."""
         return pyip.inputChoice(
             prompt="Saisir 'S' pour sélectionner un joueur dans la liste, ou 'C' pour créer un joueur.\n",
             choices=["S", "C"]
