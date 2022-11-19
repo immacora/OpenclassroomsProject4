@@ -93,6 +93,11 @@ class TournamentModel:
             return open_tournament.doc_id
 
     @staticmethod
+    def update_tournament(label, field_to_update, tournament_id):
+        """Met à jour la fiche du tournoi."""
+        TournamentModel.TOURNAMENTS_TABLE.update({label: field_to_update}, doc_ids=[tournament_id])
+
+    @staticmethod
     def get_all_tournaments():
         """Retourne la liste des tournois et leur id."""
         tournaments = db_functions.get_all_documents(TournamentModel.TOURNAMENTS_TABLE.all(), "tournament_id")
@@ -163,7 +168,7 @@ class TournamentModel:
 
 
 class PlayerStandingsGrid:
-    """Grille des scores des joueurs du tournoi."""
+    """Joueur de la grille des scores du tournoi."""
 
     PLAYERS_STANDINGS_GRID_TABLE = db_functions.players_standings_grid_table()
 
@@ -193,7 +198,7 @@ class PlayerStandingsGrid:
         return unserialized_player_standings_grid
 
     def __str__(self):
-        """Représentation de l'objet grille des scores sous forme de chaîne de caractères."""
+        """Représentation de l'objet joueur de la grille des scores sous forme de chaîne de caractères."""
         player_standings_grid: str = \
             f"Place du joueur dans le tournoi : {self.player_rank}\n"\
             f"Nom du joueur : {self.player_name}\n"\
@@ -201,7 +206,7 @@ class PlayerStandingsGrid:
             f"Exempté du round n° : {self.exempted_round}\n"\
             f"Adversaires du joueur (par ordre de tour): {self.rounds_opponents}\n"\
             f"Identifiant du joueur : {self.player_id}\n"\
-            f"Identifiant du tournoi : {self.tournament_id}"
+            f"Identifiant du tournoi : {self.tournament_id}\n"
         return player_standings_grid
 
     def serialize_player_standings_grid(self):
