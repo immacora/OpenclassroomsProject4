@@ -173,7 +173,7 @@ class PlayerStandingsGrid:
     PLAYERS_STANDINGS_GRID_TABLE = db_functions.players_standings_grid_table()
 
     def __init__(self, player_rank, player_name,
-                 rounds_scores, exempted_round, rounds_opponents, player_id, tournament_id):
+                 rounds_scores, exempted_round, rounds_opponents, player_id, tournament_id, closed=False):
         """Initialise le joueur de la grille."""
         self.player_rank: int = player_rank
         self.player_name: str = player_name
@@ -182,6 +182,7 @@ class PlayerStandingsGrid:
         self.rounds_opponents: list = rounds_opponents
         self.player_id: int = player_id
         self.tournament_id: int = tournament_id
+        self.closed = closed
 
     @staticmethod
     def unserialize_player_standings_grid(serialized_player_standings_grid):
@@ -193,7 +194,8 @@ class PlayerStandingsGrid:
             exempted_round=serialized_player_standings_grid["exempted_round"],
             rounds_opponents=serialized_player_standings_grid["rounds_opponents"],
             player_id=serialized_player_standings_grid["player_id"],
-            tournament_id=serialized_player_standings_grid["tournament_id"]
+            tournament_id=serialized_player_standings_grid["tournament_id"],
+            closed=serialized_player_standings_grid["closed"]
         )
         return unserialized_player_standings_grid
 
@@ -206,7 +208,8 @@ class PlayerStandingsGrid:
             f"Exempté du round n° : {self.exempted_round}\n"\
             f"Adversaires du joueur (par ordre de tour): {self.rounds_opponents}\n"\
             f"Identifiant du joueur : {self.player_id}\n"\
-            f"Identifiant du tournoi : {self.tournament_id}\n"
+            f"Identifiant du tournoi : {self.tournament_id}\n"\
+            f"Archivé : {self.closed}"
         return player_standings_grid
 
     def serialize_player_standings_grid(self):
@@ -218,7 +221,8 @@ class PlayerStandingsGrid:
             "exempted_round": self.exempted_round,
             "rounds_opponents": self.rounds_opponents,
             "player_id": self.player_id,
-            "tournament_id": self.tournament_id
+            "tournament_id": self.tournament_id,
+            "closed": self.closed
         }
         return serialized_player_standings_grid
 
@@ -235,3 +239,16 @@ class PlayerStandingsGrid:
             serialized_players_standings_grid
         )
         return players_standings_grid_id
+
+    @staticmethod
+    def get_open_players_standings_grid():
+        """Retourne la liste des id des joueurs de la grille des scores en cours."""
+        players_standings_grid_query = db_functions.Query()
+        open_players_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.search(players_standings_grid_query.closed == False) # ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
+        if open_players_standings_grid:
+            return open_players_standings_grid
+
+    @staticmethod
+    def close_players_standings_grid(players_standings_grid_ids):
+        """Clôture la fiche des joueurs de la grille de scores du tournoi."""
+        PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.update({"closed": True}, doc_ids=[players_standings_grid_ids])

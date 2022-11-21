@@ -388,13 +388,16 @@ class TournamentController:
             Si c'est le premier tour:
                 Affiche le numéro du tour.
                 Selon le choix, retourne au menu ou crée l'appariement du premier tour
-                avec la liste des tours à lancer et la liste des joueurs appariés de la grille des scores.
+                avec la liste des tours à lancer et la liste des joueurs appariés de la grille des scores (sauvegardés).
                 Affiche l'appariement des joueurs.
-
+                Lance le tour ou retourne au menu selon le choix.
+            Si tous les tours sont fermés, propose de clôturer le tournoi (tournoi + joueurs de la grille) ou de retourner au menu.
+            Sinon:
+                Affiche le tour en cours
 
 
                 Lance le tour ou retourne au menu selon le choix.
-            Propose de clôturer le tournoi s'il n'existe plus de tours à jouer.
+
         Sinon :
             Affiche un message demandant de créer un tournoi.
         """
@@ -403,22 +406,7 @@ class TournamentController:
             tournament = TournamentModel.unserialize_tournament(TournamentModel.get_tournament_by_id(tournament_id))
             print(f"Vous gérez le tournoi n° {tournament_id}:\n {tournament}\n")
 
-
-
-            # ATTENTION PLACE DE LA FONCTION = else:
-            #récupère les joueurs de la grille SOUS FORME DE DICO POUR LE DATAFRAME
-            players_standings_grid = PlayerStandingsGrid.get_open_players_standings_grid()
-            print("get_open_players_standings_grid", players_standings_grid)
-
-            print("Afficher l'appariement du tour\n\n")
-            self.show_pairing(players_standings_grid, tournament)
-
-            print("show_pairing")
-
-
-
-
-            """open_round = self.get_open_round(tournament)
+            open_round = self.get_open_round(tournament)
             if not open_round and len(tournament.rounds) == 0:
                 print(f"Vous gérez le tour n° 1:\n")
                 pairing = TournamentView.ask_for_pairing()
@@ -433,52 +421,38 @@ class TournamentController:
 
                     players_standings_grid = self.create_players_standings_grid(created_rounds, tournament_id)
                     PlayerStandingsGrid.save_players_standings_grid(players_standings_grid)
-
-                    print("Afficher l'appariement du tour\n\n")
                     self.show_pairing(players_standings_grid, tournament)
 
-                    print("show_pairing")
-
-
-
-                    print(*players_standings_grid)
-
-
-                    print("Créer la fonction : self.start_round(open_round) ou passer au else????")
-
-                    #RE GET le tournoi ????
-                    tournament = TournamentModel.unserialize_tournament(
-                        TournamentModel.get_tournament_by_id(tournament_id))
-                    print("tournament", tournament)
-
-
-
+                    play_round = TournamentView.ask_play_round()
+                    if play_round == "Y":
+                        print("Créer la fonction : self.start_round(open_round)")
 
             elif not open_round:
                 print("Tous les tours ont été joués.")
                 close_tournament = TournamentView.ask_close_tournament()
                 if close_tournament == "Y":
                     TournamentModel.close_tournament(tournament_id)
-                    ##################### FONCTION A TESTER+param=doit recevoir 1 liste d'id
-                    PlayerStandingsGrid.close_players_standings_grid(players_standings_grid_ids)
+                    ##################### FONCTION A CREER(param=liste d'id)
+                    #PlayerStandingsGrid.close_players_standings_grid(players_standings_grid_ids)
             else:
                 print(f"Vous gérez le tour n° {open_round.round_number}:\n {open_round}\n")
                 
                 # Récupérer la grille et afficher le PAIRING
+
+                #récupère les joueurs de la grille SOUS FORME DE DICO POUR LE DATAFRAME
                 players_standings_grid = PlayerStandingsGrid.get_open_players_standings_grid()
+                #print("get_open_players_standings_grid", players_standings_grid)
 
+                self.show_pairing(players_standings_grid, tournament)
 
+                print("show_pairing")
+                ################################
 
                 
                 # Demander de lancer le tour
                 play_round = TournamentView.ask_play_round()
                 if play_round == "Y":
-                    print("Créer la fonction : self.start_round(open_round)")"""
-
-
-
-
-
+                    print("Créer la fonction : self.start_round(open_round)")
 
 
         else:
@@ -576,7 +550,7 @@ class TournamentController:
                 pairing.remove(player)
         for player in pairing:
             count += 1
-            player_df = {"Appariement": count,
+            player_df = {"Match": count,
                          "Joueur 1": player["player_name"],
                          "Joueur 2": player["round_opponent_name"]
                          }

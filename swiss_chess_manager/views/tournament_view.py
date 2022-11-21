@@ -234,10 +234,9 @@ class TournamentView:
         current_round_name = pairing[1]
         pairing_df = pairing[2]
         players_standings_grid_df = pd.DataFrame(pairing_df)
-        players_standings_grid_df.set_index("Appariement", inplace=True)
-        print(f"{tournament_name}, {current_round_name}, appariement :\n{players_standings_grid_df}")
+        players_standings_grid_df.set_index("Match", inplace=True)
+        print(f"{tournament_name}, {current_round_name}, appariement :\n\n{players_standings_grid_df}")
         return players_standings_grid_df
-
 
     @staticmethod
     def display_rounds(rounds):
