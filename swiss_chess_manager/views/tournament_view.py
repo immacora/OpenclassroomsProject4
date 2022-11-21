@@ -201,7 +201,8 @@ class TournamentView:
     def display_sorted_players_df(sort, tournament_players):
         """Affiche le dataframe des joueurs du tournoi par ordre alphabétique ou classement.
 
-        Initialise le dataframe, renomme, réorganise ses colonnes (index = identifiants), le trie et retourne la version de tri demandé.
+        Initialise le dataframe, renomme, réorganise ses colonnes (index = identifiants),
+        le trie et retourne la version de tri demandée.
         """
         players_df = pd.DataFrame(tournament_players)
         players_df.rename(
@@ -221,6 +222,22 @@ class TournamentView:
             return sorted_df
         else:
             print("ERREUR: L'affichage a échoué")
+
+    @staticmethod
+    def display_pairing(pairing):
+        """Affiche l'appariement des joueurs de la grille des scores.
+
+        Initialise le nom du tournoi, du tour, la liste des joueurs du dataframe et le dataframe.
+        Remplace l'index, affiche le dataframe et le retourne.
+        """
+        tournament_name = pairing[0]
+        current_round_name = pairing[1]
+        pairing_df = pairing[2]
+        players_standings_grid_df = pd.DataFrame(pairing_df)
+        players_standings_grid_df.set_index("Appariement", inplace=True)
+        print(f"{tournament_name}, {current_round_name}, appariement :\n{players_standings_grid_df}")
+        return players_standings_grid_df
+
 
     @staticmethod
     def display_rounds(rounds):
