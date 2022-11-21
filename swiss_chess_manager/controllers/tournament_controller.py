@@ -211,62 +211,6 @@ class TournamentController:
 
         return updated_opponents_players
 
-    def create_players_standings_grid(self, created_rounds, saved_tournament_id):
-        """Crée les joueurs de la grille des scores du tournoi.
-
-        Initialise l'id du joueur exempté du premier tour, la liste des id des joueurs triés par classement,
-        la liste triée des joueurs du tournoi cherchés par id, le compteur et la liste des joueurs de la grille.
-        Crée la liste des joueurs de la grille triés par place dans le tournoi
-        (place, nom complet, scores, exempté, adversaires, id)
-        Crée la liste des joueurs appariés pour le tour avec gestion du joueur impair pour les joueurs de la grille.
-        Crée l'objet joueur de la grille et la liste des objets joueurs de la grille.
-        Retourne la liste des objets joueurs de la grille.
-        """
-        round_player_exempt_id = created_rounds[0]
-        sorted_tournament_players_id = created_rounds[2]
-        sorted_tournament_players: list = self.get_tournament_players(sorted_tournament_players_id)
-        count = 0
-        players_standings_grid: list = []
-
-        for tournament_player in sorted_tournament_players:
-            count += 1
-            player_rank = count
-            player_name = f"{tournament_player['firstname']} {tournament_player['lastname']}"
-            rounds_scores = 0
-            if tournament_player["player_id"] == round_player_exempt_id:
-                exempted_round = 1
-            else:
-                exempted_round = 0
-            player_id = int(tournament_player["player_id"])
-
-            player_standings_grid = {
-                "player_rank": player_rank,
-                "player_name": player_name,
-                "rounds_scores": rounds_scores,
-                "exempted_round": exempted_round,
-                "rounds_opponents": [],
-                "player_id": player_id,
-                "saved_tournament_id": saved_tournament_id
-            }
-            players_standings_grid.append(player_standings_grid)
-
-        updated_opponents_players = self.create_round_opponent(players_standings_grid)
-        players_standings_grid = []
-
-        for updated_opponents_player in updated_opponents_players:
-            player_standings_grid = PlayerStandingsGrid(
-                updated_opponents_player["player_rank"],
-                updated_opponents_player["player_name"],
-                updated_opponents_player["rounds_scores"],
-                updated_opponents_player["exempted_round"],
-                updated_opponents_player["rounds_opponents"],
-                updated_opponents_player["player_id"],
-                updated_opponents_player["saved_tournament_id"]
-            )
-            players_standings_grid.append(player_standings_grid)
-
-        return players_standings_grid
-
     def create_tournament(self):
         """Créer un tournoi.
 
@@ -378,6 +322,62 @@ class TournamentController:
             if open_round.closed is False:
                 return open_round
 
+    def create_players_standings_grid(self, created_rounds, saved_tournament_id):
+        """Crée les joueurs de la grille des scores du tournoi.
+
+        Initialise l'id du joueur exempté du premier tour, la liste des id des joueurs triés par classement,
+        la liste triée des joueurs du tournoi cherchés par id, le compteur et la liste des joueurs de la grille.
+        Crée la liste des joueurs de la grille triés par place dans le tournoi
+        (place, nom complet, scores, exempté, adversaires, id)
+        Crée la liste des joueurs appariés pour le tour avec gestion du joueur impair pour les joueurs de la grille.
+        Crée l'objet joueur de la grille et la liste des objets joueurs de la grille.
+        Retourne la liste des objets joueurs de la grille.
+        """
+        round_player_exempt_id = created_rounds[0]
+        sorted_tournament_players_id = created_rounds[2]
+        sorted_tournament_players: list = self.get_tournament_players(sorted_tournament_players_id)
+        count = 0
+        players_standings_grid: list = []
+
+        for tournament_player in sorted_tournament_players:
+            count += 1
+            player_rank = count
+            player_name = f"{tournament_player['firstname']} {tournament_player['lastname']}"
+            rounds_scores = 0
+            if tournament_player["player_id"] == round_player_exempt_id:
+                exempted_round = 1
+            else:
+                exempted_round = 0
+            player_id = int(tournament_player["player_id"])
+
+            player_standings_grid = {
+                "player_rank": player_rank,
+                "player_name": player_name,
+                "rounds_scores": rounds_scores,
+                "exempted_round": exempted_round,
+                "rounds_opponents": [],
+                "player_id": player_id,
+                "saved_tournament_id": saved_tournament_id
+            }
+            players_standings_grid.append(player_standings_grid)
+
+        updated_opponents_players = self.create_round_opponent(players_standings_grid)
+        players_standings_grid = []
+
+        for updated_opponents_player in updated_opponents_players:
+            player_standings_grid = PlayerStandingsGrid(
+                updated_opponents_player["player_rank"],
+                updated_opponents_player["player_name"],
+                updated_opponents_player["rounds_scores"],
+                updated_opponents_player["exempted_round"],
+                updated_opponents_player["rounds_opponents"],
+                updated_opponents_player["player_id"],
+                updated_opponents_player["saved_tournament_id"]
+            )
+            players_standings_grid.append(player_standings_grid)
+
+        return players_standings_grid
+
     def manage_current_tournament(self):
         """Gérer le tournoi en cours.
 
@@ -385,14 +385,14 @@ class TournamentController:
         S'il en existe un :
             Initialise l'objet tournoi et l'affiche.
             Initialise le tour en cours.
-            Si c'est le premier tour:
-                Affiche le numéro du tour.
+            Si aucun tour n'existe (premier tour):
+                Affiche "tour 1".
                 Selon le choix, retourne au menu ou crée l'appariement du premier tour
                 avec la liste des tours à lancer et la liste des joueurs appariés de la grille des scores (sauvegardés).
                 Affiche l'appariement des joueurs.
                 Lance le tour ou retourne au menu selon le choix.
             Si tous les tours sont fermés, propose de clôturer le tournoi (tournoi + joueurs de la grille) ou de retourner au menu.
-            Sinon:
+            Sinon (autres tours):
                 Affiche le tour en cours
 
 
@@ -421,11 +421,15 @@ class TournamentController:
 
                     players_standings_grid = self.create_players_standings_grid(created_rounds, tournament_id)
                     PlayerStandingsGrid.save_players_standings_grid(players_standings_grid)
-                    self.show_pairing(players_standings_grid, tournament)
+                    serialized_player_standings_grid = PlayerStandingsGrid.serialize_players_standings_grid(
+                        players_standings_grid
+                    )
 
-                    play_round = TournamentView.ask_play_round()
-                    if play_round == "Y":
-                        print("Créer la fonction : self.start_round(open_round)")
+                    self.show_pairing(serialized_player_standings_grid, tournament)
+
+                    print(
+                        f"\nVous avez créé l'appariement du tour n° 1:\n"
+                        f"Vous pouvez maintenant le consulter et lancer le tour depuis le MENU TOURNOIS - Gérer le tournoi en cours")
 
             elif not open_round:
                 print("Tous les tours ont été joués.")
@@ -530,9 +534,13 @@ class TournamentController:
 
         for round in tournament.rounds:
             if round.closed == False:
-                current_round_name =round.round_name
+                current_round_name = round.round_name
                 current_round_number = round.round_number
                 break
+        if current_round_number == 0:
+            current_round_name = "Round 1"
+            current_round_number = 1
+
         for player in players_standings_grid:
             round_opponent_id = player["rounds_opponents"][current_round_number-1]
             if player["exempted_round"] == 1:

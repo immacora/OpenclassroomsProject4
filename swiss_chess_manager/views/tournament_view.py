@@ -63,7 +63,7 @@ class TournamentView:
         Si le résultat de l'input est un int, assigne la valeur saisie.
         Retourne le nombre de joueurs du tournoi
         """
-        players_number = 3######################################## REMETTRE à 8 PAR DEFAUT
+        players_number = 8
         players_number_input: int = pyip.inputNum(
             prompt="Saisir le nombre de joueurs ou valider (8 par défaut)",
             blank=True, min=2
@@ -235,7 +235,7 @@ class TournamentView:
         pairing_df = pairing[2]
         players_standings_grid_df = pd.DataFrame(pairing_df)
         players_standings_grid_df.set_index("Match", inplace=True)
-        print(f"{tournament_name}, {current_round_name}, appariement :\n\n{players_standings_grid_df}")
+        print(f"\n{tournament_name}, {current_round_name}, appariement :\n\n{players_standings_grid_df}")
         return players_standings_grid_df
 
     @staticmethod
@@ -251,6 +251,7 @@ class TournamentView:
         )
         rounds_df.set_index("Numéro de tour", inplace=True)
         print(f"Liste des tours du tournoi:\n{rounds_df}")
+
         return rounds_df
 
     @staticmethod
@@ -262,7 +263,6 @@ class TournamentView:
         Affiche le tournoi.
         """
         tournament_se = pd.Series(tournament)
-        del tournament_se["standings_grid"]
         tournament_se.index = ["Nom", "Lieu", "Date de début", "Date de fin", "Cadence", "Description", "Joueurs",
                                "Nombre de tours", "Tours", "Archivé"]
         print(f"\nTournoi n° {tournament_id}:\n{tournament_se}")

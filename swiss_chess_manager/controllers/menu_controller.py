@@ -95,9 +95,12 @@ class MenuController:
                             restart = MenuView.ask_to_restart()
                     elif tournament_display_option == "Liste de tous les tours du tournoi":
                         rounds = report.get(key="Tours")
-                        report = TournamentController(TournamentModel, TournamentView).show_rounds(rounds)
-                        if report is not False:
-                            functions.save_report(report)
+                        if len(rounds) == 0:
+                            print("Pour afficher les tours du tournoi, lancez l'appariement des joueurs depuis le le MENU TOURNOIS - Gérer le tournoi en cours")
+                        else:
+                            report = TournamentController(TournamentModel, TournamentView).show_rounds(rounds)
+                            if report is not False:
+                                functions.save_report(report)
                     elif tournament_display_option == "Liste de tous les matchs du tournoi":
                         print("####################### AFFICHER la liste de tous les matchs d'un tournoi")
                 MenuController.run_menu()
