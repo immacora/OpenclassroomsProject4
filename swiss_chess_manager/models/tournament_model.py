@@ -212,6 +212,18 @@ class PlayerStandingsGrid:
             f"Archivé : {self.closed}"
         return player_standings_grid
 
+    @staticmethod
+    def serialize_players_standings_grid(players_standings_grid):
+        """Sérialise la liste des instances des joueurs de la grille."""
+
+        serialized_players_standings_grid = []
+        for player_standings_grid in players_standings_grid:
+            serialized_player_standings_grid = PlayerStandingsGrid.serialize_player_standings_grid(
+                player_standings_grid
+            )
+            serialized_players_standings_grid.append(serialized_player_standings_grid)
+        return serialized_players_standings_grid
+
     def serialize_player_standings_grid(self):
         """Sérialise l'instance du joueur de la grille dans un dictionnaire."""
         serialized_player_standings_grid: dict = {
@@ -232,7 +244,9 @@ class PlayerStandingsGrid:
         et retourne la liste d'id des joueurs de la grille."""
         serialized_players_standings_grid = []
         for player_standings_grid in players_standings_grid:
-            serialized_player_standings_grid = PlayerStandingsGrid.serialize_player_standings_grid(player_standings_grid)
+            serialized_player_standings_grid = PlayerStandingsGrid.serialize_player_standings_grid(
+                player_standings_grid
+            )
             serialized_players_standings_grid.append(serialized_player_standings_grid)
 
         players_standings_grid_id: int = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.insert_multiple(
