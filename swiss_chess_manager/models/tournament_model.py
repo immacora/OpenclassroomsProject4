@@ -256,13 +256,13 @@ class PlayerStandingsGrid:
 
     @staticmethod
     def get_open_players_standings_grid():
-        """Retourne la liste des id des joueurs de la grille des scores en cours."""
+        """Retourne la liste des joueurs de la grille des scores en cours."""
         players_standings_grid_query = db_functions.Query()
         open_players_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.search(players_standings_grid_query.closed == False) # ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
         if open_players_standings_grid:
             return open_players_standings_grid
 
     @staticmethod
-    def close_players_standings_grid(players_standings_grid_ids):
-        """Clôture la fiche des joueurs de la grille de scores du tournoi."""
-        PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.update({"closed": True}, doc_ids=[players_standings_grid_ids])
+    def close_players_standings_grid():
+        """Clôture les fiches des joueurs de la grille de scores en cours."""
+        PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.update({"closed": True})
