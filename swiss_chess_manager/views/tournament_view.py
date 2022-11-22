@@ -142,9 +142,9 @@ class TournamentView:
 
     @staticmethod
     def ask_close_tournament():
-        """Demande de cloture du tournoi."""
+        """Demande de clôture du tournoi."""
         return pyip.inputYesNo(
-            prompt="\nVoulez-vous cloturer le tournoi ? "
+            prompt="\nVoulez-vous clôturer le tournoi ? "
                    "(Attention, aucune modification ne pourra être effectuée ensuite) 'Y' (yes) / 'N' (no) ?\n",
             yesVal="Y", noVal="N"
         )
@@ -241,15 +241,23 @@ class TournamentView:
     @staticmethod
     def display_rounds(rounds):
         """Affiche les tours du tournoi.
-        Initialise le dataframe, renomme, réorganise ses colonnes (index = round_number) et le retourne.
+        Initialise le dataframe, renomme, réorganise ses colonnes (index = round_number),
+        remplit les valeurs manquantes avec 0, convertit le nombre de matchs en int et le retourne.
         """
         rounds_df = pd.DataFrame(rounds)
         rounds_df.rename(
-            columns={"round_number": "Numéro de tour", "round_name": "Nom du tour", "matchs_number": "Nombre de matchs", "matchs": "Liste des matchs",
-                     "start_datetime": "Date et heure de début", "end_datetime": "Date et heure de fin", "closed": "Archivé"},
+            columns={"round_number": "Numéro de tour",
+                     "round_name": "Nom du tour",
+                     "matches_number": "Nombre de matchs",
+                     "matches": "Liste des matchs",
+                     "start_datetime": "Date et heure de début",
+                     "end_datetime": "Date et heure de fin",
+                     "closed": "Archivé"},
             inplace=True
         )
         rounds_df.set_index("Numéro de tour", inplace=True)
+        rounds_df = rounds_df.fillna(0)
+        rounds_df["Nombre de matchs"] = rounds_df["Nombre de matchs"].astype(int)
         print(f"Liste des tours du tournoi:\n{rounds_df}")
 
         return rounds_df
