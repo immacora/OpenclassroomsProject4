@@ -189,8 +189,8 @@ class PlayerStandingsGrid:
         """Initialise le joueur de la grille."""
         self.player_rank: int = player_rank
         self.player_name: str = player_name
-        self.rounds_scores: list = rounds_scores#corriger : je veux une liste de dictionnaires
-        self.exempted: int = exempted#corrigé : je veux un statut true ou false pour exempt 1*du tournoi
+        self.rounds_scores: list = rounds_scores
+        self.exempted: int = exempted
         self.rounds_opponents: list = rounds_opponents
         self.player_id: int = player_id
         self.tournament_id: int = tournament_id
