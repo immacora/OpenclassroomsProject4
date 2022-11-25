@@ -6,13 +6,14 @@ class Round:
 
     TOURNAMENTS_TABLE = db_functions.tournaments_table()
 
-    def __init__(self, round_number, round_name, matches_number, matches=None, start_datetime="", end_datetime="",
+    def __init__(self, round_number, round_name, matches_number, matches=None, round_player_exempt_id=0, start_datetime="", end_datetime="",
                  closed=False):
         """Initialise le tour."""
         self.round_number: int = round_number
         self.round_name: str = round_name
         self.matches_number: int = matches_number
         self.matches: list = matches
+        self.round_player_exempt_id: int = round_player_exempt_id
         self.start_datetime: str = start_datetime
         self.end_datetime: str = end_datetime
         self.closed = closed
@@ -25,6 +26,7 @@ class Round:
             round_name=serialized_round["round_name"],
             matches_number=serialized_round["matches_number"],
             matches=serialized_round["matches"],
+            round_player_exempt_id=serialized_round["round_player_exempt_id"],
             start_datetime=serialized_round["start_datetime"],
             end_datetime=serialized_round["end_datetime"],
             closed=serialized_round["closed"]
@@ -42,6 +44,15 @@ class Round:
                      f"Archivé : {self.closed}"
         return round
 
+    @staticmethod
+    def serialize_rounds(rounds):
+        """Sérialise la liste des instances des joueurs de la grille."""
+        serialized_rounds = []
+        for round in rounds:
+            serialized_round = Round.serialize_round(round)
+            serialized_rounds.append(serialized_round)
+        return serialized_rounds
+
     def serialize_round(self):
         """Sérialise l'instance du tour dans un dictionnaire."""
         serialized_round: dict = {
@@ -49,6 +60,7 @@ class Round:
             "round_name": self.round_name,
             "matches_number": self.matches_number,
             "matches": self.matches,
+            "round_player_exempt_id": self.round_player_exempt_id,
             "start_datetime": self.start_datetime,
             "end_datetime": self.end_datetime,
             "closed": self.closed
@@ -168,21 +180,33 @@ class TournamentModel:
 
 
 class PlayerStandingsGrid:
-    """Joueur de la grille des scores du tournoi."""
+    """Joueur de la grille des scores du tournoi triés par place dans le tournoi (place, nom complet, liste des score par tour, exempté (booléen car 1 seule foi/tournoi), liste des adversaires par tour, id)."""
 
     PLAYERS_STANDINGS_GRID_TABLE = db_functions.players_standings_grid_table()
 
     def __init__(self, player_rank, player_name,
-                 rounds_scores, exempted_round, rounds_opponents, player_id, tournament_id, closed=False):
+                 rounds_scores, exempted, rounds_opponents, player_id, tournament_id, closed=False):
         """Initialise le joueur de la grille."""
         self.player_rank: int = player_rank
         self.player_name: str = player_name
-        self.rounds_scores: list = rounds_scores
-        self.exempted_round: int = exempted_round
+        self.rounds_scores: list = rounds_scores#corriger : je veux une liste de dictionnaires
+        self.exempted: int = exempted#corrigé : je veux un statut true ou false pour exempt 1*du tournoi
         self.rounds_opponents: list = rounds_opponents
         self.player_id: int = player_id
         self.tournament_id: int = tournament_id
         self.closed = closed
+
+    @staticmethod
+    def unserialize_players_standings_grid(serialized_players_standings_grid):
+        """Sérialise la liste des instances des joueurs de la grille."""
+
+        unserialized_players_standings_grid = []
+        for serialized_player_standings_grid in serialized_players_standings_grid:
+            unserialized_player_standings_grid = PlayerStandingsGrid.unserialize_player_standings_grid(
+                serialized_player_standings_grid
+            )
+            unserialized_players_standings_grid.append(unserialized_player_standings_grid)
+        return unserialized_players_standings_grid
 
     @staticmethod
     def unserialize_player_standings_grid(serialized_player_standings_grid):
@@ -191,7 +215,7 @@ class PlayerStandingsGrid:
             player_rank=serialized_player_standings_grid["player_rank"],
             player_name=serialized_player_standings_grid["player_name"],
             rounds_scores=serialized_player_standings_grid["rounds_scores"],
-            exempted_round=serialized_player_standings_grid["exempted_round"],
+            exempted=serialized_player_standings_grid["exempted"],
             rounds_opponents=serialized_player_standings_grid["rounds_opponents"],
             player_id=serialized_player_standings_grid["player_id"],
             tournament_id=serialized_player_standings_grid["tournament_id"],
@@ -204,9 +228,9 @@ class PlayerStandingsGrid:
         player_standings_grid: str = \
             f"Place du joueur dans le tournoi : {self.player_rank}\n"\
             f"Nom du joueur : {self.player_name}\n"\
-            f"Scores du joueur (par ordre de tour) : {self.rounds_scores}\n"\
-            f"Exempté du round n° : {self.exempted_round}\n"\
-            f"Adversaires du joueur (par ordre de tour): {self.rounds_opponents}\n"\
+            f"Scores du joueur : {self.rounds_scores}\n"\
+            f"Exempté lors du tournoi : {self.exempted}\n"\
+            f"Adversaires du joueur: {self.rounds_opponents}\n"\
             f"Identifiant du joueur : {self.player_id}\n"\
             f"Identifiant du tournoi : {self.tournament_id}\n"\
             f"Archivé : {self.closed}"
@@ -230,7 +254,7 @@ class PlayerStandingsGrid:
             "player_rank": self.player_rank,
             "player_name": self.player_name,
             "rounds_scores": self.rounds_scores,
-            "exempted_round": self.exempted_round,
+            "exempted": self.exempted,
             "rounds_opponents": self.rounds_opponents,
             "player_id": self.player_id,
             "tournament_id": self.tournament_id,
@@ -256,13 +280,33 @@ class PlayerStandingsGrid:
 
     @staticmethod
     def get_open_players_standings_grid():
-        """Retourne la liste des joueurs de la grille des scores en cours."""
+        """Retourne la liste des joueurs en cours."""
         players_standings_grid_query = db_functions.Query()
         open_players_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.search(players_standings_grid_query.closed == False) # ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
         if open_players_standings_grid:
             return open_players_standings_grid
 
     @staticmethod
+    def get_player_standings_grid_id(player_id):
+        """Retourne l'id du joueur de la grille du tournoi en cours par statut et id de joueur."""
+        players_standings_grid_query = db_functions.Query()
+        player_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.get(players_standings_grid_query.closed == False and players_standings_grid_query.player_id == player_id)
+        player_standings_grid_id = player_standings_grid.doc_id
+        return player_standings_grid_id
+
+    @staticmethod
+    def get_player_standings_grid(player_standings_grid_id):
+        """Retourne le joueur de la grille du tournoi cherché par id."""
+        serialized_player_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.get(doc_id=player_standings_grid_id)
+        return serialized_player_standings_grid
+
+    @staticmethod
+    def update_player_standings_grid(label, field_to_update, player_id):
+        """Met à jour la fiche du joueur."""
+        player_standings_grid_id = PlayerStandingsGrid.get_player_standings_grid_id(player_id)
+        PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.update({label: field_to_update}, doc_ids=[player_standings_grid_id])
+
+    @staticmethod
     def close_players_standings_grid():
-        """Clôture les fiches des joueurs de la grille de scores en cours."""
+        """Clôture les fiches des joueurs en cours."""
         PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.update({"closed": True})

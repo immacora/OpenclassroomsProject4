@@ -127,7 +127,7 @@ class TournamentView:
     def ask_play_round():
         """Demande de lancement du tour."""
         return pyip.inputYesNo(
-            prompt="Voulez-vous lancer le tour ? Saisir 'Y' (yes) pour le lancer ou 'N' (no) pour revenir au menu\n",
+            prompt="Voulez-vous lancer le tour (le lancement déclenchera l'horodatage) ? Saisir 'Y' (yes) pour le lancer ou 'N' (no) pour quitter le programme\n",
             yesVal="Y", noVal="N"
         )
 
@@ -147,6 +147,30 @@ class TournamentView:
             prompt="\nVoulez-vous clôturer le tournoi ? "
                    "(Attention, aucune modification ne pourra être effectuée ensuite) 'Y' (yes) / 'N' (no) ?\n",
             yesVal="Y", noVal="N"
+        )
+
+    @staticmethod
+    def ask_score(player_name):
+        """Demande la saisie du score."""
+        return pyip.inputMenu(
+            choices=["Gagnant", "Perdant", "Match nul"],
+            prompt=f"\nSaisir le résultat du joueur {player_name} (Attention, "
+                   f"aucune modification ne pourra être effectuée ensuite):\n", numbered=True
+        )
+
+    @staticmethod
+    def ask_exempted_score(player_name):
+        """Demande la saisie du score du joueur exempté."""
+        return pyip.inputFloat(
+            prompt=f"\nSaisir le score attribué au joueur exempté {player_name} (de 0 à 1): ", min=0, max=1
+        )
+
+    @staticmethod
+    def ask_close_round():
+        """Demande de clôture du tour."""
+        return pyip.inputYesNo(
+            prompt="\nSaisir 'Y' (yes) pour terminer le tour\n",
+            yesVal="Y"
         )
 
     @staticmethod
@@ -224,21 +248,6 @@ class TournamentView:
             print("ERREUR: L'affichage a échoué")
 
     @staticmethod
-    def display_pairing(pairing):
-        """Affiche l'appariement des joueurs de la grille des scores.
-
-        Initialise le nom du tournoi, du tour, la liste des joueurs du dataframe et le dataframe.
-        Remplace l'index, affiche le dataframe et le retourne.
-        """
-        tournament_name = pairing[0]
-        current_round_name = pairing[1]
-        pairing_df = pairing[2]
-        players_standings_grid_df = pd.DataFrame(pairing_df)
-        players_standings_grid_df.set_index("Match", inplace=True)
-        print(f"\n{tournament_name}, {current_round_name}, appariement :\n\n{players_standings_grid_df}")
-        return players_standings_grid_df
-
-    @staticmethod
     def display_rounds(rounds):
         """Affiche les tours du tournoi.
         Initialise le dataframe, renomme, réorganise ses colonnes (index = round_number),
@@ -261,6 +270,28 @@ class TournamentView:
         print(f"Liste des tours du tournoi:\n{rounds_df}")
 
         return rounds_df
+
+    @staticmethod
+    def display_pairing(round_name, pairing):
+        """Affiche l'appariement des joueurs.
+
+        Initialise le dataframe.
+        Initialise les noms de colonnes, remplace l'index, affiche le dataframe et le retourne.
+        """
+        columns_names = ["Match", "Joueur 1", "Joueur 2"]
+        pairing_df = pd.DataFrame(pairing, columns=columns_names)
+        pairing_df.set_index("Match", inplace=True)
+        print(f"\n{round_name}, appariement :\n\n{pairing_df}")
+        return pairing_df
+
+    @staticmethod
+    def display_matches(matches):
+        """Affiche les matchs du tournoi."""
+        matches_df = pd.DataFrame(matches)
+        pd.set_option('display.max_columns', None)
+        pd.set_option('display.max_rows', None)
+        print(f"Liste des matchs du tournoi:\n{matches_df}")
+        return matches_df
 
     @staticmethod
     def display_tournament_card(tournament_id, tournament):
