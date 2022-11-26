@@ -267,7 +267,7 @@ class TournamentController:
     @staticmethod
     def get_open_round(tournament_id):
         """Retourne l'objet tour (ronde) en cours."""
-        tournament = TournamentModel.get_tournament_by_id(tournament_id)
+        tournament = TournamentModel.unserialize_tournament(TournamentModel.get_tournament_by_id(tournament_id))
         rounds = tournament.rounds
         for open_round in rounds:
             if open_round.closed is False:
