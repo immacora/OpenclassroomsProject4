@@ -284,6 +284,7 @@ class TournamentView:
         print(f"\n{round_name}, appariement :\n\n{pairing_df}")
         return pairing_df
 
+
     @staticmethod
     def display_matches(matches):
         """Affiche les matchs du tournoi."""
