@@ -5,6 +5,7 @@ from swiss_chess_manager.controllers.player_controller import PlayerController
 from swiss_chess_manager.views.player_view import PlayerView
 from swiss_chess_manager.controllers import functions
 from datetime import datetime
+from operator import attrgetter
 
 
 class TournamentController:
@@ -288,7 +289,7 @@ class TournamentController:
             count += 1
             player_rank = count
             player_id = tournament_player
-            rounds_scores = []
+            tournament_score: float = 0.0
 
             player = PlayerModel.get_player_by_id(player_id)
             player_name = f"{player['firstname']} {player['lastname']}"
@@ -303,7 +304,7 @@ class TournamentController:
             player_standings_grid = PlayerStandingsGrid(
                 player_rank=player_rank,
                 player_name=player_name,
-                rounds_scores=rounds_scores,
+                tournament_score=tournament_score,
                 exempted=exempted,
                 rounds_opponents=[],
                 player_id=player_id,
@@ -315,42 +316,56 @@ class TournamentController:
 
         return players_standings_grid_id
 
-    def sorted_round_players(self, round_number):
-        """Trier la liste des joueurs de la grille par score puis rang."""
-        sorted_round_players = []
+    def sorted_round_players(self, tournament_id, round_number):
+        """Créer la liste triée des joueurs avec le joueur exempté si la liste est impaire.
 
-        if round_number == 1:
-            sorted_round_players = PlayerStandingsGrid.unserialize_players_standings_grid(
+        Initialise la liste des joueurs de la grille déjà triée pour le premier tour
+        (tri par classement + id joueur exempté), le tournoi, les rounds et le booléen impair.
+        Si le n° du round est différend de 1:
+            Trie la liste par place dans le tournoi, et si la liste est impaire, inverse l'ordre de tri, exempte le premier joueur non exempté du tournoi, boucle sur les tours pour ajouter son id dans le champ round_player_exempt_id du tour et inverse l'ordre de tri.
+        Retourne la liste triée.
+        """
+        sorted_round_players = PlayerStandingsGrid.unserialize_players_standings_grid(
                 PlayerStandingsGrid.get_open_players_standings_grid()
             )
-        else:
-            players_standings_grid = PlayerStandingsGrid.get_open_players_standings_grid()
+        tournament = TournamentModel.unserialize_tournament(TournamentModel.get_tournament_by_id(tournament_id))
+        rounds = tournament.rounds
+        impair: bool = self.impair(sorted_round_players)
 
-            print(players_standings_grid)
+        if round_number != 1:
+            sorted_round_players.sort(key=attrgetter("player_rank"))
 
-            for player_standings_grid in players_standings_grid:
-                player_standings_grid_score = player_standings_grid["rounds_scores"]
-                player_standings_grid_score[1]
+            if impair:
+                sorted_round_players.sort(key=attrgetter("player_rank"), reverse=True)
 
-                ####################### EN COURS ########################
-                # print(scores, "scores")
-                ####################### EN COURS ########################
+                for sorted_round_player in sorted_round_players:
 
-            TournamentView.display_sorted_round_players_df(players_standings_grid)
+                    if sorted_round_player.exempted == False:
+                        sorted_round_player.exempted = True
+                        PlayerStandingsGrid.update_player_standings_grid("exempted", True, sorted_round_player.player_id)
+                        for round in rounds:
+                            if round.round_number == round_number:
+                                round.round_player_exempt_id = sorted_round_player.player_id
+                                field_to_update = tournament.rounds
+                                field_to_update = Round.serialize_rounds(field_to_update)
+                                tournament.update_tournament("rounds", field_to_update, tournament_id)
+                                break
+                        break
+                sorted_round_players.sort(key=attrgetter("player_rank"))
 
         return sorted_round_players
 
     def create_match_pairing(self, tournament_id, round_number):
         """Crée l'appariement des joueurs d'un tour selon le système suisse.
 
-        Initialise l'id du joueur exempté du round, la liste paire des joueurs triés par place, les listes de joueurs par niveau, le nombre de matchs, la liste des appariements et le compteur.
+        Initialise l'id du joueur exempté du round, la liste des joueurs triés par place, les listes de joueurs par niveau, le nombre de matchs, la liste des appariements et le compteur.
         Récupère le joueur exempté du round en cours dans le tournoi, l'apparie avec "Exempté" et met à jour la liste de ses adversaires.
         Extrait le joueur exempté de la liste le cas échéant.
         Divise les joueurs en deux moitiés (une supérieure, une inférieure).
         Crée l'appariement des joueurs par force, met à jour la liste de ses adversaires, crée les matchs du tour et met à jour la liste des tours du tournoi.
         """
         exempted_round_player_id = None
-        sorted_round_players = self.sorted_round_players(round_number)
+        sorted_round_players = self.sorted_round_players(tournament_id, round_number)
         strong_players = []
         week_players = []
         matches_number = len(sorted_round_players) // 2
@@ -358,6 +373,7 @@ class TournamentController:
         count = 0
 
         tournament = TournamentModel.unserialize_tournament(TournamentModel.get_tournament_by_id(tournament_id))
+
         rounds = tournament.rounds
         for round in rounds:
             if round.round_number == round_number:
@@ -382,6 +398,9 @@ class TournamentController:
                 week_players.append(player)
 
         for match_number in range(0, matches_number):
+
+            # aller chercher la liste des adversaires
+
             player_1 = strong_players[0]
             player_1_id = player_1.player_id
             player_1_rounds_opponents = player_1.rounds_opponents
@@ -405,6 +424,7 @@ class TournamentController:
         for round in rounds:
             if round.round_number == round_number:
                 round.matches = matches_pairing
+                round.matches_number = matches_number
                 field_to_update = tournament.rounds
                 field_to_update = Round.serialize_rounds(field_to_update)
                 tournament.update_tournament("rounds", field_to_update, tournament_id)
@@ -423,20 +443,27 @@ class TournamentController:
     def start_round(self, open_round, tournament_id):
         """Lancer le tour en cours.
 
-        Initialise le tournoi et ses tours sérialisés, le numéro du dernier tour, celui en cours, la liste des appariements du tour et celle des matchs, l'horodatage de début du tour et de fin du tour.
+        Initialise le tournoi et ses tours sérialisés, le numéro du dernier tour, celui en cours, la liste des appariements du tour, celle des matchs et des scores, l'horodatage de début du tour et de fin du tour et le compteur.
         Construit la liste des paires de joueurs du tour en cours (+exempté), demande le score obtenu, enregistre les résultats dans les joueurs de la grille de scores et met à jour le round du tournoi.
+        Affiche les résultat du tour.
+        Trie le dataframe obtenu par score puis index (index = ancien placement dans le tournoi).
+        Boucle sur les valeurs du dataframe pour enregistrer le nouveau placement des joueurs.
         Si le n° du tour en cours est différent du dernier tour, crée l'appariement des joueurs pour le prochain tour.
         """
         tournament = TournamentModel.get_tournament_by_id(tournament_id)
-        last_round = tournament.rounds_number
-        current_round_number = open_round.round_number
+        last_round = tournament["rounds_number"]
         tournament_rounds = tournament["rounds"]
+
+        current_round_number = open_round.round_number
         current_round_name = open_round.round_name
         pairing_matches = open_round.matches
-        matches_round = []
+
+        round_matches = []
+        players_round_score = []
         start_datetime = datetime.now()
         TournamentView.ask_close_round()
         end_datetime = datetime.now()
+        count = 0
 
         for match in pairing_matches:
             player_1 = match[0]
@@ -450,36 +477,57 @@ class TournamentController:
             if player_2[0] == "Exempté":
                 player_2_name = "Exempté"
                 player_1_score = TournamentView.ask_exempted_score(player_1_name)
+                player_standings_grid_1_tournament_score = player_standings_grid_1["tournament_score"] + player_1_score
+                PlayerStandingsGrid.update_player_standings_grid(
+                    "tournament_score", player_standings_grid_1_tournament_score, player_1[0]
+                )
                 player_2_score = None
             else:
                 player_standings_grid_2 = PlayerStandingsGrid.get_player_standings_grid(
                     PlayerStandingsGrid.get_player_standings_grid_id(player_2[0])
                 )
                 player_2_name = player_standings_grid_2["player_name"]
+
                 player_1_score = self.convert_player_score(TournamentView.ask_score(player_1_name))
                 player_2_score = self.convert_player_score(TournamentView.ask_score(player_2_name))
 
-                player_standings_grid_1_rounds_scores = player_standings_grid_1["rounds_scores"]
-                player_standings_grid_1_rounds_scores.append([current_round_name, player_1_score])
+                player_standings_grid_1_tournament_score = player_standings_grid_1["tournament_score"] + player_1_score
+                PlayerStandingsGrid.update_player_standings_grid(
+                    "tournament_score", player_standings_grid_1_tournament_score, player_1[0]
+                )
 
-                PlayerStandingsGrid.update_player_standings_grid("rounds_scores", player_standings_grid_1_rounds_scores, player_1[0])
-
-                player_standings_grid_2_rounds_scores = player_standings_grid_2["rounds_scores"]
-                player_standings_grid_2_rounds_scores.append([current_round_name, player_2_score])
-
-                PlayerStandingsGrid.update_player_standings_grid("rounds_scores", player_standings_grid_2_rounds_scores, player_2[0])
+                player_standings_grid_2_tournament_score = player_standings_grid_2["tournament_score"] + player_2_score
+                PlayerStandingsGrid.update_player_standings_grid(
+                    "tournament_score", player_standings_grid_2_tournament_score, player_2[0]
+                )
 
             match = [player_1[0], player_1_score], [player_2[0], player_2_score]
-            matches_round.append(match)
+            round_matches.append(match)
+
+            players_round_score.append([player_1[0], player_1_score])
+            players_round_score.append([player_2[0], player_2_score])
 
         for tournament_round in tournament_rounds:
             if tournament_round["round_name"] == current_round_name:
-                tournament_round["matches"] = matches_round
+                tournament_round["matches"] = round_matches
                 tournament_round["start_datetime"] = start_datetime.strftime("%Y-%m-%d, %H:%M:%S")
                 tournament_round["end_datetime"] = end_datetime.strftime("%Y-%m-%d, %H:%M:%S")
                 tournament_round["closed"] = True
 
         TournamentModel.update_tournament("rounds", tournament["rounds"], tournament_id)
+
+        players_standings_grid_results_df = TournamentController.show_round_results(
+            current_round_name, players_round_score
+        )
+        sorted_players_standings_grid_results_df = players_standings_grid_results_df.sort_values(
+            by=["Score"], ascending=False
+        )
+        sorted_players_standings_grid_results = sorted_players_standings_grid_results_df.values
+
+        for sorted_player_standings_grid_results in sorted_players_standings_grid_results:
+            count += 1
+            player_id = sorted_player_standings_grid_results[1]
+            PlayerStandingsGrid.update_player_standings_grid("player_rank", count, player_id)
 
         if current_round_number != last_round:
             open_round = self.get_open_round(tournament_id)
@@ -645,6 +693,29 @@ class TournamentController:
             pairing.append(couple)
 
         report = TournamentView.display_pairing(round_name, pairing)
+        if len(report) == 0:
+            print("ERREUR: L'affichage a échoué")
+            return False
+        else:
+            functions.save_report(report)
+            return report
+
+    @staticmethod
+    def show_round_results(current_round_name, players_round_score):
+        """Construit le dataframe des scores du tour par joueur de la grille.
+
+        Initialise la liste des joueurs de la grille des scores.
+        Ajoute le champ de score du tour terminé au dictionnaire du joueur de la grille.
+        Initialise le rapport d'affichage des résultats du tour, propose sa sauvegarde et le retourne.
+        """
+        players_standings_grid = PlayerStandingsGrid.get_open_players_standings_grid()
+
+        for player_standings_grid in players_standings_grid:
+            for player_round_score in players_round_score:
+                if player_round_score[0] == player_standings_grid["player_id"]:
+                    player_standings_grid["player_round_score"] = player_round_score[1]
+
+        report = TournamentView.display_round_results(current_round_name, players_standings_grid)
         if len(report) == 0:
             print("ERREUR: L'affichage a échoué")
             return False

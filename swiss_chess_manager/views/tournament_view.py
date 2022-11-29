@@ -275,8 +275,8 @@ class TournamentView:
     def display_pairing(round_name, pairing):
         """Affiche l'appariement des joueurs.
 
-        Initialise le dataframe.
-        Initialise les noms de colonnes, remplace l'index, affiche le dataframe et le retourne.
+        Initialise les noms de colonnes du dataframe.
+        Initialise le dataframe, remplace l'index, affiche le dataframe et le retourne.
         """
         columns_names = ["Match", "Joueur 1", "Joueur 2"]
         pairing_df = pd.DataFrame(pairing, columns=columns_names)
@@ -284,6 +284,33 @@ class TournamentView:
         print(f"\n{round_name}, appariement :\n\n{pairing_df}")
         return pairing_df
 
+    @staticmethod
+    def display_round_results(round_name, players_standings_grid):
+        """Affiche l'appariement des joueurs.
+
+        Initialise les noms de colonnes du dataframe.
+        Initialise le dataframe.
+        Modifie les options d'affichage du dataframe.
+        Renomme les colonnes.
+        Remplace la colonne d'index par celle de la place du joueur dans le tournoi.
+        Affiche le dataframe et le retourne.
+        """
+        columns_names = ["player_rank", "player_name", "player_id", "player_round_score", "tournament_score"]
+        players_standings_grid_results_df = pd.DataFrame(players_standings_grid, columns=columns_names)
+        pd.set_option('display.max_columns', None)
+        pd.set_option('display.max_rows', None)
+        players_standings_grid_results_df.rename(
+            columns={
+                "player_rank": "Placement précédent",
+                "player_name": "Nom",
+                "player_id": "Joueur n°",
+                "tournament_score": "Score",
+                "player_round_score": "Score du tour"
+            },
+            inplace=True)
+        players_standings_grid_results_df.set_index("Placement précédent", inplace=True)
+        print(f"\n{round_name}, résultat :\n{players_standings_grid_results_df}")
+        return players_standings_grid_results_df
 
     @staticmethod
     def display_matches(matches):

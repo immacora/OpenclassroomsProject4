@@ -38,7 +38,6 @@ class Round:
         round: str = f"Tour n° {self.round_number}\n " \
                      f"Nom : {self.round_name}\n " \
                      f"Nombre de matchs : {self.matches_number}\n " \
-                     f"Liste des matchs : {self.matches}\n " \
                      f"Date et heure de début : {self.start_datetime}\n " \
                      f"Date et heure de fin : {self.end_datetime}\n " \
                      f"Archivé : {self.closed}"
@@ -180,16 +179,16 @@ class TournamentModel:
 
 
 class PlayerStandingsGrid:
-    """Joueur de la grille des scores du tournoi triés par place dans le tournoi (place, nom complet, liste des score par tour, exempté (booléen car 1 seule foi/tournoi), liste des adversaires par tour, id)."""
+    """Joueur de la grille des scores du tournoi triés par place dans le tournoi (place, nom complet, score au tournoi, exempté (booléen: 1 seule exemption/tournoi), liste des adversaires par tour, id)."""
 
     PLAYERS_STANDINGS_GRID_TABLE = db_functions.players_standings_grid_table()
 
     def __init__(self, player_rank, player_name,
-                 rounds_scores, exempted, rounds_opponents, player_id, tournament_id, closed=False):
+                 tournament_score, exempted, rounds_opponents, player_id, tournament_id, closed=False):
         """Initialise le joueur de la grille."""
         self.player_rank: int = player_rank
         self.player_name: str = player_name
-        self.rounds_scores: list = rounds_scores
+        self.tournament_score: float = tournament_score
         self.exempted: int = exempted
         self.rounds_opponents: list = rounds_opponents
         self.player_id: int = player_id
@@ -214,7 +213,7 @@ class PlayerStandingsGrid:
         unserialized_player_standings_grid = PlayerStandingsGrid(
             player_rank=serialized_player_standings_grid["player_rank"],
             player_name=serialized_player_standings_grid["player_name"],
-            rounds_scores=serialized_player_standings_grid["rounds_scores"],
+            tournament_score=serialized_player_standings_grid["tournament_score"],
             exempted=serialized_player_standings_grid["exempted"],
             rounds_opponents=serialized_player_standings_grid["rounds_opponents"],
             player_id=serialized_player_standings_grid["player_id"],
@@ -228,7 +227,7 @@ class PlayerStandingsGrid:
         player_standings_grid: str = \
             f"Place du joueur dans le tournoi : {self.player_rank}\n"\
             f"Nom du joueur : {self.player_name}\n"\
-            f"Scores du joueur : {self.rounds_scores}\n"\
+            f"Score du joueur : {self.tournament_score}\n"\
             f"Exempté lors du tournoi : {self.exempted}\n"\
             f"Adversaires du joueur: {self.rounds_opponents}\n"\
             f"Identifiant du joueur : {self.player_id}\n"\
@@ -253,7 +252,7 @@ class PlayerStandingsGrid:
         serialized_player_standings_grid: dict = {
             "player_rank": self.player_rank,
             "player_name": self.player_name,
-            "rounds_scores": self.rounds_scores,
+            "tournament_score": self.tournament_score,
             "exempted": self.exempted,
             "rounds_opponents": self.rounds_opponents,
             "player_id": self.player_id,
@@ -285,6 +284,13 @@ class PlayerStandingsGrid:
         open_players_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.search(players_standings_grid_query.closed == False) # ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
         if open_players_standings_grid:
             return open_players_standings_grid
+
+    @staticmethod
+    def get_player_standings_grid_name(player_id):
+        """Retourne le nom du joueur de la grille."""
+        player_standings_grid = PlayerStandingsGrid.get_player_standings_grid_id(PlayerStandingsGrid.get_player_standings_grid_id(player_id))
+        player_standings_grid_name = player_standings_grid["player_name"]
+        return player_standings_grid_name
 
     @staticmethod
     def get_player_standings_grid_id(player_id):
