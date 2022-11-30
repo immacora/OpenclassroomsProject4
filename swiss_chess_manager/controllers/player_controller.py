@@ -10,31 +10,8 @@ class PlayerController:
         self.model = model
         self.view = view
 
-    def add_new_player(self):
-        """Créer un joueur.
-
-        Initialise le joueur.
-        Formate la datetime.
-        Crée l'objet joueur.
-        Sauvegarde le joueur.
-        Affiche le joueur créé et retourne son id ou affiche un message d'erreur.
-        """
-        player_input: dict = PlayerView.player_input(self.view)
-        player_input["date_of_birth"] = player_input["date_of_birth"].strftime('%Y-%m-%d')
-        player = PlayerModel(player_input["lastname"],
-                             player_input["firstname"],
-                             player_input["date_of_birth"],
-                             player_input["gender"],
-                             player_input["rating"])
-        saved_player = player.save_player()
-
-        if saved_player is not None:
-            print(f"\nVous avez créé le joueur n° {saved_player}:\n {player}")
-            return saved_player
-        else:
-            print("L'enregistrement du joueur n'a pas été effectué")
-
-    def edit_player(self):
+    @staticmethod
+    def edit_player():
         """Modifier la fiche d'un joueur.
 
         Initialise l'identifiant cherché.
@@ -94,3 +71,27 @@ class PlayerController:
         else:
             report = PlayerView.display_sorted_df(sort, players)
             return report
+
+    def add_new_player(self):
+        """Créer un joueur.
+
+        Initialise le joueur.
+        Formate la datetime.
+        Crée l'objet joueur.
+        Sauvegarde le joueur.
+        Affiche le joueur créé et retourne son id ou affiche un message d'erreur.
+        """
+        player_input: dict = PlayerView.player_input(self.view)
+        player_input["date_of_birth"] = player_input["date_of_birth"].strftime('%Y-%m-%d')
+        player = PlayerModel(player_input["lastname"],
+                             player_input["firstname"],
+                             player_input["date_of_birth"],
+                             player_input["gender"],
+                             player_input["rating"])
+        saved_player = player.save_player()
+
+        if saved_player is not None:
+            print(f"\nVous avez créé le joueur n° {saved_player}:\n {player}")
+            return saved_player
+        else:
+            print("L'enregistrement du joueur n'a pas été effectué")

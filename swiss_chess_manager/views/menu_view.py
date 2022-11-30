@@ -60,6 +60,6 @@ class MenuView:
         """Demande de saisie de l'id du tournoi à afficher."""
         tournament_id: int = pyip.inputNum(
             prompt="Pour afficher le détail d'un tournoi (joueurs, tours, matchs), saisir son identifiant. "
-                   "Sinon, valider pour revenir au menu.",
+                   "Sinon, valider pour revenir au menu.\n",
             blank=True, min=1)
         return tournament_id

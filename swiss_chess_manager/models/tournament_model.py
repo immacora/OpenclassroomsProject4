@@ -6,8 +6,8 @@ class Round:
 
     TOURNAMENTS_TABLE = db_functions.tournaments_table()
 
-    def __init__(self, round_number, round_name, matches_number, matches=None, round_player_exempt_id=0, start_datetime="", end_datetime="",
-                 closed=False):
+    def __init__(self, round_number, round_name, matches_number,
+                 matches=None, round_player_exempt_id=0, start_datetime="", end_datetime="", closed=False):
         """Initialise le tour."""
         self.round_number: int = round_number
         self.round_name: str = round_name
@@ -35,25 +35,25 @@ class Round:
 
     def __str__(self):
         """Représentation de l'objet tour (ronde) sous forme de chaîne de caractères."""
-        round: str = f"Tour n° {self.round_number}\n " \
-                     f"Nom : {self.round_name}\n " \
-                     f"Nombre de matchs : {self.matches_number}\n " \
-                     f"Date et heure de début : {self.start_datetime}\n " \
-                     f"Date et heure de fin : {self.end_datetime}\n " \
-                     f"Archivé : {self.closed}"
-        return round
+        tournament_round: str = f"Tour n° {self.round_number}\n " \
+                                f"Nom : {self.round_name}\n " \
+                                f"Nombre de matchs : {self.matches_number}\n " \
+                                f"Date et heure de début : {self.start_datetime}\n " \
+                                f"Date et heure de fin : {self.end_datetime}\n " \
+                                f"Archivé : {self.closed}"
+        return tournament_round
 
     @staticmethod
     def serialize_rounds(rounds):
-        """Sérialise la liste des instances des joueurs de la grille."""
+        """Sérialise la liste des tours."""
         serialized_rounds = []
-        for round in rounds:
-            serialized_round = Round.serialize_round(round)
+        for tournament_round in rounds:
+            serialized_round = Round.serialize_round(tournament_round)
             serialized_rounds.append(serialized_round)
         return serialized_rounds
 
     def serialize_round(self):
-        """Sérialise l'instance du tour dans un dictionnaire."""
+        """Sérialise l'instance du tour."""
         serialized_round: dict = {
             "round_number": self.round_number,
             "round_name": self.round_name,
@@ -150,14 +150,14 @@ class TournamentModel:
                           f"Description : {self.description}\n " \
                           f"Joueurs : {self.players}\n " \
                           f"Nombre de tours : {self.rounds_number}\n " \
-                          f"Archivé : {self.closed}"
+                          f"Archivé : {self.closed}\n"
         return tournament
 
     def serialize_tournament(self):
-        """Sérialise l'instance du tournoi dans un dictionnaire."""
+        """Sérialise l'instance du tournoi."""
         serialized_rounds = []
-        for round in self.rounds:
-            serialized_rounds.append(Round.serialize_round(round))
+        for tournament_round in self.rounds:
+            serialized_rounds.append(Round.serialize_round(tournament_round))
         serialized_tournament: dict = {
             "name": self.name,
             "location": self.location,
@@ -179,7 +179,8 @@ class TournamentModel:
 
 
 class PlayerStandingsGrid:
-    """Joueur de la grille des scores du tournoi triés par place dans le tournoi (place, nom complet, score au tournoi, exempté (booléen: 1 seule exemption/tournoi), liste des adversaires par tour, id)."""
+    """Joueur de la grille des scores du tournoi (place, nom, score, exempté->booléen: 1 seule exemption/tournoi),
+    liste des adversaires par tour, id du joueur, id du tournoi, archivé)."""
 
     PLAYERS_STANDINGS_GRID_TABLE = db_functions.players_standings_grid_table()
 
@@ -225,13 +226,13 @@ class PlayerStandingsGrid:
     def __str__(self):
         """Représentation de l'objet joueur de la grille des scores sous forme de chaîne de caractères."""
         player_standings_grid: str = \
-            f"Place du joueur dans le tournoi : {self.player_rank}\n"\
-            f"Nom du joueur : {self.player_name}\n"\
-            f"Score du joueur : {self.tournament_score}\n"\
-            f"Exempté lors du tournoi : {self.exempted}\n"\
-            f"Adversaires du joueur: {self.rounds_opponents}\n"\
-            f"Identifiant du joueur : {self.player_id}\n"\
-            f"Identifiant du tournoi : {self.tournament_id}\n"\
+            f"Place du joueur dans le tournoi : {self.player_rank}\n" \
+            f"Nom du joueur : {self.player_name}\n" \
+            f"Score du joueur : {self.tournament_score}\n" \
+            f"Exempté lors du tournoi : {self.exempted}\n" \
+            f"Adversaires du joueur: {self.rounds_opponents}\n" \
+            f"Identifiant du joueur : {self.player_id}\n" \
+            f"Identifiant du tournoi : {self.tournament_id}\n" \
             f"Archivé : {self.closed}"
         return player_standings_grid
 
@@ -248,7 +249,7 @@ class PlayerStandingsGrid:
         return serialized_players_standings_grid
 
     def serialize_player_standings_grid(self):
-        """Sérialise l'instance du joueur de la grille dans un dictionnaire."""
+        """Sérialise l'instance du joueur de la grille."""
         serialized_player_standings_grid: dict = {
             "player_rank": self.player_rank,
             "player_name": self.player_name,
@@ -281,14 +282,17 @@ class PlayerStandingsGrid:
     def get_open_players_standings_grid():
         """Retourne la liste des joueurs en cours."""
         players_standings_grid_query = db_functions.Query()
-        open_players_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.search(players_standings_grid_query.closed == False) # ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
+        open_players_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.search(
+            players_standings_grid_query.closed == False)  # ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
         if open_players_standings_grid:
             return open_players_standings_grid
 
     @staticmethod
     def get_player_standings_grid_name(player_id):
         """Retourne le nom du joueur de la grille."""
-        player_standings_grid = PlayerStandingsGrid.get_player_standings_grid_id(PlayerStandingsGrid.get_player_standings_grid_id(player_id))
+        player_standings_grid = PlayerStandingsGrid.get_player_standings_grid(
+            PlayerStandingsGrid.get_player_standings_grid_id(player_id)
+        )
         player_standings_grid_name = player_standings_grid["player_name"]
         return player_standings_grid_name
 
@@ -296,21 +300,25 @@ class PlayerStandingsGrid:
     def get_player_standings_grid_id(player_id):
         """Retourne l'id du joueur de la grille du tournoi en cours par statut et id de joueur."""
         players_standings_grid_query = db_functions.Query()
-        player_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.get(players_standings_grid_query.closed == False and players_standings_grid_query.player_id == player_id)
+        player_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.get(
+            players_standings_grid_query.closed == False and players_standings_grid_query.player_id == player_id)
         player_standings_grid_id = player_standings_grid.doc_id
         return player_standings_grid_id
 
     @staticmethod
     def get_player_standings_grid(player_standings_grid_id):
         """Retourne le joueur de la grille du tournoi cherché par id."""
-        serialized_player_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.get(doc_id=player_standings_grid_id)
+        serialized_player_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.get(
+            doc_id=player_standings_grid_id)
         return serialized_player_standings_grid
 
     @staticmethod
     def update_player_standings_grid(label, field_to_update, player_id):
         """Met à jour la fiche du joueur."""
         player_standings_grid_id = PlayerStandingsGrid.get_player_standings_grid_id(player_id)
-        PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.update({label: field_to_update}, doc_ids=[player_standings_grid_id])
+        PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.update(
+            {label: field_to_update}, doc_ids=[player_standings_grid_id]
+        )
 
     @staticmethod
     def close_players_standings_grid():

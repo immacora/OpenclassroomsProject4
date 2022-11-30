@@ -127,7 +127,8 @@ class TournamentView:
     def ask_play_round():
         """Demande de lancement du tour."""
         return pyip.inputYesNo(
-            prompt="Voulez-vous lancer le tour (le lancement déclenchera l'horodatage) ? Saisir 'Y' (yes) pour le lancer ou 'N' (no) pour quitter le programme\n",
+            prompt="Voulez-vous lancer le tour (le lancement déclenchera l'horodatage) ?"
+                   " Saisir 'Y' (yes) pour le lancer ou 'N' (no) pour quitter le programme\n",
             yesVal="Y", noVal="N"
         )
 
@@ -199,7 +200,9 @@ class TournamentView:
         Remplace la colonne d'index par celle des identifiants.
         Retourne le dataframe.
         """
-        tournaments_df = pd.DataFrame(tournaments)
+        columns_names = ["name", "location", "start_date", "end_date", "cadence", "description",
+                         "players", "rounds_number", "tournament_id", "closed"]
+        tournaments_df = pd.DataFrame(tournaments, columns=columns_names)
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_rows', None)
         tournaments_df.rename(
@@ -212,7 +215,6 @@ class TournamentView:
                 "description": "Description",
                 "players": "Joueurs",
                 "rounds_number": "Nombre de tours",
-                "rounds": "Tours",
                 "closed": "Archivé",
                 "tournament_id": "Identifiant"
             },
@@ -253,12 +255,12 @@ class TournamentView:
         Initialise le dataframe, renomme, réorganise ses colonnes (index = round_number),
         remplit les valeurs manquantes avec 0, convertit le nombre de matchs en int et le retourne.
         """
-        rounds_df = pd.DataFrame(rounds)
+        columns_names = ["round_number", "round_name", "matches_number", "start_datetime", "end_datetime", "closed"]
+        rounds_df = pd.DataFrame(rounds, columns=columns_names)
         rounds_df.rename(
             columns={"round_number": "Numéro de tour",
                      "round_name": "Nom du tour",
                      "matches_number": "Nombre de matchs",
-                     "matches": "Liste des matchs",
                      "start_datetime": "Date et heure de début",
                      "end_datetime": "Date et heure de fin",
                      "closed": "Archivé"},
@@ -285,55 +287,63 @@ class TournamentView:
         return pairing_df
 
     @staticmethod
-    def display_round_results(round_name, players_standings_grid):
-        """Affiche l'appariement des joueurs.
+    def display_tournament_results(players_standings_grid):
+        """Affiche la grille de score des joueurs du tournoi.
 
         Initialise les noms de colonnes du dataframe.
         Initialise le dataframe.
-        Modifie les options d'affichage du dataframe.
         Renomme les colonnes.
         Remplace la colonne d'index par celle de la place du joueur dans le tournoi.
         Affiche le dataframe et le retourne.
         """
-        columns_names = ["player_rank", "player_name", "player_id", "player_round_score", "tournament_score"]
+        columns_names = ["player_rank", "player_name", "player_id", "tournament_score"]
         players_standings_grid_results_df = pd.DataFrame(players_standings_grid, columns=columns_names)
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.max_rows', None)
         players_standings_grid_results_df.rename(
             columns={
-                "player_rank": "Placement précédent",
+                "player_rank": "Placement",
                 "player_name": "Nom",
                 "player_id": "Joueur n°",
-                "tournament_score": "Score",
-                "player_round_score": "Score du tour"
+                "tournament_score": "Score"
             },
             inplace=True)
-        players_standings_grid_results_df.set_index("Placement précédent", inplace=True)
-        print(f"\n{round_name}, résultat :\n{players_standings_grid_results_df}")
-        return players_standings_grid_results_df
+        players_standings_grid_results_df.set_index("Placement", inplace=True)
+        sorted_players_standings_grid_results_df = players_standings_grid_results_df.sort_values(by=["Placement"])
+        print(f"\nGrille de score des joueurs :\n{sorted_players_standings_grid_results_df}")
+        return sorted_players_standings_grid_results_df
+
+    @staticmethod
+    def display_round_results(current_round_name, players, round_player_exempt_name):
+        """Affiche les résultats du tour.
+
+        Initialise le dataframe.
+        Remplace la colonne d'index par celle de la place du joueur dans le tournoi.
+        Trie le dataframe par place.
+        Affiche le dataframe et le retourne.
+        """
+        players_round_results_df = pd.DataFrame(players)
+        players_round_results_df.set_index("Placement", inplace=True)
+        sorted_players_round_results_df = players_round_results_df.sort_values(by=["Placement"])
+        print(f"\n{current_round_name}, résultat (Joueur exempté : {round_player_exempt_name}) :\n"
+              f"{sorted_players_round_results_df}")
+        return sorted_players_round_results_df
 
     @staticmethod
     def display_matches(matches):
         """Affiche les matchs du tournoi."""
-        matches_df = pd.DataFrame(matches)
+        columns_names = ["round_name", "matchs"]
+        matches_df = pd.DataFrame(matches, columns=columns_names)
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_rows', None)
+        matches_df.rename(
+            columns={
+                "round_name": "Nom du tour",
+                "matchs": "Matchs"
+            },
+            inplace=True)
+        matches_df.set_index("Nom du tour", inplace=True)
+        matches_df = matches_df.fillna(0)
         print(f"Liste des matchs du tournoi:\n{matches_df}")
         return matches_df
-
-    @staticmethod
-    def display_tournament_card(tournament_id, tournament):
-        """Affiche le tournoi sélectionné.
-
-        Initialise la fiche du tournoi.
-        Renomme les colonnes à afficher.
-        Affiche le tournoi.
-        """
-        tournament_se = pd.Series(tournament)
-        tournament_se.index = ["Nom", "Lieu", "Date de début", "Date de fin", "Cadence", "Description", "Joueurs",
-                               "Nombre de tours", "Tours", "Archivé"]
-        print(f"\nTournoi n° {tournament_id}:\n{tournament_se}")
-        return tournament_se
 
     @staticmethod
     def ask_tournament_display_option():

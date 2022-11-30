@@ -15,22 +15,19 @@ def db_connect():
 def players_table():
     """Retourne la table des joueurs."""
     db = db_connect()
-    players_table = db.table("players")
-    return players_table
+    return db.table("players")
 
 
 def tournaments_table():
     """Retourne la table des tournois."""
     db = db_connect()
-    tournaments_table = db.table("tournaments")
-    return tournaments_table
+    return db.table("tournaments")
 
 
 def players_standings_grid_table():
     """Retourne la table des tournois."""
     db = db_connect()
-    players_standings_grid_table = db.table("players_standings_grid_table")
-    return players_standings_grid_table
+    return db.table("players_standings_grid_table")
 
 
 def get_all_documents(db_documents, document_id):
