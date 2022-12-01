@@ -24,10 +24,10 @@ def tournaments_table():
     return db.table("tournaments")
 
 
-def players_standings_grid_table():
+def players_standings_grid():
     """Retourne la table des tournois."""
     db = db_connect()
-    return db.table("players_standings_grid_table")
+    return db.table("players_standings_grid")
 
 
 def get_all_documents(db_documents, document_id):

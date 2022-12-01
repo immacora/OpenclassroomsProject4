@@ -127,7 +127,7 @@ class TournamentView:
     def ask_play_round():
         """Demande de lancement du tour."""
         return pyip.inputYesNo(
-            prompt="Voulez-vous lancer le tour (le lancement déclenchera l'horodatage) ?"
+            prompt="\nVoulez-vous lancer le tour (le lancement déclenchera l'horodatage) ?"
                    " Saisir 'Y' (yes) pour le lancer ou 'N' (no) pour quitter le programme\n",
             yesVal="Y", noVal="N"
         )
@@ -328,20 +328,18 @@ class TournamentView:
         return sorted_players_round_results_df
 
     @staticmethod
-    def display_matches(matches):
-        """Affiche les matchs du tournoi."""
-        columns_names = ["round_name", "matchs"]
-        matches_df = pd.DataFrame(matches, columns=columns_names)
+    def display_matches(tournament_matches):
+        """Affiche les matchs du tournoi.
+
+        Initialise le dataframe.
+        Modifie ses options d'affichage.
+        Renomme les colonnes à afficher.
+        Remplace la colonne d'index par celle de Nom du tour.
+        Affiche le dataframe et le retourne."""
+        matches_df = pd.DataFrame(tournament_matches)
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_rows', None)
-        matches_df.rename(
-            columns={
-                "round_name": "Nom du tour",
-                "matchs": "Matchs"
-            },
-            inplace=True)
         matches_df.set_index("Nom du tour", inplace=True)
-        matches_df = matches_df.fillna(0)
         print(f"Liste des matchs du tournoi:\n{matches_df}")
         return matches_df
 
@@ -352,7 +350,8 @@ class TournamentView:
             choices=[
                 "Liste de tous les joueurs du tournoi",
                 "Liste de tous les tours du tournoi",
-                "Liste de tous les matchs du tournoi"],
+                "Liste de tous les matchs du tournoi"
+            ],
             prompt="Afficher le rapport :\n", numbered=True)
         return tournament_display_option
 

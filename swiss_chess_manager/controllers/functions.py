@@ -1,10 +1,11 @@
-"""Module de fonctions du menu."""
+"""Module commun pour la fonction de sauvegarde."""
 import os
 from datetime import datetime
 from swiss_chess_manager.views.menu_view import MenuView
 
 
 def save_report(report):
+    """Sauvegarde le rapport."""
     if MenuView.ask_save_report() == "Y":
         date = datetime.now()
         date = date.strftime('%Y-%m-%d-%H-%M-%S')

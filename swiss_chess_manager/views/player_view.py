@@ -38,12 +38,13 @@ class PlayerView:
 
     @staticmethod
     def rating():
-        """Demande la saisie du classement du joueur (entre 799 plancher ELO rapide et 3500) et le retourne."""
+        """Demande la saisie du classement du joueur
+        (entre 799: plancher ELO rapide et 3500: plafond ordi) et le retourne."""
         return pyip.inputNum(prompt="Saisir le classement du joueur (entre 799 et 3500): ", min=799, max=3500)
 
     @staticmethod
     def ask_player_id():
-        """Demande la saisie de l'id du joueur cherché et le retourne."""
+        """Demande la saisie d'un id de joueur et le retourne."""
         player_id: int = pyip.inputNum(prompt="\nSaisir l'identifiant du joueur à modifier: ", min=1)
         return player_id
 

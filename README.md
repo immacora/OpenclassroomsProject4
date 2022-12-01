@@ -17,7 +17,7 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
         - Installer les modules : pip install -r requirements.txt
 
 ## Contenu
-    - Un répertoire data (données des tables players et tournaments de tinydb)
+    - Un répertoire data (données des tables players, tournaments et players_standings_grid de tinydb)
     - Un répertoire flake8_rapport #################################
     - Un répertoire reports (rapports exportés depuis l'application)
     - Le répertoire swiss_chess_manager contenant le code de l'application (les 3 répertoires : models, views, controllers)

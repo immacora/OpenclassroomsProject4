@@ -11,7 +11,7 @@ class MenuView:
     def display_main_menu():
         """Affiche le menu principal et retourne le sous-menu choisi."""
         submenu = pyip.inputMenu(
-            choices=["Joueurs", "Tournois", "Quitter"],
+            choices=["Joueurs", "Tournois", "Rapports", "Quitter"],
             prompt="\n----- MENU SWISS CHESS MANAGER -----\n", numbered=True)
         return submenu
 
@@ -38,6 +38,16 @@ class MenuView:
         return submenu_option
 
     @staticmethod
+    def display_reports_menu():
+        """Affiche le sous-menu rapports et retourne l'option choisie."""
+        submenu_option = pyip.inputMenu(
+            choices=["Afficher la liste des joueurs",
+                     "Afficher les tournois",
+                     "Retourner au menu principal"],
+            prompt="\n----- MENU RAPPORTS -----\n", numbered=True)
+        return submenu_option
+
+    @staticmethod
     def ask_to_restart():
         """Propose de recommencer l'action ou de revenir au menu principal et retourne le choix."""
         return pyip.inputYesNo(
@@ -57,7 +67,7 @@ class MenuView:
 
     @staticmethod
     def ask_tournament_id():
-        """Demande de saisie de l'id du tournoi à afficher."""
+        """Demande la saisie de l'id du tournoi à afficher et le retourne."""
         tournament_id: int = pyip.inputNum(
             prompt="Pour afficher le détail d'un tournoi (joueurs, tours, matchs), saisir son identifiant. "
                    "Sinon, valider pour revenir au menu.\n",
