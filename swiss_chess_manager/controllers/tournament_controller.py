@@ -75,20 +75,9 @@ class TournamentController:
     @staticmethod
     def check_rounds_opponents_id(player_1_rounds_opponents, week_players):
         """Retourne le 1er joueur de la liste des week_players exclu de la liste des adversaires du joueur 1."""
-        ####################
-        print("week_players", week_players, 333333333333333)
-        ####################
-
-
         for week_player in week_players:
             if week_player.player_id not in player_1_rounds_opponents:
-                ####################
-                print("week_player", week_player, 444444444444444)
-                ####################
                 player_2 = week_player
-                ####################
-                print("player_2", player_2, 555555555555555555555)
-                ####################
                 return player_2
 
     @staticmethod
@@ -252,20 +241,9 @@ class TournamentController:
 
         for round in rounds:
             if round["round_name"] == current_round_name:
-
-                ########
-                print(round, 111111111111111111111111111)
-                ########
-
-
                 matches = round["matches"]
                 round_player_exempt_id = round["round_player_exempt_id"]
                 if round_player_exempt_id != 0:
-
-
-                    print(round, round_player_exempt_id)
-
-
                     round_player_exempt_name = PlayerStandingsGrid.get_player_standings_grid_name(
                         round_player_exempt_id
                     )
@@ -348,15 +326,12 @@ class TournamentController:
         impair: bool = self.impair(sorted_round_players)
 
         if round_number != 1:
-
             sorted_round_players.sort(key=attrgetter("player_rank"))
 
             if impair:
                 sorted_round_players.sort(key=attrgetter("player_rank"), reverse=True)
-
                 for sorted_round_player in sorted_round_players:
-
-                    if sorted_round_player.exempted == False:
+                    if sorted_round_player.exempted is False:
                         sorted_round_player.exempted = True
                         PlayerStandingsGrid.update_player_standings_grid(
                             "exempted", True, sorted_round_player.player_id
@@ -607,16 +582,7 @@ class TournamentController:
             player_1_id = player_1.player_id
             player_1_rounds_opponents = player_1.rounds_opponents
 
-            ######
-            print("week_player[0]", week_players[0], 111111111111111111)
-            ######
-
             player_2 = self.check_rounds_opponents_id(player_1_rounds_opponents, week_players)
-
-            ######
-            print("player_2", player_2, 22222222222222222222)
-            ######
-
             player_2_id = player_2.player_id
             player_2_rounds_opponents = player_2.rounds_opponents
 
@@ -632,7 +598,7 @@ class TournamentController:
             strong_players.remove(player_1)
             week_players.remove(player_2)
 
-        for round in rounds: ################### modif Shadows built-in name 'round'
+        for round in rounds:
             if round.round_number == round_number:
                 round.matches = matches_pairing
                 round.matches_number = matches_number

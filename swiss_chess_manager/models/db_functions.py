@@ -1,7 +1,6 @@
 """Module de fonctions communes aux modèles concernant l'échange avec la base de données."""
 import os
-
-from tinydb import TinyDB, Query #Query est utilisé dans le modèle
+from tinydb import TinyDB, Query
 
 
 def db_connect():
@@ -37,3 +36,7 @@ def get_all_documents(db_documents, document_id):
         document[document_id] = document.doc_id
         documents.append(document)
     return documents
+
+
+def query():
+    return Query()

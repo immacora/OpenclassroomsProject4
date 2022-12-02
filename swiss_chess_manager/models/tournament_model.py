@@ -99,7 +99,7 @@ class TournamentModel:
         """Retourne l'id du tournoi en cours."""
         tournament_query = db_functions.Query()
         open_tournament = TournamentModel.TOURNAMENTS_TABLE.get(
-            tournament_query.closed == False)  # ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
+            tournament_query.closed == 0)
         if open_tournament:
             return open_tournament.doc_id
 
@@ -292,7 +292,7 @@ class PlayerStandingsGrid:
         """Retourne la liste des joueurs en cours."""
         players_standings_grid_query = db_functions.Query()
         open_players_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.search(
-            players_standings_grid_query.closed == False)  # ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
+            players_standings_grid_query.closed == 0)  # ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
         if open_players_standings_grid:
             return open_players_standings_grid
 
@@ -310,7 +310,7 @@ class PlayerStandingsGrid:
         """Retourne l'id du joueur de la grille du tournoi en cours par statut et id de joueur."""
         players_standings_grid_query = db_functions.Query()
         player_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.get(
-            players_standings_grid_query.closed == False and players_standings_grid_query.player_id == player_id)
+            players_standings_grid_query.closed == 0 and players_standings_grid_query.player_id == player_id)
         player_standings_grid_id = player_standings_grid.doc_id
         return player_standings_grid_id
 
