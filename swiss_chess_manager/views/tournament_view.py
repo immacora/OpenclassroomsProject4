@@ -58,10 +58,10 @@ class TournamentView:
     def players_number():
         """Nombre de joueurs du tournoi : 8 par défaut (min 2).
 
-        Initialise le nombre de tours à 8.
+        Initialise le nombre de tours par défaut à 8.
         Initialise le nombre de tours saisis par l'utilisateur.
         Si le résultat de l'input est un int, assigne la valeur saisie.
-        Retourne le nombre de joueurs du tournoi
+        Retourne le nombre de joueurs du tournoi.
         """
         players_number = 8
         players_number_input: int = pyip.inputNum(
@@ -78,14 +78,14 @@ class TournamentView:
     def rounds_number():
         """Nombre de tours (rondes) du tournoi : 4 par défaut (min 1).
 
-        Initialise le nombre de tours à 4.
+        Initialise le nombre de tours par défaut à 4.
         Initialise le nombre de tours saisis par l'utilisateur.
         Si le résultat de l'input est un int, assigne la valeur saisie.
-        Retourne le nombre de tours
+        Retourne le nombre de tours.
         """
         rounds_number = 4
         rounds_number_input: int = pyip.inputNum(
-            prompt="Saisir le nombre de rondes ou valider (4 par défaut)",
+            prompt="Saisir le nombre de tours ou valider (4 par défaut)",
             blank=True, min=1
         )
         if isinstance(rounds_number_input, int):
@@ -127,7 +127,7 @@ class TournamentView:
     def ask_play_round():
         """Demande de lancement du tour."""
         return pyip.inputYesNo(
-            prompt="Voulez-vous lancer le tour (le lancement déclenchera l'horodatage) ?"
+            prompt="\nVoulez-vous lancer le tour (le lancement déclenchera l'horodatage) ?"
                    " Saisir 'Y' (yes) pour le lancer ou 'N' (no) pour quitter le programme\n",
             yesVal="Y", noVal="N"
         )
@@ -161,7 +161,7 @@ class TournamentView:
 
     @staticmethod
     def ask_exempted_score(player_name):
-        """Demande la saisie du score du joueur exempté."""
+        """Demande la saisie du score du joueur exempté (de 0 à 1 selon le règlement du tournoi)."""
         return pyip.inputFloat(
             prompt=f"\nSaisir le score attribué au joueur exempté {player_name} (de 0 à 1): ", min=0, max=1
         )
@@ -184,7 +184,7 @@ class TournamentView:
 
     @staticmethod
     def select_tournament_player():
-        """Demande de sélection ou création du joueur."""
+        """Demande de sélection ou de création du joueur."""
         return pyip.inputChoice(
             prompt="Saisir 'S' pour sélectionner un joueur dans la liste, ou 'C' pour créer un joueur.\n",
             choices=["S", "C"]
@@ -194,11 +194,8 @@ class TournamentView:
     def display_tournaments(tournaments):
         """Affiche la liste des tournois.
 
-        Initialise le dataframe.
-        Modifie les options d'affichage du dataframe.
-        Renomme les colonnes à afficher.
-        Remplace la colonne d'index par celle des identifiants.
-        Retourne le dataframe.
+        Initialise le dataframe, modifie ses options d'affichage, renomme ses colonnes,
+        remplace celle des index par celle des identifiants affiche le dataframe et le retourne.
         """
         columns_names = ["name", "location", "start_date", "end_date", "cadence", "description",
                          "players", "rounds_number", "tournament_id", "closed"]
@@ -228,7 +225,7 @@ class TournamentView:
         """Affiche le dataframe des joueurs du tournoi par ordre alphabétique ou classement.
 
         Initialise le dataframe, renomme, réorganise ses colonnes (index = identifiants),
-        le trie et retourne la version de tri demandée.
+        le trie, l'affiche et retourne la version de tri demandée.
         """
         players_df = pd.DataFrame(tournament_players)
         players_df.rename(
@@ -253,7 +250,8 @@ class TournamentView:
     def display_rounds(rounds):
         """Affiche les tours du tournoi.
         Initialise le dataframe, renomme, réorganise ses colonnes (index = round_number),
-        remplit les valeurs manquantes avec 0, convertit le nombre de matchs en int et le retourne.
+        remplit les valeurs manquantes avec 0, convertit le nombre de matchs en int,
+        affiche le dataframe et le retourne.
         """
         columns_names = ["round_number", "round_name", "matches_number", "start_datetime", "end_datetime", "closed"]
         rounds_df = pd.DataFrame(rounds, columns=columns_names)
@@ -277,8 +275,7 @@ class TournamentView:
     def display_pairing(round_name, pairing):
         """Affiche l'appariement des joueurs.
 
-        Initialise les noms de colonnes du dataframe.
-        Initialise le dataframe, remplace l'index, affiche le dataframe et le retourne.
+        Initialise les noms de colonnes et le dataframe, remplace l'index, affiche le dataframe et le retourne.
         """
         columns_names = ["Match", "Joueur 1", "Joueur 2"]
         pairing_df = pd.DataFrame(pairing, columns=columns_names)
@@ -290,11 +287,8 @@ class TournamentView:
     def display_tournament_results(players_standings_grid):
         """Affiche la grille de score des joueurs du tournoi.
 
-        Initialise les noms de colonnes du dataframe.
-        Initialise le dataframe.
-        Renomme les colonnes.
-        Remplace la colonne d'index par celle de la place du joueur dans le tournoi.
-        Affiche le dataframe et le retourne.
+        Initialise les noms de colonnes et le dataframe, renomme ses colonnes,
+        remplace l'index par la place du joueur dans le tournoi, affiche le dataframe et le retourne.
         """
         columns_names = ["player_rank", "player_name", "player_id", "tournament_score"]
         players_standings_grid_results_df = pd.DataFrame(players_standings_grid, columns=columns_names)
@@ -315,10 +309,8 @@ class TournamentView:
     def display_round_results(current_round_name, players, round_player_exempt_name):
         """Affiche les résultats du tour.
 
-        Initialise le dataframe.
-        Remplace la colonne d'index par celle de la place du joueur dans le tournoi.
-        Trie le dataframe par place.
-        Affiche le dataframe et le retourne.
+        Initialise le dataframe, remplace la colonne d'index par celle de la place du joueur dans le tournoi,
+        trie le dataframe par place, l'affiche et le retourne.
         """
         players_round_results_df = pd.DataFrame(players)
         players_round_results_df.set_index("Placement", inplace=True)
@@ -328,20 +320,15 @@ class TournamentView:
         return sorted_players_round_results_df
 
     @staticmethod
-    def display_matches(matches):
-        """Affiche les matchs du tournoi."""
-        columns_names = ["round_name", "matchs"]
-        matches_df = pd.DataFrame(matches, columns=columns_names)
+    def display_matches(tournament_matches):
+        """Affiche les matchs du tournoi.
+
+        Initialise le dataframe, modifie ses options d'affichage,
+        renomme ses colonnes, remplace l'index par le Nom du tour, l'affiche et le retourne."""
+        matches_df = pd.DataFrame(tournament_matches)
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_rows', None)
-        matches_df.rename(
-            columns={
-                "round_name": "Nom du tour",
-                "matchs": "Matchs"
-            },
-            inplace=True)
         matches_df.set_index("Nom du tour", inplace=True)
-        matches_df = matches_df.fillna(0)
         print(f"Liste des matchs du tournoi:\n{matches_df}")
         return matches_df
 
@@ -350,9 +337,10 @@ class TournamentView:
         """Affiche les options d'affichage de détail du tournoi et retourne l'option choisie."""
         tournament_display_option = pyip.inputMenu(
             choices=[
-                "Liste de tous les joueurs du tournoi",
-                "Liste de tous les tours du tournoi",
-                "Liste de tous les matchs du tournoi"],
+                "Liste des joueurs du tournoi",
+                "Liste des tours du tournoi",
+                "Liste des matchs du tournoi"
+            ],
             prompt="Afficher le rapport :\n", numbered=True)
         return tournament_display_option
 

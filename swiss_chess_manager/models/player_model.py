@@ -72,10 +72,9 @@ class PlayerModel:
             return player_id
 
     def player_exist(self, serialized_player):
-        """Vérifie l'existence du joueur à insérer dans la db.
+        """Vérifie l'existence du joueur à insérer dans la db (Correspondance : nom complet et date de naissance).
 
-         Correspondance : nom complet et date de naissance
-         Retourne True si c'est un doublon.
+         Retourne True si c'est un doublon, False sinon.
          """
         double = False
         players = self.get_all_players()

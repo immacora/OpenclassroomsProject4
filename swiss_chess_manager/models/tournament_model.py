@@ -33,6 +33,15 @@ class Round:
         )
         return unserialize_round
 
+    @staticmethod
+    def serialize_rounds(rounds):
+        """Sérialise la liste des tours."""
+        serialized_rounds = []
+        for tournament_round in rounds:
+            serialized_round = Round.serialize_round(tournament_round)
+            serialized_rounds.append(serialized_round)
+        return serialized_rounds
+
     def __str__(self):
         """Représentation de l'objet tour (ronde) sous forme de chaîne de caractères."""
         tournament_round: str = f"Tour n° {self.round_number}\n " \
@@ -42,15 +51,6 @@ class Round:
                                 f"Date et heure de fin : {self.end_datetime}\n " \
                                 f"Archivé : {self.closed}"
         return tournament_round
-
-    @staticmethod
-    def serialize_rounds(rounds):
-        """Sérialise la liste des tours."""
-        serialized_rounds = []
-        for tournament_round in rounds:
-            serialized_round = Round.serialize_round(tournament_round)
-            serialized_rounds.append(serialized_round)
-        return serialized_rounds
 
     def serialize_round(self):
         """Sérialise l'instance du tour."""
@@ -74,7 +74,7 @@ class TournamentModel:
 
     def __init__(self, name, location, start_date, end_date, cadence, description,
                  players, rounds_number, rounds, closed=False):
-        """Initialise le tournois."""
+        """Initialise le tournoi."""
         if rounds is None:
             rounds = []
         self.name: str = name
@@ -102,6 +102,15 @@ class TournamentModel:
             tournament_query.closed == False)  # ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
         if open_tournament:
             return open_tournament.doc_id
+
+    @staticmethod
+    def get_open_round(tournament_id):
+        """Retourne l'objet tour (ronde) en cours."""
+        tournament = TournamentModel.unserialize_tournament(TournamentModel.get_tournament_by_id(tournament_id))
+        rounds = tournament.rounds
+        for open_round in rounds:
+            if open_round.closed is False:
+                return open_round
 
     @staticmethod
     def update_tournament(label, field_to_update, tournament_id):
@@ -264,7 +273,7 @@ class PlayerStandingsGrid:
 
     @staticmethod
     def save_players_standings_grid(players_standings_grid):
-        """Insère les joueurs sérialisés du tournoi dans la table players_standings_grid_table
+        """Insère les joueurs sérialisés du tournoi dans la table players_standings_grid
         et retourne la liste d'id des joueurs de la grille."""
         serialized_players_standings_grid = []
         for player_standings_grid in players_standings_grid:
@@ -322,5 +331,5 @@ class PlayerStandingsGrid:
 
     @staticmethod
     def close_players_standings_grid():
-        """Clôture les fiches des joueurs en cours."""
+        """Clôture les fiches des joueurs non archivées"""
         PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.update({"closed": True})

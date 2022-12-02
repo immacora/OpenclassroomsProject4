@@ -12,16 +12,10 @@ class PlayerController:
 
     @staticmethod
     def edit_player():
-        """Modifier la fiche d'un joueur.
+        """Modifie la fiche d'un joueur.
 
-        Initialise l'identifiant cherché.
-        Initialise le document correspondant de la table players.
-        Si l'identifiant cherché n'existe pas dans la table, affiche un message d'erreur
-        Sinon : Initialise l'objet joueur et le champ à modifier.
-            Assigne les nouvelles valeurs
-            Modifie le joueur
-            Cherche le joueur modifié dans la table.
-            Affiche le joueur modifié.
+        Initialise l'id cherché et le document correspondant.
+        Affiche un message d'erreur si l'id n'existe pas ou modifie et affiche le joueur.
         """
         player_id = PlayerView.ask_player_id()
         db_serialized_player = PlayerModel.get_player_by_id(player_id)
@@ -56,12 +50,10 @@ class PlayerController:
 
     @staticmethod
     def show_players():
-        """Afficher la liste des joueurs de la table players par ordre alphabétique ou classement.
+        """Affiche la liste des joueurs par ordre alphabétique ou classement.
 
-        Initialise la liste des joueurs.
-        Initialise le type de tri.
-        Si aucun joueur n'a été récupéré, affiche un message d'erreur.
-        Sinon : Retourne le rapport de la liste des joueurs triée.
+        Initialise la liste des joueurs et le type de tri.
+        Retourne le rapport de la liste des joueurs triée ou False.
         """
         players = PlayerModel.get_all_players()
         sort = PlayerView.ask_sort()

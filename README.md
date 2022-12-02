@@ -17,26 +17,21 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
         - Installer les modules : pip install -r requirements.txt
 
 ## Contenu
-    - Un répertoire data (données des tables players et tournaments de tinydb)
+    - Un répertoire data (données des tables players, tournaments et players_standings_grid de tinydb)
     - Un répertoire flake8_rapport #################################
-    - Un répertoire reports (rapports exportés depuis l'application)
     - Le répertoire swiss_chess_manager contenant le code de l'application (les 3 répertoires : models, views, controllers)
     - Le fichier swiss_chess_manager.py permettant d'exécuter l'application
     - Le fichier requirements
     - Un fichier .flake8###########################
     - Le fichier README
+    - Un répertoire reports a été ajouté à titre d'exemple de la fonctionnalité d'export souhaitée pour l'avenir. Les rapports, consultables depuis le dossier répertoire après l'arrêt du programme, ne contiennent actuellement que les données brutes des dataframes générés. 
 
 ## Utilisation
 ### Remarques générales
-    Le logiciel comporte un menu principal, le MENU SWISS CHESS MANAGER, qui propose 2 sous-menus :
-    MENU JOUEURS et MENU TOURNOIS.
-
-    Le MENU JOUEURS est une section dédiée à l'ajout, la modification et l'affichage des joueurs contenus dans la base de données du programme.
-    Elle permet également d'exporter des rapports : Affichage de la liste des joueurs (par ordre alphabétique ou classement).
-
-    Le MENU TOURNOIS est une section dédiée à la gestion d'un tournoi d'échecs selon le système suisse et son affichage.
-    Elle permet également d'exporter des rapports : 
-        Affichage de la liste des tournois, de la fiche détaillée d'un tournoi, sa liste des joueurs (par ordre alphabétique ou classement), celle de ses tours et celle de ses matchs).
+    Le logiciel comporte un menu principal, le MENU SWISS CHESS MANAGER, qui propose 3 sous-menus :
+    - MENU JOUEURS : section dédiée à l'ajout et la modification des joueurs de la base de données du programme.
+    - MENU TOURNOIS : section dédiée à la gestion d'un tournoi d'échecs selon le système suisse. Elle permet de gérer plusieurs tournois mais 1 seul à la fois. Elle fonctionne par états gérés par sauvegarde automatique selon l'action de l'utilisateur.
+    - MENU RAPPORTS : section dédiée à l'affichage des joueurs par ordre alphabétique ou classement et des tournois (liste des tournois, des tours d'un tournoi, des matchs d'un tournoi).
 
 ### Déroulement d'un tournoi
 
@@ -47,15 +42,18 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
         2.1 MENU JOUEURS :
             - Créer un nouveau joueur
             - Modifier la fiche d'un joueur
-            - Afficher la liste des joueurs (par ordre alphabétique ou classement)
             - Retourner au menu principal
         2.2 MENU TOURNOIS :
-            - Lancer un tournoi (créer un tournoi : 8 joueurs et 4 tours par défaut)
-            - Gérer le tournoi en cours (créer les tours, les appariements, saisir les résultats, clôturer le tournoi)
-            - Afficher les tournois (afficher la liste des tournois, le détail d'un tournoi : la liste de ses joueurs, celle de ses tours et de ses matchs)
+            - Créer un tournoi (8 joueurs et 4 tours par défaut)
+            - Gérer le tournoi en cours (créer les appariements, les tours, saisir les résultats, clôturer le tournoi)
+        2.3 MENU RAPPORTS :
+            - Afficher la liste des joueurs :
+                * Ordre alphabétique
+                * Classement
+            - Afficher la liste des tournois :
+                - Afficher le détail d'un tournoi de la liste :
+                    * Liste de ses joueurs
+                    * Liste de ses tours
+                    * Liste de ses matchs
 
-    3- Consulter les rapports (fonctionnalité ajoutée à titre d'exemple pour l'amélioration souhaitée) :
-        Les rapports produits au cours d'un tournoi ou depuis le menu joueurs peuvent être exportés en csv (dataframes bruts et nommés par date).
-        Ils sont consultables depuis le dossier reports après l'arrêt du programme.
-
-    4- Générer 1 nouveau rapport flake8 (exemple)
+    3- Générer 1 nouveau rapport flake8 (exemple)

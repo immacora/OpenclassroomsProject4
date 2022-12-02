@@ -25,9 +25,9 @@ def tournaments_table():
 
 
 def players_standings_grid_table():
-    """Retourne la table des tournois."""
+    """Retourne la table des joueurs de grille des scores du tournoi."""
     db = db_connect()
-    return db.table("players_standings_grid_table")
+    return db.table("players_standings_grid")
 
 
 def get_all_documents(db_documents, document_id):
