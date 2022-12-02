@@ -418,7 +418,7 @@ class TournamentController:
                 round_player_exempt_id = first_round_player_exempt_id
             else:
                 matches_number = None
-                round_player_exempt_id = None
+                round_player_exempt_id = 0
             tournament_round = Round(
                 round_number=count,
                 round_name=f"Round {count}",
@@ -546,7 +546,7 @@ class TournamentController:
         Crée l'appariement des joueurs par force avec vérification de la liste de ses adversaires (+ maj. liste),
         crée les matchs du tour et met à jour la liste des tours du tournoi.
         """
-        round_player_exempt_id = None
+        round_player_exempt_id = 0
         sorted_round_players = self.sorted_round_players(tournament_id, round_number)
         strong_players = []
         week_players = []
@@ -562,7 +562,7 @@ class TournamentController:
                 round_player_exempt_id = tournament_round.round_player_exempt_id
                 break
 
-        if round_player_exempt_id:
+        if round_player_exempt_id != 0:
             for round_player in sorted_round_players:
                 if round_player.player_id == round_player_exempt_id:
                     exempted_round_player_rounds_opponents = round_player.rounds_opponents
