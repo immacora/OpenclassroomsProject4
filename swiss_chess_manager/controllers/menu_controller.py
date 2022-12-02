@@ -16,10 +16,9 @@ class MenuController:
 
     @staticmethod
     def run_menu():
-        """Lance le menu principal.
+        """Lance le menu principal : MENU SWISS CHESS MANAGER.
 
-        Initialise le sous-menu et son option.
-        Dirige vers l'option de sous-menu choisie ou boucle.
+        Initialise le sous-menu et son option, dirige vers l'option de sous-menu choisie ou boucle.
         """
         submenu = MenuView.display_main_menu()
         submenu_option = ""
@@ -43,14 +42,13 @@ class MenuController:
     def run_submenu_function(submenu_option):
         """Exécute la fonction liée à l'option sélectionnée.
 
-        Initialise la fonction du contrôleur concerné.
-        Initialise l'action choisie par l'utilisateur.
-        Exécute le choix
-        MENU JOUEURS :
-            Boucle sur l'action (ajouter ou modifier un joueur, afficher la liste des joueurs)
-            Retourne au menu principal (R: recommencer / S: sortir).
-        MENU TOURNOIS :
-            Lance un tournoi, gère le tournoi en cours ou affiche les tournois.
+        Initialise la fonction du contrôleur concerné et l'exécute.
+        MENU JOUEURS : Boucle sur l'action (ajouter ou modifier un joueur) tant que l'administrateur le demande
+        ou retourne au menu principal (R: recommencer / S: sortir).
+        MENU TOURNOIS : Créer un tournoi s'il n'en existe aucun en cours et gérer le tournoi en cours.
+        MENU RAPPORTS : Afficher la liste des joueurs par ordre alphabétique ou classement,
+        afficher les tournois (la liste des tournois, le détail d'un tournoi :
+        liste de ses joueurs, celle de ses tours et de ses matchs).
         Affiche le menu principal.
         """
         if submenu_option == "Créer un nouveau joueur":
@@ -69,7 +67,7 @@ class MenuController:
             report = PlayerController(PlayerModel, PlayerView).show_players()
             if report is not False:
                 functions.save_report(report)
-        elif submenu_option == "Lancer un tournoi":
+        elif submenu_option == "Créer un tournoi":
             TournamentController(TournamentModel, TournamentView).start_tournament()
         elif submenu_option == "Gérer le tournoi en cours":
             TournamentController(TournamentModel, TournamentView).manage_current_tournament()
@@ -86,7 +84,7 @@ class MenuController:
                         TournamentModel.get_tournament_by_id(tournament_id)
                     )
                     tournament_display_option = TournamentView.ask_tournament_display_option()
-                    if tournament_display_option == "Liste de tous les joueurs du tournoi":
+                    if tournament_display_option == "Liste des joueurs du tournoi":
                         tournament_players_id = tournament.players
                         report = TournamentController(TournamentModel, TournamentView).show_tournament_players(
                             tournament_players_id
@@ -99,7 +97,7 @@ class MenuController:
                             )
                             functions.save_report(report)
                             restart = MenuView.ask_to_restart()
-                    elif tournament_display_option == "Liste de tous les tours du tournoi":
+                    elif tournament_display_option == "Liste des tours du tournoi":
                         tournament_rounds = tournament.rounds
                         if len(tournament_rounds) == 0:
                             print("Pour afficher les tours du tournoi, lancez l'appariement des joueurs "
@@ -109,7 +107,7 @@ class MenuController:
                                 .show_rounds(tournament_rounds)
                             if report is not False:
                                 functions.save_report(report)
-                    elif tournament_display_option == "Liste de tous les matchs du tournoi":
+                    elif tournament_display_option == "Liste des matchs du tournoi":
                         tournament_rounds = tournament.rounds
                         if len(tournament_rounds) == 0:
                             print(

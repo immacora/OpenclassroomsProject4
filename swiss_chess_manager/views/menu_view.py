@@ -21,7 +21,6 @@ class MenuView:
         submenu_option = pyip.inputMenu(
             choices=["Créer un nouveau joueur",
                      "Modifier la fiche d'un joueur",
-                     "Afficher la liste des joueurs",
                      "Retourner au menu principal"],
             prompt="\n----- MENU JOUEURS -----\n", numbered=True)
         return submenu_option
@@ -30,9 +29,8 @@ class MenuView:
     def display_tournaments_menu():
         """Affiche le sous-menu tournois et retourne l'option choisie."""
         submenu_option = pyip.inputMenu(
-            choices=["Lancer un tournoi",
+            choices=["Créer un tournoi",
                      "Gérer le tournoi en cours",
-                     "Afficher les tournois",
                      "Retourner au menu principal"],
             prompt="\n----- MENU TOURNOIS -----\n", numbered=True)
         return submenu_option
