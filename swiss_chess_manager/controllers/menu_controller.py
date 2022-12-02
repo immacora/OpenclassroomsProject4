@@ -16,10 +16,9 @@ class MenuController:
 
     @staticmethod
     def run_menu():
-        """Lancer le menu.
+        """Lance le menu principal.
 
-        Lance le menu principal avec retour du sous-menu.
-        Initialise l'option du sous-menu.
+        Initialise le sous-menu et son option.
         Dirige vers l'option de sous-menu choisie ou boucle.
         """
         submenu = MenuView.display_main_menu()
@@ -28,6 +27,8 @@ class MenuController:
             submenu_option = MenuView.display_players_menu()
         elif submenu == "Tournois":
             submenu_option = MenuView.display_tournaments_menu()
+        elif submenu == "Rapports":
+            submenu_option = MenuView.display_reports_menu()
         elif submenu == "Quitter":
             exit()
         else:
