@@ -286,7 +286,8 @@ class TournamentView:
         """Affiche la grille de score des joueurs du tournoi.
 
         Initialise les noms de colonnes et le dataframe, renomme ses colonnes,
-        remplace l'index par la place du joueur dans le tournoi, le trie, l'affiche et retourne la version de tri demandée.
+        remplace l'index par la place du joueur dans le tournoi, le trie,
+        l'affiche et retourne la version de tri demandée.
         """
         columns_names = ["player_rank", "player_name", "player_id", "tournament_score"]
         players_standings_grid_results_df = pd.DataFrame(players_standings_grid, columns=columns_names)

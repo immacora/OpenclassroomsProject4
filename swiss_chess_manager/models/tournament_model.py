@@ -288,15 +288,6 @@ class PlayerStandingsGrid:
         return players_standings_grid_id
 
     @staticmethod
-    def get_open_players_standings_grid():
-        """Retourne la liste des joueurs en cours."""
-        players_standings_grid_query = db_functions.Query()
-        open_players_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.search(
-            players_standings_grid_query.closed == 0)
-        if open_players_standings_grid:
-            return open_players_standings_grid
-
-    @staticmethod
     def get_tournament_players_standings_grid(tournament_id):
         """Retourne la liste des joueurs du tournoi."""
         players_standings_grid_query = db_functions.query()
@@ -317,16 +308,12 @@ class PlayerStandingsGrid:
 
     @staticmethod
     def get_player_standings_grid_id(player_id, tournament_id):
-        """Retourne l'id du joueur de la grille du tournoi en cours par statut et id de joueur."""
+        """Retourne l'id du joueur de la grille du tournoi en cours par tournoi et id de joueur."""
         players_standings_grid_query = db_functions.query()
         player_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.get(
-            players_standings_grid_query.tournament_id == tournament_id
-            and players_standings_grid_query.player_id == player_id
+            (players_standings_grid_query.tournament_id == tournament_id)
+            & (players_standings_grid_query.player_id == player_id)
         )
-        ###################################################
-        print(player_standings_grid)
-        ##################################
-
         player_standings_grid_id = player_standings_grid.doc_id
         return player_standings_grid_id
 

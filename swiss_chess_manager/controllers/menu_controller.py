@@ -83,36 +83,30 @@ class MenuController:
                     tournament = TournamentModel.unserialize_tournament(
                         TournamentModel.get_tournament_by_id(tournament_id)
                     )
-                    tournament_display_option = TournamentView.ask_tournament_display_option()
-                    if tournament_display_option == "Liste des joueurs du tournoi":
-                        report = TournamentController(TournamentModel, TournamentView).show_tournament_results(
-                            tournament_id
-                        )
-                        functions.save_report(report)
-                        restart = MenuView.ask_to_restart()
-                        while restart == "Y":
+                    tournament_rounds = tournament.rounds
+                    if len(tournament_rounds) == 0:
+                        print("Lancez l'appariement des joueurs depuis le MENU TOURNOIS - "
+                              "Gérer le tournoi en cours pour afficher le détail du tournoi sélectionné.")
+                    else:
+                        tournament_display_option = TournamentView.ask_tournament_display_option()
+                        if tournament_display_option == "Liste des joueurs du tournoi":
                             report = TournamentController(TournamentModel, TournamentView).show_tournament_results(
                                 tournament_id
                             )
                             functions.save_report(report)
                             restart = MenuView.ask_to_restart()
-                    elif tournament_display_option == "Liste des tours du tournoi":
-                        tournament_rounds = tournament.rounds
-                        if len(tournament_rounds) == 0:
-                            print("Pour afficher les tours du tournoi, lancez l'appariement des joueurs "
-                                  "depuis le MENU TOURNOIS - Gérer le tournoi en cours")
-                        else:
-                            report = TournamentController(TournamentModel, TournamentView)\
+                            while restart == "Y":
+                                report = TournamentController(TournamentModel, TournamentView).show_tournament_results(
+                                    tournament_id
+                                )
+                                functions.save_report(report)
+                                restart = MenuView.ask_to_restart()
+                        elif tournament_display_option == "Liste des tours du tournoi":
+                            report = TournamentController(TournamentModel, TournamentView) \
                                 .show_rounds(tournament_rounds)
                             if report is not False:
                                 functions.save_report(report)
-                    elif tournament_display_option == "Liste des matchs du tournoi":
-                        tournament_rounds = tournament.rounds
-                        if len(tournament_rounds) == 0:
-                            print(
-                                "Pour afficher les matchs du tournoi, lancez l'appariement des joueurs "
-                                "depuis le MENU TOURNOIS - Gérer le tournoi en cours")
-                        else:
+                        elif tournament_display_option == "Liste des matchs du tournoi":
                             tournament = tournament.serialize_tournament()
                             tournament_rounds = tournament["rounds"]
                             round_1 = tournament_rounds[0]
@@ -121,7 +115,7 @@ class MenuController:
                                     "Aucun match n'a encore été joué. Pour afficher les matchs du tournoi, "
                                     "lancez le premier tour depuis le MENU TOURNOIS - Gérer le tournoi en cours")
                             else:
-                                report = TournamentController(TournamentModel, TournamentView)\
+                                report = TournamentController(TournamentModel, TournamentView) \
                                     .show_matches(tournament_rounds, tournament_id)
                                 if report is not False:
                                     functions.save_report(report)
