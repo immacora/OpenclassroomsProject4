@@ -1,3 +1,4 @@
+from swiss_chess_manager.controllers import functions
 from swiss_chess_manager.controllers.player_controller import PlayerController
 from swiss_chess_manager.controllers.tournament_controller import TournamentController
 from swiss_chess_manager.models.player_model import PlayerModel
@@ -5,7 +6,6 @@ from swiss_chess_manager.models.tournament_model import TournamentModel
 from swiss_chess_manager.views.menu_view import MenuView
 from swiss_chess_manager.views.player_view import PlayerView
 from swiss_chess_manager.views.tournament_view import TournamentView
-from swiss_chess_manager.controllers import functions
 
 
 class MenuController:
@@ -85,15 +85,14 @@ class MenuController:
                     )
                     tournament_display_option = TournamentView.ask_tournament_display_option()
                     if tournament_display_option == "Liste des joueurs du tournoi":
-                        tournament_players_id = tournament.players
-                        report = TournamentController(TournamentModel, TournamentView).show_tournament_players(
-                            tournament_players_id
+                        report = TournamentController(TournamentModel, TournamentView).show_tournament_results(
+                            tournament_id
                         )
                         functions.save_report(report)
                         restart = MenuView.ask_to_restart()
                         while restart == "Y":
-                            report = TournamentController(TournamentModel, TournamentView).show_tournament_players(
-                                tournament_players_id
+                            report = TournamentController(TournamentModel, TournamentView).show_tournament_results(
+                                tournament_id
                             )
                             functions.save_report(report)
                             restart = MenuView.ask_to_restart()
@@ -123,7 +122,7 @@ class MenuController:
                                     "lancez le premier tour depuis le MENU TOURNOIS - Gérer le tournoi en cours")
                             else:
                                 report = TournamentController(TournamentModel, TournamentView)\
-                                    .show_matches(tournament_rounds)
+                                    .show_matches(tournament_rounds, tournament_id)
                                 if report is not False:
                                     functions.save_report(report)
                 MenuController.run_menu()
