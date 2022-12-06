@@ -297,20 +297,36 @@ class PlayerStandingsGrid:
             return open_players_standings_grid
 
     @staticmethod
-    def get_player_standings_grid_name(player_id):
+    def get_tournament_players_standings_grid(tournament_id):
+        """Retourne la liste des joueurs du tournoi."""
+        players_standings_grid_query = db_functions.query()
+        tournament_players_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.search(
+            players_standings_grid_query.tournament_id == tournament_id
+        )
+        if tournament_players_standings_grid:
+            return tournament_players_standings_grid
+
+    @staticmethod
+    def get_player_standings_grid_name(player_id, tournament_id):
         """Retourne le nom du joueur de la grille."""
         player_standings_grid = PlayerStandingsGrid.get_player_standings_grid(
-            PlayerStandingsGrid.get_player_standings_grid_id(player_id)
+            PlayerStandingsGrid.get_player_standings_grid_id(player_id, tournament_id)
         )
         player_standings_grid_name = player_standings_grid["player_name"]
         return player_standings_grid_name
 
     @staticmethod
-    def get_player_standings_grid_id(player_id):
+    def get_player_standings_grid_id(player_id, tournament_id):
         """Retourne l'id du joueur de la grille du tournoi en cours par statut et id de joueur."""
-        players_standings_grid_query = db_functions.Query()
+        players_standings_grid_query = db_functions.query()
         player_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.get(
-            players_standings_grid_query.closed == 0 and players_standings_grid_query.player_id == player_id)
+            players_standings_grid_query.tournament_id == tournament_id
+            and players_standings_grid_query.player_id == player_id
+        )
+        ###################################################
+        print(player_standings_grid)
+        ##################################
+
         player_standings_grid_id = player_standings_grid.doc_id
         return player_standings_grid_id
 
@@ -322,9 +338,9 @@ class PlayerStandingsGrid:
         return serialized_player_standings_grid
 
     @staticmethod
-    def update_player_standings_grid(label, field_to_update, player_id):
+    def update_player_standings_grid(label, field_to_update, player_id, tournament_id):
         """Met à jour la fiche du joueur."""
-        player_standings_grid_id = PlayerStandingsGrid.get_player_standings_grid_id(player_id)
+        player_standings_grid_id = PlayerStandingsGrid.get_player_standings_grid_id(player_id, tournament_id)
         PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.update(
             {label: field_to_update}, doc_ids=[player_standings_grid_id]
         )

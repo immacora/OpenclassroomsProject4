@@ -151,6 +151,15 @@ class TournamentView:
         )
 
     @staticmethod
+    def ask_sort():
+        """Demande le type de tri (alphabétique ou placement) et le retourne."""
+        sort = pyip.inputMenu(
+            choices=["Ordre alphabétique", "Placement"],
+            prompt="\nAfficher les joueurs par:\n", numbered=True
+        )
+        return sort
+
+    @staticmethod
     def ask_score(player_name):
         """Demande la saisie du score."""
         return pyip.inputMenu(
@@ -221,30 +230,19 @@ class TournamentView:
         return tournaments_df
 
     @staticmethod
-    def display_sorted_players_df(sort, tournament_players):
-        """Affiche le dataframe des joueurs du tournoi par ordre alphabétique ou classement.
-
-        Initialise le dataframe, renomme, réorganise ses colonnes (index = identifiants),
-        le trie, l'affiche et retourne la version de tri demandée.
-        """
-        players_df = pd.DataFrame(tournament_players)
+    def display_db_players_by_rating(sorted_tournament_players):
+        """Affiche le dataframe des joueurs de la db dans le tournoi."""
+        players_df = pd.DataFrame(sorted_tournament_players)
         players_df.rename(
             columns={"lastname": "Prénom", "firstname": "Nom", "date_of_birth": "Date de naissance", "gender": "Genre",
-                     "rating": "Classement", "player_id": "Identifiant"}, inplace=True)
+                     "rating": "Classement", "player_id": "Id"}, inplace=True)
         players_df = players_df.reindex(
-            columns=["Identifiant", "Nom", "Prénom", "Date de naissance", "Genre", "Classement"]
+            columns=["Classement", "Nom", "Prénom", "Date de naissance", "Genre", "Id"]
         )
-        players_df.set_index("Identifiant", inplace=True)
-        if sort == "Ordre alphabétique":
-            sorted_df = players_df.sort_values(by=["Nom"])
-            print(f"Liste des joueurs triée par ordre alphabétique:\n{sorted_df}")
-            return sorted_df
-        elif sort == "Classement":
-            sorted_df = players_df.sort_values(by=["Classement"], ascending=False)
-            print(f"Liste des joueurs triée par classement:\n{sorted_df}")
-            return sorted_df
-        else:
-            print("ERREUR: L'affichage a échoué")
+        players_df.set_index("Classement", inplace=True)
+
+        sorted_df = players_df.sort_values(by=["Classement"], ascending=False)
+        print(f"Liste des joueurs triée par classement:\n{sorted_df}")
 
     @staticmethod
     def display_rounds(rounds):
@@ -284,11 +282,11 @@ class TournamentView:
         return pairing_df
 
     @staticmethod
-    def display_tournament_results(players_standings_grid):
+    def display_tournament_results(sort, players_standings_grid):
         """Affiche la grille de score des joueurs du tournoi.
 
         Initialise les noms de colonnes et le dataframe, renomme ses colonnes,
-        remplace l'index par la place du joueur dans le tournoi, affiche le dataframe et le retourne.
+        remplace l'index par la place du joueur dans le tournoi, le trie, l'affiche et retourne la version de tri demandée.
         """
         columns_names = ["player_rank", "player_name", "player_id", "tournament_score"]
         players_standings_grid_results_df = pd.DataFrame(players_standings_grid, columns=columns_names)
@@ -301,9 +299,16 @@ class TournamentView:
             },
             inplace=True)
         players_standings_grid_results_df.set_index("Placement", inplace=True)
-        sorted_players_standings_grid_results_df = players_standings_grid_results_df.sort_values(by=["Placement"])
-        print(f"\nGrille de score des joueurs :\n{sorted_players_standings_grid_results_df}")
-        return sorted_players_standings_grid_results_df
+        if sort == "Ordre alphabétique":
+            sorted_players_results_df = players_standings_grid_results_df.sort_values(by=["Nom"])
+            print(f"Liste des joueurs triée par ordre alphabétique:\n{sorted_players_results_df}")
+            return sorted_players_results_df
+        elif sort == "Placement":
+            sorted_players_results_df = players_standings_grid_results_df.sort_values(by=["Placement"])
+            print(f"Liste des joueurs triée par placement:\n{sorted_players_results_df}")
+            return sorted_players_results_df
+        else:
+            print("ERREUR: L'affichage a échoué")
 
     @staticmethod
     def display_round_results(current_round_name, players, round_player_exempt_name):
