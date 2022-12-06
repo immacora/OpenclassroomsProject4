@@ -791,6 +791,7 @@ class TournamentController:
                 if close_tournament == "Y":
                     TournamentModel.close_tournament(tournament_id)
                     PlayerStandingsGrid.close_players_standings_grid()
-                    print("Le tournoi a été clôturé. Vous pouvez en créer un nouveau.")
+                    print("Le tournoi a été clôturé. Vous pouvez relancer le programme et en créer un nouveau.")
+                    exit()
         else:
             print("Il n'existe aucun tournoi en cours, vous devez en créer un nouveau.")
