@@ -292,7 +292,7 @@ class PlayerStandingsGrid:
         """Retourne la liste des joueurs en cours."""
         players_standings_grid_query = db_functions.Query()
         open_players_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.search(
-            players_standings_grid_query.closed == 0)  # ATTENTION NE FONCTIONNE PAS AVEC le type booléen (is)
+            players_standings_grid_query.closed == 0)
         if open_players_standings_grid:
             return open_players_standings_grid
 

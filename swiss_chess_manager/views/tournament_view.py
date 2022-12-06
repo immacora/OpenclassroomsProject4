@@ -1,5 +1,5 @@
-import pyinputplus as pyip
 import pandas as pd
+import pyinputplus as pyip
 
 
 class TournamentView:
