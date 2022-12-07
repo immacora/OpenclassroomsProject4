@@ -19,18 +19,21 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
 ## Contenu
     - Un répertoire data (données des tables players, tournaments et players_standings_grid de tinydb)
     - Un répertoire flake8_rapport contenant le fichier HTML généré par flake8
-    - Le répertoire swiss_chess_manager contenant le code de l'application (les 3 répertoires : models, views, controllers)
+    - Le répertoire swiss_chess_manager contenant les répertoires models, views et controllers
     - Le fichier swiss_chess_manager.py permettant d'exécuter l'application
     - Le fichier requirements
+    - Le fichier flake8
     - Le fichier README
-    - Un répertoire reports a été ajouté à titre d'exemple de la fonctionnalité d'export souhaitée pour l'avenir. Les rapports, consultables depuis le dossier répertoire après l'arrêt du programme, ne contiennent actuellement que les données brutes des dataframes générés. 
+    Un répertoire reports a été ajouté à titre d'exemple d'une fonctionnalité d'export des rapport. 
 
 ## Utilisation
 ### Remarques générales
     Le logiciel comporte un menu principal, le MENU SWISS CHESS MANAGER, qui propose 3 sous-menus :
     - MENU JOUEURS : section dédiée à l'ajout et la modification des joueurs de la base de données du programme.
-    - MENU TOURNOIS : section dédiée à la gestion d'un tournoi d'échecs selon le système suisse. Elle permet de gérer plusieurs tournois mais 1 seul à la fois. Elle fonctionne par états gérés par sauvegarde automatique selon l'action de l'utilisateur.
-    - MENU RAPPORTS : section dédiée à l'affichage des joueurs par ordre alphabétique ou classement et des tournois (liste des tournois, des tours d'un tournoi, des matchs d'un tournoi).
+    - MENU TOURNOIS : section dédiée à la gestion d'un tournoi d'échecs selon le système suisse.
+    Elle permet de gérer 1 tournoi à la fois et fonctionne par états.
+    - MENU RAPPORTS : section dédiée à l'affichage des joueurs par ordre alphabétique ou classement et des tournois.
+    Elle permet d'afficher la liste des tournois puis celle des joueurs, tours et matchs du tournoi sélectionné.
 
 ### Déroulement d'un tournoi
 

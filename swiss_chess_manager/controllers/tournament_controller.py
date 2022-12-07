@@ -325,7 +325,7 @@ class TournamentController:
         Retourne la liste triée.
         """
         sorted_round_players = PlayerStandingsGrid.unserialize_players_standings_grid(
-            PlayerStandingsGrid.get_open_players_standings_grid()
+            PlayerStandingsGrid.get_tournament_players_standings_grid(tournament_id)
         )
         tournament = TournamentModel.unserialize_tournament(TournamentModel.get_tournament_by_id(tournament_id))
         tournament_rounds = tournament.rounds
@@ -544,7 +544,7 @@ class TournamentController:
         l'apparie avec "Exempté" et met à jour la liste de ses adversaires.
         Extrait le joueur exempté de la liste le cas échéant.
         Divise les joueurs en deux moitiés (une supérieure, une inférieure).
-        Crée l'appariement des joueurs par force avec vérification de la liste de ses adversaires (+ maj. liste),
+        Crée l'appariement des joueurs par force avec adversaires différents sauf pour le dernier match pour le cas où le nb de joueurs n'est pas optimisé pour le nb de tours (+ maj. liste),
         crée les matchs du tour et met à jour la liste des tours du tournoi.
         """
         round_player_exempt_id = None
@@ -589,6 +589,9 @@ class TournamentController:
             player_1_rounds_opponents = player_1.rounds_opponents
 
             player_2 = self.check_rounds_opponents_id(player_1_rounds_opponents, week_players)
+            if player_2 is None:
+                player_2 = week_players[0]
+
             player_2_id = player_2.player_id
             player_2_rounds_opponents = player_2.rounds_opponents
 
@@ -654,10 +657,6 @@ class TournamentController:
             )
             player_1_name = player_standings_grid_1["player_name"]
 
-            ##################################
-            print(player_standings_grid_1)
-            ##################################
-
             if player_2[0] == "Exempté":
                 player_1_score = TournamentView.ask_exempted_score(player_1_name)
                 player_standings_grid_1_tournament_score = player_standings_grid_1["tournament_score"] + player_1_score
@@ -683,11 +682,6 @@ class TournamentController:
                 )
 
             match = [player_1[0], player_1_score], [player_2[0], player_2_score]
-
-            ##################################
-            print(match)
-            ##################################
-
             round_matches.append(match)
 
             players_round_score.append([player_1[0], player_1_score])
@@ -707,7 +701,7 @@ class TournamentController:
         self.show_round_results(current_round_name, tournament_id)
 
         round_players = PlayerStandingsGrid.unserialize_players_standings_grid(
-            PlayerStandingsGrid.get_open_players_standings_grid()
+            PlayerStandingsGrid.get_tournament_players_standings_grid(tournament_id)
         )
 
         sorted_round_players_by_rank = sorted(round_players, key=attrgetter("player_rank"))
