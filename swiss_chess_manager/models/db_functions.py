@@ -1,4 +1,4 @@
-"""Module de fonctions communes aux modèles concernant l'échange avec la base de données."""
+"""Module de fonctions d'échange avec la base de données."""
 import os
 
 from tinydb import TinyDB, Query
@@ -40,5 +40,5 @@ def get_all_documents(db_documents, document_id):
 
 
 def query():
-    """Retourne la requête."""
+    """Retourne l'objet requête."""
     return Query()

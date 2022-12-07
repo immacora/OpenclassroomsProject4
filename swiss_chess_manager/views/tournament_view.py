@@ -56,13 +56,7 @@ class TournamentView:
 
     @staticmethod
     def players_number():
-        """Nombre de joueurs du tournoi : 8 par défaut (min 2).
-
-        Initialise le nombre de tours par défaut à 8.
-        Initialise le nombre de tours saisis par l'utilisateur.
-        Si le résultat de l'input est un int, assigne la valeur saisie.
-        Retourne le nombre de joueurs du tournoi.
-        """
+        """Demande la saisie du nombre de joueurs du tournoi (8 par défaut, min 2) et le retourne."""
         players_number = 8
         players_number_input: int = pyip.inputNum(
             prompt="Saisir le nombre de joueurs ou valider (8 par défaut)",
@@ -76,13 +70,7 @@ class TournamentView:
 
     @staticmethod
     def rounds_number():
-        """Nombre de tours (rondes) du tournoi : 4 par défaut (min 1).
-
-        Initialise le nombre de tours par défaut à 4.
-        Initialise le nombre de tours saisis par l'utilisateur.
-        Si le résultat de l'input est un int, assigne la valeur saisie.
-        Retourne le nombre de tours.
-        """
+        """Demande la saisie du nombre de tours (rondes) du tournoi (4 par défaut, min 1) et le retourne."""
         rounds_number = 4
         rounds_number_input: int = pyip.inputNum(
             prompt="Saisir le nombre de tours ou valider (4 par défaut)",
@@ -201,11 +189,7 @@ class TournamentView:
 
     @staticmethod
     def display_tournaments(tournaments):
-        """Affiche la liste des tournois.
-
-        Initialise le dataframe, modifie ses options d'affichage, renomme ses colonnes,
-        remplace celle des index par celle des identifiants affiche le dataframe et le retourne.
-        """
+        """Affiche le dataframe de la liste des tournois (index = identifiants) et la retourne."""
         columns_names = ["name", "location", "start_date", "end_date", "cadence", "description",
                          "players", "rounds_number", "tournament_id", "closed"]
         tournaments_df = pd.DataFrame(tournaments, columns=columns_names)
@@ -246,11 +230,7 @@ class TournamentView:
 
     @staticmethod
     def display_rounds(rounds):
-        """Affiche les tours du tournoi.
-        Initialise le dataframe, renomme, réorganise ses colonnes (index = round_number),
-        remplit les valeurs manquantes avec 0, convertit le nombre de matchs en int,
-        affiche le dataframe et le retourne.
-        """
+        """Affiche le dataframe des tours du tournoi et le retourne (index = round_number)."""
         columns_names = ["round_number", "round_name", "matches_number", "start_datetime", "end_datetime", "closed"]
         rounds_df = pd.DataFrame(rounds, columns=columns_names)
         rounds_df.rename(
@@ -271,10 +251,7 @@ class TournamentView:
 
     @staticmethod
     def display_pairing(round_name, pairing):
-        """Affiche l'appariement des joueurs.
-
-        Initialise les noms de colonnes et le dataframe, remplace l'index, affiche le dataframe et le retourne.
-        """
+        """Affiche le dataframe de l'appariement des joueurs et le retourne (index = Match)."""
         columns_names = ["Match", "Joueur 1", "Joueur 2"]
         pairing_df = pd.DataFrame(pairing, columns=columns_names)
         pairing_df.set_index("Match", inplace=True)
@@ -283,12 +260,7 @@ class TournamentView:
 
     @staticmethod
     def display_tournament_results(sort, players_standings_grid):
-        """Affiche la grille de score des joueurs du tournoi.
-
-        Initialise les noms de colonnes et le dataframe, renomme ses colonnes,
-        remplace l'index par la place du joueur dans le tournoi, le trie,
-        l'affiche et retourne la version de tri demandée.
-        """
+        """Affiche la grille de score des joueurs du tournoi selon le tri demandé et le retourne (index = Placement)."""
         columns_names = ["player_rank", "player_name", "player_id", "tournament_score"]
         players_standings_grid_results_df = pd.DataFrame(players_standings_grid, columns=columns_names)
         players_standings_grid_results_df.rename(
@@ -313,11 +285,7 @@ class TournamentView:
 
     @staticmethod
     def display_round_results(current_round_name, players, round_player_exempt_name):
-        """Affiche les résultats du tour.
-
-        Initialise le dataframe, remplace la colonne d'index par celle de la place du joueur dans le tournoi,
-        trie le dataframe par place, l'affiche et le retourne.
-        """
+        """Affiche le dataframe des résultats du tour et le retourne (index = Placement)."""
         players_round_results_df = pd.DataFrame(players)
         players_round_results_df.set_index("Placement", inplace=True)
         sorted_players_round_results_df = players_round_results_df.sort_values(by=["Placement"])
@@ -327,10 +295,7 @@ class TournamentView:
 
     @staticmethod
     def display_matches(tournament_matches):
-        """Affiche les matchs du tournoi.
-
-        Initialise le dataframe, modifie ses options d'affichage,
-        renomme ses colonnes, remplace l'index par le Nom du tour, l'affiche et le retourne."""
+        """Affiche le dataframe des matchs du tournoi et le retourne."""
         matches_df = pd.DataFrame(tournament_matches)
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_rows', None)

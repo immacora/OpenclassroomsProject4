@@ -12,11 +12,7 @@ class PlayerController:
 
     @staticmethod
     def edit_player():
-        """Modifie la fiche d'un joueur.
-
-        Initialise l'id cherché et le document correspondant.
-        Affiche un message d'erreur si l'id n'existe pas ou modifie et affiche le joueur.
-        """
+        """Modifie la fiche d'un joueur selon l'id sélectionné."""
         player_id = PlayerView.ask_player_id()
         db_serialized_player = PlayerModel.get_player_by_id(player_id)
         if db_serialized_player is None:
@@ -50,11 +46,7 @@ class PlayerController:
 
     @staticmethod
     def show_players():
-        """Affiche la liste des joueurs par ordre alphabétique ou classement.
-
-        Initialise la liste des joueurs et le type de tri.
-        Retourne le rapport de la liste des joueurs triée ou False.
-        """
+        """Affiche la liste des joueurs par ordre alphabétique ou classement et retourne la liste triée ou False."""
         players = PlayerModel.get_all_players()
         sort = PlayerView.ask_sort()
         if len(players) == 0:
@@ -65,14 +57,7 @@ class PlayerController:
             return report
 
     def add_new_player(self):
-        """Créer un joueur.
-
-        Initialise le joueur.
-        Formate la datetime.
-        Crée l'objet joueur.
-        Sauvegarde le joueur.
-        Affiche le joueur créé et retourne son id ou affiche un message d'erreur.
-        """
+        """Créer un joueur (affiche le joueur créé et retourne son id ou affiche un message d'erreur)."""
         player_input: dict = PlayerView.player_input(self.view)
         player_input["date_of_birth"] = player_input["date_of_birth"].strftime('%Y-%m-%d')
         player = PlayerModel(player_input["lastname"],

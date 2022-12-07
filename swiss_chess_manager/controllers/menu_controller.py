@@ -16,10 +16,7 @@ class MenuController:
 
     @staticmethod
     def run_menu():
-        """Lance le menu principal : MENU SWISS CHESS MANAGER.
-
-        Initialise le sous-menu et son option, dirige vers l'option de sous-menu choisie ou boucle.
-        """
+        """Lance le menu principal : MENU SWISS CHESS MANAGER et dirige vers l'option de sous-menu choisie."""
         submenu = MenuView.display_main_menu()
         submenu_option = ""
         if submenu == "Joueurs":
@@ -40,16 +37,12 @@ class MenuController:
 
     @staticmethod
     def run_submenu_function(submenu_option):
-        """Exécute la fonction liée à l'option sélectionnée.
+        """Exécute l'option de sous-menu sélectionnée ou retourne au menu principal.
 
-        Initialise la fonction du contrôleur concerné et l'exécute.
-        MENU JOUEURS : Boucle sur l'action (ajouter ou modifier un joueur) tant que l'administrateur le demande
-        ou retourne au menu principal (R: recommencer / S: sortir).
-        MENU TOURNOIS : Créer un tournoi s'il n'en existe aucun en cours et gérer le tournoi en cours.
+        MENU JOUEURS : Ajouter ou modifier un joueur.
+        MENU TOURNOIS : Créer un tournoi (s'il n'en existe aucun en cours) et gérer le tournoi en cours.
         MENU RAPPORTS : Afficher la liste des joueurs par ordre alphabétique ou classement,
-        afficher les tournois (la liste des tournois, le détail d'un tournoi :
-        liste de ses joueurs, celle de ses tours et de ses matchs).
-        Affiche le menu principal.
+        Afficher les tournois (liste des tournois-> détail du tournoi choisi-> liste de ses joueurs, tours, matchs).
         """
         if submenu_option == "Créer un nouveau joueur":
             PlayerController(PlayerModel, PlayerView).add_new_player()
@@ -94,13 +87,6 @@ class MenuController:
                                 tournament_id
                             )
                             functions.save_report(report)
-                            restart = MenuView.ask_to_restart()
-                            while restart == "Y":
-                                report = TournamentController(TournamentModel, TournamentView).show_tournament_results(
-                                    tournament_id
-                                )
-                                functions.save_report(report)
-                                restart = MenuView.ask_to_restart()
                         elif tournament_display_option == "Liste des tours du tournoi":
                             report = TournamentController(TournamentModel, TournamentView) \
                                 .show_rounds(tournament_rounds)

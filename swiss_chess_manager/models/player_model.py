@@ -53,7 +53,7 @@ class PlayerModel:
         return player
 
     def serialize_player(self):
-        """Sérialise l'instance du joueur dans un dictionnaire."""
+        """Sérialise l'instance du joueur."""
         serialized_player: dict = {
             "lastname": self.lastname,
             "firstname": self.firstname,
@@ -72,10 +72,7 @@ class PlayerModel:
             return player_id
 
     def player_exist(self, serialized_player):
-        """Vérifie l'existence du joueur à insérer dans la db (Correspondance : nom complet et date de naissance).
-
-         Retourne True si c'est un doublon, False sinon.
-         """
+        """Vérifie l'existence du joueur par nom complet et date de naissance (doublon = True)."""
         double = False
         players = self.get_all_players()
         for player in players:
