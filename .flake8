@@ -5,9 +5,7 @@ exclude=
     __pycache__,
     data/,
     reports/,
-    flake8_rapport/,
     README.md,
-    .flake8,
     requirements.txt,
     venv/
 
@@ -15,7 +13,6 @@ filename =
     main.py,
     swiss_chess_manager/
 
-format = html
 
 max-line-length = 119
 max-doc-length = 119

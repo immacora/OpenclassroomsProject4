@@ -24,7 +24,7 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
     - Le fichier requirements
     - Le fichier flake8
     - Le fichier README
-    Un répertoire reports a été ajouté à titre d'exemple d'une fonctionnalité d'export des rapport. 
+    Le programme propose l'export (facultatif) des rapports consultés vers un répertoire reports.
 
 ## Utilisation
 ### Remarques générales
@@ -32,7 +32,7 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
     - MENU JOUEURS : section dédiée à l'ajout et la modification des joueurs de la base de données du programme.
     - MENU TOURNOIS : section dédiée à la gestion d'un tournoi d'échecs selon le système suisse.
     Elle permet de gérer 1 tournoi à la fois et fonctionne par états.
-    - MENU RAPPORTS : section dédiée à l'affichage des joueurs par ordre alphabétique ou classement et des tournois.
+    - MENU RAPPORTS : section dédiée à l'affichage des joueurs (ordre alphabétique ou classement) et des tournois.
     Elle permet d'afficher la liste des tournois puis celle des joueurs, tours et matchs du tournoi sélectionné.
 
 ### Déroulement d'un tournoi
@@ -47,7 +47,7 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
             - Retourner au menu principal
         2.2 MENU TOURNOIS :
             - Créer un tournoi (8 joueurs et 4 tours par défaut)
-            - Gérer le tournoi en cours (créer les appariements, les tours, saisir les résultats, clôturer le tournoi)
+            - Gérer le tournoi en cours (appariements, tours, résultats, clôture du tournoi)
         2.3 MENU RAPPORTS :
             - Afficher la liste des joueurs :
                 * Ordre alphabétique

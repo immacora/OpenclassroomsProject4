@@ -1,0 +1,3 @@
+Identifiant,Nom,Lieu,Date de début,Date de fin,Cadence,Description,Joueurs,Nombre de tours,Archivé
+1,Premier open 2022,Maisons-Laffitte,2022-12-01,2022-12-02,Bullet,Tournoi de test 8 joueurs,"[1, 13, 7, 6, 2, 10, 4, 5]",4,True
+2,Tournoi d'échecs junior 2022,Maisons-Laffitte,2022-12-04,2022-12-05,Blitz,Tournoi de test 9 joueurs,"[11, 1, 13, 7, 2, 12, 3, 9, 8]",4,True
