@@ -10,7 +10,7 @@ class TournamentView:
 
     @staticmethod
     def name():
-        """Demande la saisie du nom du tournoi et le retourne."""
+        """Saisie du nom du tournoi."""
         return pyip.inputStr(
             prompt="Saisir le nom du tournoi (caractères spéciaux interdits): ",
             blank=False,
@@ -19,7 +19,7 @@ class TournamentView:
 
     @staticmethod
     def location():
-        """Demande la saisie du lieu du tournoi et le retourne."""
+        """Saisie du lieu du tournoi."""
         return pyip.inputStr(
             prompt="Saisir le lieu du tournoi (caractères spéciaux interdits): ",
             blank=False,
@@ -28,17 +28,17 @@ class TournamentView:
 
     @staticmethod
     def start_date():
-        """Demande la saisie de la date de début du tournoi et la retourne."""
+        """Saisie de la date de début du tournoi."""
         return pyip.inputDate(prompt="Saisir la date de début du tournoi au format (YYYY/MM/DD): ")
 
     @staticmethod
     def end_date():
-        """Demande la saisie de la date de fin du tournoi et la retourne."""
+        """Saisie de la date de fin du tournoi."""
         return pyip.inputDate(prompt="Saisir la date de fin du tournoi au format (YYYY/MM/DD): ")
 
     @staticmethod
     def cadence():
-        """Demande la saisie du type de contrôle du temps du tournoi (bullet, blitz ou coup rapide) et le retourne."""
+        """Saisie du type de contrôle du temps du tournoi (bullet, blitz ou coup rapide)."""
         cadence = pyip.inputMenu(
             choices=["Bullet", "Blitz", "Coup rapide"],
             prompt="\nSaisir le numéro correspondant à la cadence du tournoi:\n", numbered=True
@@ -47,7 +47,7 @@ class TournamentView:
 
     @staticmethod
     def description():
-        """Demande la saisie (facultative) des remarques générales sur le tournoi et les retourne."""
+        """Saisie (facultative) des remarques générales sur le tournoi."""
         return pyip.inputStr(
             prompt="Saisir les remarques générales sur le tournoi (caractères spéciaux interdits):\n",
             blank=True,
@@ -56,7 +56,7 @@ class TournamentView:
 
     @staticmethod
     def players_number():
-        """Demande la saisie du nombre de joueurs du tournoi (8 par défaut, min 2) et le retourne."""
+        """Saisie du nombre de joueurs du tournoi (8 par défaut, min 2)."""
         players_number = 8
         players_number_input: int = pyip.inputNum(
             prompt="Saisir le nombre de joueurs ou valider (8 par défaut)",
@@ -70,7 +70,7 @@ class TournamentView:
 
     @staticmethod
     def rounds_number():
-        """Demande la saisie du nombre de tours (rondes) du tournoi (4 par défaut, min 1) et le retourne."""
+        """Saisie du nombre de tours (rondes) du tournoi (4 par défaut, min 1)."""
         rounds_number = 4
         rounds_number_input: int = pyip.inputNum(
             prompt="Saisir le nombre de tours ou valider (4 par défaut)",
@@ -140,7 +140,7 @@ class TournamentView:
 
     @staticmethod
     def ask_sort():
-        """Demande le type de tri (alphabétique ou placement) et le retourne."""
+        """Demande le type de tri (alphabétique ou placement)."""
         sort = pyip.inputMenu(
             choices=["Ordre alphabétique", "Placement"],
             prompt="\nAfficher les joueurs par:\n", numbered=True
@@ -189,7 +189,7 @@ class TournamentView:
 
     @staticmethod
     def display_tournaments(tournaments):
-        """Affiche le dataframe de la liste des tournois (index = identifiants) et la retourne."""
+        """Affiche le dataframe de la liste des tournois (index = identifiants) et le retourne."""
         columns_names = ["name", "location", "start_date", "end_date", "cadence", "description",
                          "players", "rounds_number", "tournament_id", "closed"]
         tournaments_df = pd.DataFrame(tournaments, columns=columns_names)
@@ -305,7 +305,7 @@ class TournamentView:
 
     @staticmethod
     def ask_tournament_display_option():
-        """Affiche les options d'affichage de détail du tournoi et retourne l'option choisie."""
+        """Demande l'option d'affichage de détail du tournoi sélectionné (joueurs, tours, match)."""
         tournament_display_option = pyip.inputMenu(
             choices=[
                 "Liste des joueurs du tournoi",

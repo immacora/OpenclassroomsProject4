@@ -188,8 +188,7 @@ class TournamentModel:
 
 
 class PlayerStandingsGrid:
-    """Joueur de la grille des scores du tournoi (place, nom, score, exempté->booléen: 1 seule exemption/tournoi),
-    liste des adversaires par tour, id du joueur, id du tournoi, archivé)."""
+    """Joueur de la grille des scores du tournoi (exempté->booléen: 1 seule exemption/tournoi)."""
 
     PLAYERS_STANDINGS_GRID_TABLE = db_functions.players_standings_grid_table()
 
@@ -273,8 +272,7 @@ class PlayerStandingsGrid:
 
     @staticmethod
     def save_players_standings_grid(players_standings_grid):
-        """Insère les joueurs sérialisés du tournoi dans la table players_standings_grid
-        et retourne la liste d'id des joueurs de la grille."""
+        """Insère les joueurs sérialisés du tournoi dans la table players_standings_grid et retourne la liste d'id."""
         serialized_players_standings_grid = []
         for player_standings_grid in players_standings_grid:
             serialized_player_standings_grid = PlayerStandingsGrid.serialize_player_standings_grid(
@@ -289,7 +287,7 @@ class PlayerStandingsGrid:
 
     @staticmethod
     def get_tournament_players_standings_grid(tournament_id):
-        """Retourne la liste des joueurs du tournoi."""
+        """Retourne la liste des joueurs de la grille."""
         players_standings_grid_query = db_functions.query()
         tournament_players_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.search(
             players_standings_grid_query.tournament_id == tournament_id
@@ -308,7 +306,7 @@ class PlayerStandingsGrid:
 
     @staticmethod
     def get_player_standings_grid_id(player_id, tournament_id):
-        """Retourne l'id du joueur de la grille du tournoi en cours par tournoi et id de joueur."""
+        """Retourne l'id du joueur de la grille du tournoi et joueur sélectionnés."""
         players_standings_grid_query = db_functions.query()
         player_standings_grid = PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.get(
             (players_standings_grid_query.tournament_id == tournament_id)
@@ -326,7 +324,7 @@ class PlayerStandingsGrid:
 
     @staticmethod
     def update_player_standings_grid(label, field_to_update, player_id, tournament_id):
-        """Met à jour la fiche du joueur."""
+        """Met à jour la fiche du joueur de la grille."""
         player_standings_grid_id = PlayerStandingsGrid.get_player_standings_grid_id(player_id, tournament_id)
         PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.update(
             {label: field_to_update}, doc_ids=[player_standings_grid_id]
@@ -334,5 +332,5 @@ class PlayerStandingsGrid:
 
     @staticmethod
     def close_players_standings_grid():
-        """Clôture les fiches des joueurs non archivées"""
+        """Clôture les fiches des joueurs de la grille non archivées"""
         PlayerStandingsGrid.PLAYERS_STANDINGS_GRID_TABLE.update({"closed": True})

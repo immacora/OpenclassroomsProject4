@@ -25,7 +25,7 @@ class TournamentController:
 
     @staticmethod
     def get_tournament_players(tournament_players_id):
-        """Initialise le dictionnaire des joueurs du tournoi avec leur id (PlayerModel) et le retourne."""
+        """Construit la liste de dictionnaires des joueurs avec leur id (PlayerModel)."""
         tournament_players = []
         for tournament_player_id in tournament_players_id:
             tournament_player = PlayerModel.get_player_by_id(tournament_player_id)
@@ -35,7 +35,7 @@ class TournamentController:
 
     @staticmethod
     def save_tournament(tournament):
-        """Sauvegarde le tournoi, l'affiche et retourne son id ou affiche un message d'erreur et quitte le programme."""
+        """Sauvegarde le tournoi."""
         print(f"\nVous allez créer le tournoi :\n {tournament}")
         save_tournament_request = TournamentView.ask_save_tournament()
         if save_tournament_request == "Y":
@@ -49,7 +49,7 @@ class TournamentController:
 
     @staticmethod
     def check_player_id(players_df, tournament_players):
-        """Vérifie l'id du joueur avant enregistrement dans la liste des joueurs du tournoi (retourne l'id ou False)."""
+        """Vérifie l'id du joueur avant enregistrement dans la liste des joueurs du tournoi."""
         player_id = TournamentView.ask_tournament_player_id()
         while (player_id not in players_df.index.values) or (player_id in tournament_players):
             print("L'identifiant choisi ne correspond à aucun joueur disponible "
@@ -73,7 +73,7 @@ class TournamentController:
 
     @staticmethod
     def convert_player_score(score):
-        """Attribue la valeur de score requise (gagnant = 1, Perdant = 0, Nul = 0.5) en float."""
+        """Attribue la valeur de score requise."""
         if score == "Gagnant":
             score = float(1)
         elif score == "Perdant":
@@ -135,7 +135,7 @@ class TournamentController:
 
     @staticmethod
     def show_tournaments():
-        """Demande l'affichage de la liste des tournois et retourne le dataframe ou affiche un message d'erreur."""
+        """Demande l'affichage de la liste des tournois et retourne le dataframe."""
         tournaments = TournamentModel.get_all_tournaments()
         if len(tournaments) == 0:
             print("ERREUR: Aucun tournoi n'a été trouvé dans la table tournaments")
@@ -453,9 +453,8 @@ class TournamentController:
     def create_match_pairing(self, tournament_id, round_number):
         """Crée l'appariement des joueurs d'un tour selon le système suisse.
 
-        Récupère le joueur exempté du round en cours dans le tournoi,
-        l'apparie avec "Exempté" et met à jour la liste de ses adversaires.
-        Extrait le joueur exempté de la liste le cas échéant.
+        Récupère le joueur exempté du round en cours, l'apparie avec "Exempté",
+        met à jour la liste de ses adversaires et l'extrait de la liste des joueurs.
         Divise les joueurs en deux moitiés (une supérieure, une inférieure).
         Crée l'appariement des joueurs par force avec adversaires différents (+ maj. liste) sauf pour le dernier match
         (cas du nb de joueurs non optimisé pour le nb de tours), crée les matchs du tour, met à jour la liste des tours.
@@ -475,7 +474,6 @@ class TournamentController:
             if tournament_round.round_number == round_number:
                 round_player_exempt_id = tournament_round.round_player_exempt_id
                 break
-
         if round_player_exempt_id:
             for round_player in sorted_round_players:
                 if round_player.player_id == round_player_exempt_id:
@@ -628,25 +626,12 @@ class TournamentController:
             self.create_match_pairing(tournament_id, current_round_number)
 
     def manage_current_tournament(self):
-        """Gérer le tournoi en cours.
+        """Gérer le tournoi en cours s'il en existe un.
 
-        S'il en existe un :
-            Initialise l'objet tournoi et l'affiche.
-            Initialise le tour en cours.
-            Si aucun tour n'existe (premier tour):
-                Affiche "tour 1".
-                Retourne au menu ou
-                crée la liste des tours, trie la liste des id de joueurs par classement pour le 1er tour, maj le tournoi
-                crée la liste des joueurs de la grille des scores (classés par place d'après la liste du tournoi maj)
-                crée l'appariement des joueurs et retourne au menu.
-            Si tous les tours sont fermés, propose de clôturer le tournoi (tournoi + joueurs de la grille)
-            ou de retourner au menu.
-            Sinon :
-                Affiche le tour en cours et son appariement.
-                Tant que tous les tours n'ont pas été joués, lance le tour et génère l'appariement suivant
-                ou retourne au menu selon le choix.
-        Sinon :
-            Affiche un message demandant de créer un tournoi.
+        Au 1er tour : crée la liste des tours, celle des joueurs de la grille des scores et l'appariement des joueurs.
+        Si tous les tours sont fermés, propose de clôturer le tournoi (tournoi + joueurs de la grille).
+        Sinon, affiche le tour en cours, son appariement, et propose de lancer le tour,
+        puis les suivants tant que tous les tours n'ont pas été joués.
         """
         tournament_id = TournamentModel.get_open_tournament()
         if tournament_id:
