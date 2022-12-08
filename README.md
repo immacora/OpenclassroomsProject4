@@ -12,8 +12,8 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
     - flake8
 
 ## Installation
-    - Créez l’environnement virtuel du projet : python3 -m venv .venv
-        - Activez l’environnement virtuel
+    - Créez l’environnement virtuel du projet : py -m venv .venv
+        - Activez l’environnement virtuel : .venv\Scripts\activate
         - Installer les modules : pip install -r requirements.txt
 
 ## Contenu
@@ -38,7 +38,7 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
 ### Déroulement d'un tournoi
 
     1- Exécutez le programme depuis la console :
-        Pour afficher le MENU SWISS CHESS MANAGER, saisir : python swiss_chess_manager.py
+        Pour afficher le MENU SWISS CHESS MANAGER, saisir : py swiss_chess_manager.py
 
     2- Choisir un sous-menu :
         2.1 MENU JOUEURS :
