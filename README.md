@@ -33,7 +33,7 @@ Programme autonome développé en Python pour gérer, hors ligne, des tournois d
     - MENU TOURNOIS : section dédiée à la gestion d'un tournoi d'échecs selon le système suisse.
     Elle permet de gérer 1 tournoi à la fois et fonctionne par états.
     - MENU RAPPORTS : section dédiée à l'affichage des joueurs (ordre alphabétique/classement) et des tournois.
-    Elle permet d'afficher la liste des tournois puis celle des joueurs, tours et matchs du tournoi sélectionné.
+    Elle permet d'afficher la liste des tournois et celle des joueurs, tours et matchs du tournoi sélectionné.
 
 ### Déroulement d'un tournoi
 
