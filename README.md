@@ -3,6 +3,8 @@ Développez un programme logiciel en Python
 
 Programme autonome développé en Python pour gérer, hors ligne, des tournois d'échecs selon l'algorithme "suisse" d'appariements et produire les rapports de ces tournois.
 
+![kisspng-chessboard-chess-opening-chess-piece-chess-strateg-international-chess-5a918657cff249 2194135615194865518518](https://user-images.githubusercontent.com/76613773/206693566-9900f44a-67dc-4bae-a686-51081edd6bc9.png)
+
 ## Prérequis :
     - python 3.10.7
     - pip
