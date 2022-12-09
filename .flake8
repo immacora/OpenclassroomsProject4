@@ -10,7 +10,7 @@ exclude=
     venv/
 
 filename =
-    main.py,
+    swiss_chess_manager.py,
     swiss_chess_manager/
 
 
